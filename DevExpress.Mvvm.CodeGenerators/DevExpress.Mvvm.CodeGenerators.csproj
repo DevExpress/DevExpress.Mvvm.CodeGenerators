@@ -77,15 +77,14 @@
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <Copyright>Copyright © 2000-2021 Developer Express Inc.</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>DXicon.jpg</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Update="tools\**" Pack="true" PackagePath="" />
+    <None Include="..\DXicon.jpg" Pack="true" PackagePath="" />
+    <None Include="..\LICENSE" Pack="true" PackagePath="" />
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
