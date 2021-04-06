@@ -1,0 +1,95 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DevExpress.Mvvm.CodeGenerators</RootNamespace>
+    <AssemblyName>DevExpress.Mvvm.CodeGenerators</AssemblyName>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <SignAssembly>true</SignAssembly>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MVVM;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;MVVM;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Diagnostics\ConstExpressions.cs" />
+    <Compile Include="Diagnostics\GeneratorDiagnostics.cs" />
+    <Compile Include="Generators\ClassGenerator.cs" />
+    <Compile Include="Generators\CommandGenerator.cs" />
+    <Compile Include="Generators\EventArgsGenerator.cs" />
+    <Compile Include="Generators\InterfaceGenerator.cs" />
+    <Compile Include="Generators\PropertyGenerator.cs" />
+    <Compile Include="Helpers\AttributeHelper.cs" />
+    <Compile Include="Helpers\ClassHelper.cs" />
+    <Compile Include="Helpers\CommandHelper.cs" />
+    <Compile Include="Helpers\PropertyHelper.cs" />
+    <Compile Include="Info\ContextInfo.cs" />
+    <Compile Include="Info\INPCInfo.cs" />
+    <Compile Include="InitializationGenerator\AccessModifierGenerator.cs" />
+    <Compile Include="InitializationGenerator\AttributesGenerator.cs" />
+    <Compile Include="InitializationGenerator\InitializationGenerator.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="SourceGenerator.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="AnalyzerReleasesTracking\AnalyzerReleases.Shipped.md" />
+    <AdditionalFiles Include="AnalyzerReleasesTracking\AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>DevExpress.Mvvm.CodeGenerators</PackageId>
+    <PackageVersion>21.1.0</PackageVersion>
+    <Authors>Developer Express Inc.</Authors>
+    <PackageProjectUrl>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>This package allows you to generate boilerplate code for your ViewModels at compile time. Command declarations, property change notifications, IDataErrorInfo implementation, and service support are automatically added to a partial class linked to your ViewModel.</Description>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageTags>devexpress dxmvvm dx mvvm wpf xaml sourcegenerator generator</PackageTags>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <Copyright>Copyright © 2000-2021 Developer Express Inc.</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="tools\**" Pack="true" PackagePath="" />
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
+  </ItemGroup>
+</Project>
