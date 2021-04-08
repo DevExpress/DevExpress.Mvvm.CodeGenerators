@@ -67,7 +67,7 @@
   <PropertyGroup>
     <PackageId>DevExpress.Mvvm.CodeGenerators</PackageId>
     <PackageVersion>21.1.0</PackageVersion>
-    <Owners>devexpress</Owners>
+    <Owners>Developer Express Inc.</Owners>
     <Authors>Developer Express Inc.</Authors>
     <PackageProjectUrl>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators</PackageProjectUrl>
     <RepositoryUrl>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators</RepositoryUrl>
