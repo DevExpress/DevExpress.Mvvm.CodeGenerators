@@ -28,14 +28,14 @@ using System.ComponentModel;";
             var inpcedInfo = INPCInfo.GetINPCedInfo(contextInfo, classSymbol);
             if(inpcedInfo.HasNoImplementation())
                 interfaces.Add(new INPCedInterfaceGenerator());
-            var impelementRaiseChangedMethod = inpcedInfo.CanImplementRaiseMethod();
+            var impelementRaiseChangedMethod = inpcedInfo.ShouldImplementRaiseMethod();
             if(impelementRaiseChangedMethod)
                 raiseChangedMethod = inpcedInfo.RaiseMethodImplementation;
 
             var inpcingInfo = INPCInfo.GetINPCingInfo(contextInfo, classSymbol);
             if(inpcingInfo.HasNoImplementation())
                 interfaces.Add(new INPCingInterfaceGenerator());
-            var impelementRaiseChangingMethod = inpcingInfo.CanImplementRaiseMethod();
+            var impelementRaiseChangingMethod = inpcingInfo.ShouldImplementRaiseMethod();
             if(impelementRaiseChangingMethod)
                 raiseChangingMethod = inpcingInfo.RaiseMethodImplementation;
 

@@ -14,10 +14,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.ViewModelAttributeSymbol, nameofImplementIDEI, false);
         public static bool GetImplementISSValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.ViewModelAttributeSymbol, nameofImplementISS, false);
-        public static IEnumerable<IFieldSymbol> GetFieldCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol propertyAttribute) =>
-            GetProcessingMembers<IFieldSymbol>(classSymbol, propertyAttribute);
-        public static IEnumerable<IMethodSymbol> GetCommandCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol commandAttribute) =>
-            GetProcessingMembers<IMethodSymbol>(classSymbol, commandAttribute);
+        public static IEnumerable<IFieldSymbol> GetFieldCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol propertySymbol) =>
+            GetProcessingMembers<IFieldSymbol>(classSymbol, propertySymbol);
+        public static IEnumerable<IMethodSymbol> GetCommandCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol commandSymbol) =>
+            GetProcessingMembers<IMethodSymbol>(classSymbol, commandSymbol);
         public static bool IsInterfaceImplemented(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol) =>
             classSymbol.Interfaces.Contains(interfaceSymbol);
 

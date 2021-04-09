@@ -29,9 +29,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     hasError = true;
                 }
             }
-            if(hasError)
-                return null;
-            return new CommandGenerator(methodSymbol, info.CommandAttributeSymbol, parameterType, canExecuteMethodName, isCommand);
+            return hasError ? null : new CommandGenerator(methodSymbol, info.CommandAttributeSymbol, parameterType, canExecuteMethodName, isCommand);
         }
         public string GetSourceCode() {
             var source = new StringBuilder();

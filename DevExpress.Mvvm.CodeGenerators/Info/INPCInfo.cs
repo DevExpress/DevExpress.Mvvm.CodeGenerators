@@ -30,7 +30,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         public bool HasNoImplementation() =>
             HasAttribute && !hasImplementation;
-        public bool CanImplementRaiseMethod() =>
+        public bool ShouldImplementRaiseMethod() =>
             HasAttribute && !HasRaiseMethodWithEventArgsParameter && (!hasImplementation || hasImplementationInCurrentClass);
 
         INPCInfo(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol, Func<INamedTypeSymbol, bool> checkAttribute, string methodName, string eventArgsParameter, string raiseMethodImplementation) {

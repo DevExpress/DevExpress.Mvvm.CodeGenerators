@@ -57,7 +57,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
     }
 
     class SyntaxReceiver : ISyntaxReceiver {
-        readonly List<ClassDeclarationSyntax> classSyntaxes = new List<ClassDeclarationSyntax>();
+        readonly List<ClassDeclarationSyntax> classSyntaxes = new();
         public IEnumerable<ClassDeclarationSyntax> ClassSyntaxes { get => classSyntaxes.ToArray(); }
 
         public void OnVisitSyntaxNode(SyntaxNode syntaxNode) {

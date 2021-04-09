@@ -12,8 +12,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static readonly string nameofSetterAccessModifier = AttributesGenerator.SetterAccessModifier;
 
         public static string CreatePropertyName(string fieldName) => fieldName.TrimStart('_').FirstToUpperCase();
-        public static bool GetIsVirtualValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertyAttributeSymbol) =>
-            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertyAttributeSymbol, nameofIsVirtual, false);
+        public static bool GetIsVirtualValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
+            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofIsVirtual, false);
         public static string GetChangedMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, string fieldType) {
             var methodName = GetChangedMethodName(fieldSymbol, info.PropertyAttributeSymbol);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changed", "oldValue", fieldType);
@@ -22,8 +22,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
             var methodName = GetChangingMethodName(fieldSymbol, info.PropertyAttributeSymbol);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changing", "value", fieldType);
         }
-        public static string GetSetterAccessModifierValue(IFieldSymbol fieldSymbol, INamedTypeSymbol bindableSymbol) {
-            var enumIndex = AttributeHelper.GetPropertyActualValue(fieldSymbol, bindableSymbol, nameofSetterAccessModifier, 0);
+        public static string GetSetterAccessModifierValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) {
+            var enumIndex = AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofSetterAccessModifier, 0);
             return AccessModifierGenerator.GetCodeRepresentation(enumIndex);
         }
         public static string GetAttributesList(Compilation compilation, IFieldSymbol fieldSymbol) {
@@ -46,10 +46,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
             return "[" + attributeListsString + "]";
         }
 
-        static string GetChangedMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol propertyAttributeSymbol) =>
-            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertyAttributeSymbol, nameofChangedMethod, (string)null);
-        static string GetChangingMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol propertyAttributeSymbol) =>
-            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertyAttributeSymbol, nameofChangingMethod, (string)null);
+        static string GetChangedMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
+            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofChangedMethod, (string)null);
+        static string GetChangingMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
+            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofChangingMethod, (string)null);
         static string GetMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string methodName, string defaultMethodName, string parameterName, string parameterType) {
             var hasMethodName = methodName != null;
             if(!hasMethodName)

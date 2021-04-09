@@ -27,7 +27,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static void ReportOnChangedMethodNotFound(this GeneratorExecutionContext context, IFieldSymbol fieldSymbol, string methodName, string parameterType, IEnumerable<IMethodSymbol> candidates) =>
             context.ReportDiagnostic(OnChangedMethodNotFound, SymbolNameLocation(fieldSymbol), methodName, parameterType, CandidatesMessage(candidates));
         public static void ReportIncorrectCommandSignature(this GeneratorExecutionContext context, IMethodSymbol methodSymbol) =>
-            context.ReportDiagnostic(IncorrectCommandSignature, SymbolNameLocation(methodSymbol), methodSymbol.ReturnType.ToDisplayStringNullable(), methodSymbol.Name, ParameterTypeToDisplayString(methodSymbol));
+            context.ReportDiagnostic(IncorrectCommandSignature, SymbolNameLocation(methodSymbol), methodSymbol.ReturnType.ToDisplayStringNullable(), methodSymbol.Name, ParameterTypesToDisplayString(methodSymbol));
         public static void ReportCanExecuteMethodNotFound(this GeneratorExecutionContext context, IMethodSymbol methodSymbol, string canExecuteMethodName, string parameterType, IEnumerable<IMethodSymbol> candidates) =>
             context.ReportDiagnostic(CanExecuteMethodNotFound, SymbolNameLocation(methodSymbol, AttributesGenerator.CanExecuteMethod), canExecuteMethodName, parameterType, CandidatesMessage(candidates));
         public static void ReportRaiseMethodNotFound(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol, string end) =>
@@ -50,9 +50,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static string CandidatesMessage(IEnumerable<IMethodSymbol> candidates) =>
             candidates.Any() ? $". Candidate{(candidates.Count() > 1 ? "s" : string.Empty)} with wrong signature: {CandidatesToDisplayString(candidates)}." : string.Empty;
         static string CandidatesToDisplayString(IEnumerable<IMethodSymbol> candidates) =>
-            candidates.Select(candidate => $"'{candidate.ReturnType.ToDisplayStringNullable()} {candidate.Name}({ParameterTypeToDisplayString(candidate)})'")
+            candidates.Select(candidate => $"'{candidate.ReturnType.ToDisplayStringNullable()} {candidate.Name}({ParameterTypesToDisplayString(candidate)})'")
                       .ConcatToString(", ");
-        static string ParameterTypeToDisplayString(IMethodSymbol methodSymbol) =>
+        static string ParameterTypesToDisplayString(IMethodSymbol methodSymbol) =>
             methodSymbol.Parameters.Select(parameter => parameter.Type.ToDisplayStringNullable()).ConcatToString(", ");
     }
 }
