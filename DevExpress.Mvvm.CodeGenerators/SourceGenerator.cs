@@ -31,6 +31,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 if(!AttributeHelper.HasAttribute(classSymbol, contextInfo.ViewModelAttributeSymbol))
                     continue;
 
+                if(classSymbol.IsGenericType) {
+                    context.ReportGenericViewModel(classSymbol);
+                    continue;
+                }
+
                 if(!classSyntax.Modifiers.Any(x => x.ValueText == "partial")) {
                     context.ReportNoPartialModifier(classSymbol);
                     continue;

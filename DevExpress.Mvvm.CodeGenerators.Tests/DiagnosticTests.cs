@@ -268,6 +268,27 @@ namespace Test {
                 Assert.AreEqual(GeneratorDiagnostics.RaiseMethodNotFound.Id, diagnostic.Id);
         }
 
+        [Test]
+        public void GenericViewModelDiagnostic() {
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators;
+
+namespace Test {
+    [GenerateViewModel]
+    partial class GenericClass<T> { }
+
+    public class Program {
+        public static void Main(string[] args) { }
+    }
+}
+";
+            Compilation inputCompilation = Helper.CreateCompilation(sourceCode);
+            ViewModelGenerator generator = new ViewModelGenerator();
+            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
+
+            Assert.AreEqual(2, outputCompilation.SyntaxTrees.Count());
+            Assert.AreEqual(GeneratorDiagnostics.GenericViewModel.Id, diagnostics[0].Id);
+        }
 
         [Test]
         public void TwoSuitableMethodsDiagnostic() {

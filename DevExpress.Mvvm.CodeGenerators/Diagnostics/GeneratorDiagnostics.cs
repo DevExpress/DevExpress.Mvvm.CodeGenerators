@@ -13,6 +13,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static readonly DiagnosticDescriptor IncorrectCommandSignature = CreateDiagnosticDescriptor(incorrectCommandSignatureId, incorrectCommandSignatureTitle, incorrectCommandSignatureMessageFormat);
         public static readonly DiagnosticDescriptor CanExecuteMethodNotFound = CreateDiagnosticDescriptor(canExecuteMethodNotFoundId, canExecuteMethodNotFoundTitle, canExecuteMethodNotFoundMessageFormat);
         public static readonly DiagnosticDescriptor RaiseMethodNotFound = CreateDiagnosticDescriptor(raiseMethodNotFoundId, raiseMethodNotFoundTitle, raiseMethodNotFoundMessageFormat);
+        public static readonly DiagnosticDescriptor GenericViewModel = CreateDiagnosticDescriptor(genericViewModelId, genericViewModelTitle, genericViewModelMessageFormat);
         public static readonly DiagnosticDescriptor TwoSuitableMethods = CreateDiagnosticDescriptor(twoSuitableMethodsId, twoSuitableMethodsTitle, twoSuitableMethodsMessageFormat, DiagnosticSeverity.Warning);
 
         public static void ReportNoPartialModifier(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol) =>
@@ -31,6 +32,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
             context.ReportDiagnostic(CanExecuteMethodNotFound, SymbolNameLocation(methodSymbol, AttributesGenerator.CanExecuteMethod), canExecuteMethodName, parameterType, CandidatesMessage(candidates));
         public static void ReportRaiseMethodNotFound(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol, string end) =>
             context.ReportDiagnostic(RaiseMethodNotFound, SymbolNameLocation(classSymbol), end);
+        public static void ReportGenericViewModel(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol) =>
+            context.ReportDiagnostic(GenericViewModel, SymbolNameLocation(classSymbol), classSymbol.Name);
         public static void ReportTwoSuitableMethods(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string methodName, string parameterType) =>
             context.ReportDiagnostic(TwoSuitableMethods, SymbolNameLocation(fieldSymbol), classSymbol.Name, methodName, parameterType);
 

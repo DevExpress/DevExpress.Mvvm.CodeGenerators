@@ -12,4 +12,5 @@ DXCG0005 | DevExpress.Mvvm.CodeGenerators | error | GeneratorDiagnostics
 DXCG0006 | DevExpress.Mvvm.CodeGenerators | error | GeneratorDiagnostics
 DXCG0007 | DevExpress.Mvvm.CodeGenerators | error | GeneratorDiagnostics
 DXCG0008 | DevExpress.Mvvm.CodeGenerators | error | GeneratorDiagnostics
+DXCG0009 | DevExpress.Mvvm.CodeGenerators | error | GeneratorDiagnostics
 DXCG1001 | DevExpress.Mvvm.CodeGenerators | warning | GeneratorDiagnostics
