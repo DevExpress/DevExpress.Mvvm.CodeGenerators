@@ -87,14 +87,12 @@ using System.ComponentModel;";
             var commandCandidates = ClassHelper.GetCommandCandidates(classSymbol, contextInfo.CommandAttributeSymbol);
             if(commandCandidates.Any()) {
                 mvvmComponentsList.Add("Commands");
-                if(isMvvmAvailable) {
-                    usings += Environment.NewLine + "using System.Windows.Input;";
+                if(isMvvmAvailable)
                     foreach(var methodSymbol in commandCandidates) {
                         var command = CommandGenerator.Create(contextInfo, classSymbol, methodSymbol);
                         if(command != null)
                             commands.Add(command);
                     }
-                }
             }
 
             eventArgs = eventArgsGenerator.GetSourceCode();

@@ -4,10 +4,9 @@ using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     class CommandGenerator {
-        readonly string baseType;
-        readonly string wrapperType;
+        readonly string type;
         readonly string name;
-        readonly string parameterTypeList;
+        readonly string parametersList;
 
         public static CommandGenerator Create(ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol) {
             var hasError = false;
@@ -36,25 +35,24 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
         public string GetSourceCode() {
             var source = new StringBuilder();
-            source.AppendLine($"{wrapperType} {name};");
-            source.AppendLine($"public {baseType} {name.FirstToUpperCase()} {{");
-            source.AppendLine($"get => {name} ??= new {wrapperType}({parameterTypeList});".AddTabs(1));
+            source.AppendLine($"{type} {name};");
+            source.AppendLine($"public {type} {name.FirstToUpperCase()} {{");
+            source.AppendLine($"get => {name} ??= new {type}({parametersList});".AddTabs(1));
             source.AppendLine("}");
             return source.ToString();
         }
 
-        CommandGenerator(IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string parametertype, string canExecuteMethodName, bool isCommand) {
-            var wrapperBaseType = isCommand ? "DelegateCommand" : "AsyncCommand";
+        CommandGenerator(IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string parameterType, string canExecuteMethodName, bool isCommand) {
+            var baseType = isCommand ? "DelegateCommand" : "AsyncCommand";
             var executeMethod = methodSymbol.Name;
             var useCommandManager = CommandHelper.GetUseCommandManagerValue(methodSymbol, commandAttributeSymbol).ToString().ToLower();
             var allowMultipleExecution = CommandHelper.GetAllowMultipleExecutionValue(methodSymbol, commandAttributeSymbol).ToString().ToLower();
 
-            baseType = isCommand ? "ICommand" : "IAsyncCommand";
-            wrapperType = CommandHelper.GetGenericType(wrapperBaseType, parametertype);
+            type = CommandHelper.GetGenericType(baseType, parameterType);
             name = CommandHelper.GetCommandName(methodSymbol, commandAttributeSymbol, executeMethod);
-            parameterTypeList = isCommand ?
-                                CommandHelper.ParameterTypeToDisplayString(executeMethod, canExecuteMethodName, useCommandManager) :
-                                CommandHelper.ParameterTypeToDisplayString(executeMethod, canExecuteMethodName, allowMultipleExecution, useCommandManager);
+            parametersList = isCommand ?
+                                CommandHelper.ParametersToDisplayString(executeMethod, canExecuteMethodName, useCommandManager) :
+                                CommandHelper.ParametersToDisplayString(executeMethod, canExecuteMethodName, allowMultipleExecution, useCommandManager);
         }
     }
 }

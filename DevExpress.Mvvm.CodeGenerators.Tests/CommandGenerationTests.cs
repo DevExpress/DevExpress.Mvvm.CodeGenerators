@@ -20,7 +20,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         [GenerateCommand(Name = "CommandWithoutCommandManager", UseCommandManager = false)]
         public void WithoutManager() { }
 
-        public void UpdateCommandWithoutManagerCommand() => commandWithoutCommandManager.RaiseCanExecuteChanged();
+        public void UpdateCommandWithoutManagerCommand() => CommandWithoutCommandManager.RaiseCanExecuteChanged();
     }
 
     [TestFixture]
@@ -42,27 +42,27 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public void CallRequiredMethodForCommand() {
             var generated = new GenerateCommands();
 
-            var executeMethodWithNoArg = GetFieldValue<Action<int?>, DelegateCommand<int?>>((DelegateCommand<int?>)generated.WithNullableArgCommand, "executeMethod");
+            var executeMethodWithNoArg = GetFieldValue<Action<int?>, DelegateCommand<int?>>(generated.WithNullableArgCommand, "executeMethod");
             var expectedExecuteMethodWithNoArg = generated.GetType().GetMethod("WithNullableArg");
             Assert.AreEqual(expectedExecuteMethodWithNoArg, executeMethodWithNoArg.Method);
 
-            var method = GetFieldValue<Action<int>, DelegateCommand<int>>((DelegateCommand<int>)generated.Command, "executeMethod");
+            var method = GetFieldValue<Action<int>, DelegateCommand<int>>(generated.Command, "executeMethod");
             var expectedMethod = generated.GetType().GetMethod("Method");
             Assert.AreEqual(expectedMethod, method.Method);
 
-            var canMethod = GetFieldValue<Func<int, bool>, DelegateCommand<int>>((DelegateCommand<int>)generated.Command, "canExecuteMethod");
+            var canMethod = GetFieldValue<Func<int, bool>, DelegateCommand<int>>(generated.Command, "canExecuteMethod");
             var expectedCanMethod = generated.GetType().GetMethod("CanDoIt");
             Assert.AreEqual(expectedCanMethod, canMethod.Method);
 
-            var useCommandManager = GetFieldValue<bool, DelegateCommand<int>>((DelegateCommand<int>)generated.Command, "useCommandManager");
+            var useCommandManager = GetFieldValue<bool, DelegateCommand<int>>(generated.Command, "useCommandManager");
             var expectedUseCommandManager = true;
             Assert.AreEqual(expectedUseCommandManager, useCommandManager);
 
-            useCommandManager = GetFieldValue<bool, DelegateCommand>((DelegateCommand)generated.CommandWithoutCommandManager, "useCommandManager");
+            useCommandManager = GetFieldValue<bool, DelegateCommand>(generated.CommandWithoutCommandManager, "useCommandManager");
             expectedUseCommandManager = false;
             Assert.AreEqual(expectedUseCommandManager, useCommandManager);
 
-            var canExecuteMethod = GetFieldValue<Func<int, bool>, DelegateCommand>((DelegateCommand)generated.CommandWithoutCommandManager, "canExecuteMethod");
+            var canExecuteMethod = GetFieldValue<Func<int, bool>, DelegateCommand>(generated.CommandWithoutCommandManager, "canExecuteMethod");
             Assert.IsNull(canExecuteMethod);
         }
         static TResult GetFieldValue<TResult, T>(T source, string fieldName) {

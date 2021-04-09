@@ -48,31 +48,31 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public void CallRequiredMethodForAsyncCommand() {
             var generated = new GenerateAsyncCommands();
 
-            var method = GetFieldValue<Func<int, Task>, AsyncCommand<int>>((AsyncCommand<int>)generated.MyAsyncCommand, "executeMethod");
+            var method = GetFieldValue<Func<int, Task>, AsyncCommand<int>>(generated.MyAsyncCommand, "executeMethod");
             var expectedMethod = generated.GetType().GetMethod("Method");
             Assert.AreEqual(expectedMethod, method.Method);
 
-            var canMethod = GetFieldValue<Func<int, bool>, AsyncCommand<int>>((AsyncCommand<int>)generated.MyAsyncCommand, "canExecuteMethod");
+            var canMethod = GetFieldValue<Func<int, bool>, AsyncCommand<int>>(generated.MyAsyncCommand, "canExecuteMethod");
             var expectedCanMethod = generated.GetType().GetMethod("CanDoIt");
             Assert.AreEqual(expectedCanMethod, canMethod.Method);
 
-            var useCommandManager = GetFieldValue<bool, AsyncCommand<int>>((AsyncCommand<int>)generated.MyAsyncCommand, "useCommandManager");
+            var useCommandManager = GetFieldValue<bool, AsyncCommand<int>>(generated.MyAsyncCommand, "useCommandManager");
             var expectedUseCommandManager = true;
             Assert.AreEqual(expectedUseCommandManager, useCommandManager);
 
-            var allowMultipleExecution = ((AsyncCommand<int>)generated.MyAsyncCommand).AllowMultipleExecution;
+            var allowMultipleExecution = generated.MyAsyncCommand.AllowMultipleExecution;
             var expectedAllowMultipleExecution = false;
             Assert.AreEqual(expectedAllowMultipleExecution, allowMultipleExecution);
 
-            useCommandManager = GetFieldValue<bool, AsyncCommand>((AsyncCommand)generated.AsyncCommandWithoutCommandManager, "useCommandManager");
+            useCommandManager = GetFieldValue<bool, AsyncCommand>(generated.AsyncCommandWithoutCommandManager, "useCommandManager");
             expectedUseCommandManager = false;
             Assert.AreEqual(expectedUseCommandManager, useCommandManager);
 
-            allowMultipleExecution = ((AsyncCommand)generated.AllowMultipleExecutionCommand).AllowMultipleExecution;
+            allowMultipleExecution = generated.AllowMultipleExecutionCommand.AllowMultipleExecution;
             expectedAllowMultipleExecution = true;
             Assert.AreEqual(expectedAllowMultipleExecution, allowMultipleExecution);
 
-            var canExecuteMethod = GetFieldValue<Func<int, bool>, AsyncCommand>((AsyncCommand)generated.GenericTaskCommand, "canExecuteMethod");
+            var canExecuteMethod = GetFieldValue<Func<int, bool>, AsyncCommand>(generated.GenericTaskCommand, "canExecuteMethod");
             Assert.IsNull(canExecuteMethod);
         }
         static TResult GetFieldValue<TResult, T>(T source, string fieldName) {
