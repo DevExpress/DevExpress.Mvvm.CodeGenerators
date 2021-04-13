@@ -14,7 +14,7 @@ Your project should meet the following requirements:
 Prepare your project as outlined below to enable support for View Models generated at compile time:
 
 1. Add a reference to the **DevExpress.Mvvm.v21.1**+ or install the [DevExpress.Mvvm](https://www.nuget.org/packages/DevExpressMvvm/) NuGet package.  
-2. Install the **DevExpress.Mvvm.CodeGenerators** NuGet package in your project.
+2. Install the [DevExpress.Mvvm.CodeGenerators](https://www.nuget.org/packages/DevExpress.Mvvm.CodeGenerators/21.1.0) NuGet package in your project.
 3. Set the language version to **9** in the **.csproject** file:
 
     ```xaml
