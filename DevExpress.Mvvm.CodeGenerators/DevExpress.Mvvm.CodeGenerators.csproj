@@ -71,19 +71,18 @@
     <Authors>Developer Express Inc.</Authors>
     <PackageProjectUrl>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators</PackageProjectUrl>
     <RepositoryUrl>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators</RepositoryUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>This package allows you to generate boilerplate code for your ViewModels at compile time. Command declarations, property change notifications, IDataErrorInfo implementation, and service support are automatically added to a partial class linked to your ViewModel.</Description>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageTags>devexpress dxmvvm dx mvvm wpf xaml sourcegenerator generator</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <Copyright>Copyright © 2000-2021 Developer Express Inc.</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageIcon>DXicon.jpg</PackageIcon>
+    <PackageIconUrl>https://secure.gravatar.com/avatar/6b38f1e9ffd8b069bcdc2741934fdbcf?s=512&amp;r=g&amp;d=retro</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <None Update="tools\**" Pack="true" PackagePath="" />
-    <None Include="..\DXicon.jpg" Pack="true" PackagePath="" />
     <None Include="..\LICENSE" Pack="true" PackagePath="" />
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
