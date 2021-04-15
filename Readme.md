@@ -98,8 +98,10 @@ Prepare your project as outlined below to enable support for View Models generat
  
 ## Documentation
  
-Refer to the following topic for more information: [View Models generated at compile time](https://docs.devexpress.com/WPF/402989/mvvm-framework/viewmodels/compile-time-generated-viewmodels).
+Refer to the following topic for more information: 
+* [View Models generated at compile time](https://docs.devexpress.com/WPF/402989/mvvm-framework/viewmodels/compile-time-generated-viewmodels)
  
 ## Example
 
-Refer to the following GitHub example: [How to: Use View Models Generated at Compile Time](https://github.com/DevExpress-Examples/ViewModelGenerator-Sample).
+Refer to the following GitHub example: 
+* [How to: Use View Models Generated at Compile Time](https://github.com/DevExpress-Examples/ViewModelGenerator-Sample)
