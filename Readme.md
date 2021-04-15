@@ -30,6 +30,76 @@ Prepare your project as outlined below to enable support for View Models generat
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     </PropertyGroup>
     ```
- ## See also
-Refer to the following topic for more information:
-- [View Models generated at compile time](https://docs.devexpress.com/WPF/402989/mvvm-framework/viewmodels/compile-time-generated-viewmodels)
+ 
+## Documentation
+ 
+Refer to the following topic for more information: [View Models generated at compile time](https://docs.devexpress.com/WPF/402989/mvvm-framework/viewmodels/compile-time-generated-viewmodels)
+ 
+## Example
+
+[How to: Use View Models Generated at Compile Time](https://github.com/DevExpress-Examples/ViewModelGenerator-Sample)
+ 
+* **Base View Model**
+    
+    Create a partial class. Add attributes to the class and its fields/methods:
+
+    ```csharp
+    using DevExpress.Mvvm.CodeGenerators;
+
+    [GenerateViewModel]
+    partial class ViewModel {
+        [GenerateProperty]
+        string username;
+        [GenerateProperty]
+        string status;
+
+        [GenerateCommand]
+        void Login() => Status = "User: " + Username;
+        bool CanLogin() => !string.IsNullOrEmpty(Username);
+    }
+    ```
+    
+* **Generated View Model**
+
+    The generator inspects the base View Model and produces a partial class that complements your implementation with the following boilerplate code:
+    
+    * Properties
+    * Property change notifications
+    * Command declarations
+    * INotifyPropertyChanged, INotifyPropertyChanging, IDataErrorInfo, ISupportServices implementation 
+    
+    You can view and debug the generated View Model:
+  
+    ```csharp   
+    partial class ViewModel : INotifyPropertyChanged {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
+
+        public string Username {
+            get => username;
+            set {
+                if(EqualityComparer<string>.Default.Equals(username, value)) return;
+                username = value;
+                RaisePropertyChanged(UsernameChangedEventArgs);
+            }
+        }
+
+        public string Status {
+            get => status;
+            set {
+                if(EqualityComparer<string>.Default.Equals(status, value)) return;
+                status = value;
+                RaisePropertyChanged(StatusChangedEventArgs);
+            }
+        }
+
+        DelegateCommand loginCommand;
+        public DelegateCommand LoginCommand {
+            get => loginCommand ??= new DelegateCommand(Login, CanLogin, true);
+        }
+
+        static PropertyChangedEventArgs UsernameChangedEventArgs = new PropertyChangedEventArgs(nameof(Username));
+        static PropertyChangedEventArgs StatusChangedEventArgs = new PropertyChangedEventArgs(nameof(Status));
+    }
+    ```
