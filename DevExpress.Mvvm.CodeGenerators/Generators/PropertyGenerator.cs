@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Linq;
 using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
@@ -8,6 +9,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         readonly string type;
         readonly string propertyName;
         readonly string fieldName;
+        readonly string setterAttribute;
         readonly string setterAccessModifier;
         readonly string raiseChangedMethod;
         readonly string raiseChangingMethod;
@@ -22,7 +24,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(propertyName == fieldName)
                 info.Context.ReportInvalidPropertyName(fieldSymbol, propertyName);
 
-            var type = fieldSymbol.Type.ToDisplayStringNullable();
+            var type = fieldSymbol.Type;
             var changedMethod = PropertyHelper.GetChangedMethod(info, classSymbol, fieldSymbol, propertyName, type);
             var changingMethod = PropertyHelper.GetChangingMethod(info, classSymbol, fieldSymbol, propertyName, type);
 
@@ -36,6 +38,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 source.AppendLine(attributesList);
             source.AppendLine($"public {virtuality}{type} {propertyName} {{");
             source.AppendLine($"get => {fieldName};".AddTabs(1));
+
+            if(!string.IsNullOrEmpty(setterAttribute))
+                source.AppendLine(setterAttribute.AddTabs(1));
+
             source.AppendLine($"{setterAccessModifier}set {{".AddTabs(1));
             source.AppendLine($"if(EqualityComparer<{type}>.Default.Equals({fieldName}, value)) return;".AddTabs(2));
 
@@ -58,16 +64,21 @@ namespace DevExpress.Mvvm.CodeGenerators {
             return source.ToString();
         }
 
-        PropertyGenerator(ContextInfo info, IFieldSymbol fieldSymbol, string type, string propertyName, string fieldName, string inpcedParameter, string inpcingParameter, string changedMethod, string changingMethod) {
+        PropertyGenerator(ContextInfo info, IFieldSymbol fieldSymbol, ITypeSymbol type, string propertyName, string fieldName, string inpcedParameter, string inpcingParameter, string changedMethod, string changingMethod) {
             attributesList = PropertyHelper.GetAttributesList(info.Compilation, fieldSymbol);
             setterAccessModifier = PropertyHelper.GetSetterAccessModifierValue(fieldSymbol, info.PropertyAttributeSymbol);
 
             var isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, info.PropertyAttributeSymbol);
             virtuality = isVirtual ? "virtual " : string.Empty;
 
-            this.type = type;
+            var nullableAnnotation = PropertyHelper.GetNullableAnnotation(type);
+            this.type = type.WithNullableAnnotation(nullableAnnotation).ToDisplayStringNullable();
             this.propertyName = propertyName;
             this.fieldName = fieldName == "value" ? "this.value" : fieldName;
+
+            var isNonNullableReferenceType = type.IsReferenceType && type.NullableAnnotation == NullableAnnotation.NotAnnotated;
+            if(isNonNullableReferenceType && PropertyHelper.HasMemberNotNullAttribute(info.Compilation))
+                setterAttribute = $"[System.Diagnostics.CodeAnalysis.MemberNotNull(nameof({fieldName}))]";
 
             if(inpcedParameter == "eventargs")
                 raiseChangedMethod = $"RaisePropertyChanged({propertyName}ChangedEventArgs);";

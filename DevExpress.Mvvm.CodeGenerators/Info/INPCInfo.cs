@@ -18,7 +18,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                          symbol => AttributeHelper.HasAttribute(symbol, info.ViewModelAttributeSymbol),
                          "RaisePropertyChanged",
                          "System.ComponentModel.PropertyChangedEventArgs",
-                         "protected void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);");
+                         "protected void RaisePropertyChanged(PropertyChangedEventArgs? e) => PropertyChanged?.Invoke(this, e);");
         public static INPCInfo GetINPCingInfo(ContextInfo info, INamedTypeSymbol classSymbol) =>
             new INPCInfo(classSymbol,
                          info.INPCingSymbol,
@@ -26,7 +26,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                                    AttributeHelper.GetPropertyActualValue(symbol, info.ViewModelAttributeSymbol, AttributesGenerator.ImplementINPCing, false),
                          "RaisePropertyChanging",
                          "System.ComponentModel.PropertyChangingEventArgs",
-                         "protected void RaisePropertyChanging(PropertyChangingEventArgs e) => PropertyChanging?.Invoke(this, e);");
+                         "protected void RaisePropertyChanging(PropertyChangingEventArgs? e) => PropertyChanging?.Invoke(this, e);");
 
         public bool HasNoImplementation() =>
             HasAttribute && !hasImplementation;
@@ -67,7 +67,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                                      symbol => (symbol.DeclaredAccessibility != Accessibility.Private || ignorePrivateAccessibility) &&
                                                symbol.ReturnsVoid &&
                                                symbol.Name == methodName &&
-                                               symbol.Parameters.Length == 1 && symbol.Parameters.First().Type.ToDisplayStringNullable() == parameterType)
+                                               symbol.Parameters.Length == 1 && symbol.Parameters.First().Type.ToDisplayString(NullableFlowState.None) == parameterType)
                          .Any();
     }
 }

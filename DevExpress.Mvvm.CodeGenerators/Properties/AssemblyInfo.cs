@@ -10,4 +10,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyFileVersion("21.1.0")]
 [assembly: SatelliteContractVersion("21.1.0")]
 [assembly: NeutralResourcesLanguage("en-US")]
-[assembly: InternalsVisibleTo("DevExpress.Mvvm.CodeGenerators.Tests")]
+[assembly: InternalsVisibleTo("DevExpress.Mvvm.CodeGenerators.FrameworkTests")]
+[assembly: InternalsVisibleTo("DevExpress.Mvvm.CodeGenerators.NetCoreTests")]

@@ -21,20 +21,21 @@ namespace DevExpress.Mvvm.CodeGenerators {
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, canExecuteMethod, (string)null);
         public static string ParametersToDisplayString(params string[] parameters) => parameters.ConcatToString(", ");
         public static string GetGenericType(string baseType, string genericArgumentType) => baseType + (string.IsNullOrEmpty(genericArgumentType) ? string.Empty : "<" + genericArgumentType + ">");
-        public static IEnumerable<IMethodSymbol> GetCanExecuteMethodCandidates(INamedTypeSymbol classSymbol, string canExecuteMethodName, string parameterType) =>
-            GetMethods(classSymbol,
-                       method => method.ReturnType.ToDisplayStringNullable() == "bool" &&
-                                 method.Name == canExecuteMethodName &&
-                                 HaveSameParametersList(method.Parameters, parameterType));
         public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol classSymbol, Func<IMethodSymbol, bool> condition) =>
             classSymbol.GetMembers().OfType<IMethodSymbol>().Where(condition);
         public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol classSymbol, string methodName) =>
             classSymbol.GetMembers().OfType<IMethodSymbol>().Where(method => method.Name == methodName);
+#nullable enable
+        public static IEnumerable<IMethodSymbol> GetCanExecuteMethodCandidates(INamedTypeSymbol classSymbol, string canExecuteMethodName, ITypeSymbol? parameterType) =>
+            GetMethods(classSymbol,
+                       method => method.ReturnType.ToDisplayStringNullable() == "bool" &&
+                                 method.Name == canExecuteMethodName &&
+                                 HaveSameParametersList(method.Parameters, parameterType));
 
-        static bool HaveSameParametersList(ImmutableArray<IParameterSymbol> parameters, string parameterType) {
-            var bothHaveNoParameter = parameters.Count() == 0 && parameterType == string.Empty;
-            var bothHaveSameSingleParameter = parameters.Count() == 1 && parameters.First().Type.ToDisplayStringNullable() == parameterType;
-            return bothHaveNoParameter || bothHaveSameSingleParameter;
+        static bool HaveSameParametersList(ImmutableArray<IParameterSymbol> parameters, ITypeSymbol? parameterType) {
+            if(parameterType == null)
+                return parameters.Count() == 0;
+            return parameters.Count() == 1 && PropertyHelper.IsSameType(parameters.First().Type, parameterType);
         }
     }
 }

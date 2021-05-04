@@ -5,6 +5,8 @@
         public static string GetSourceCode() =>
 $@"using System;
 
+#nullable enable
+
 namespace {Namespace} {{
 {AccessModifierGenerator.GetSourceCode().AddTabs(1)}
 

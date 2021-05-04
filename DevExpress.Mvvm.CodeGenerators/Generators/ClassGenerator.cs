@@ -106,6 +106,8 @@ using System.ComponentModel;";
             var source = new StringBuilder();
             source.AppendLine(usings);
             source.AppendLine();
+            source.AppendLine("#nullable enable");
+            source.AppendLine();
             source.AppendLine($"namespace {@namespace} {{");
 
             source.Append($"partial class {name} ".AddTabs(1));

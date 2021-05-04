@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>DevExpress.Mvvm.CodeGenerators.Tests</RootNamespace>
+    <AssemblyName>DevExpress.Mvvm.CodeGenerators.NetCoreTests</AssemblyName>
+    <LangVersion>9</LangVersion>
+    <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
+    <WarningsAsErrors>8618</WarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Analyzer Include="..\..\DevExpress.Mvvm.CodeGenerators\bin\DevExpress.Mvvm.CodeGenerators.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="DevExpress.Mvvm.CodeGenerators">
+      <HintPath>..\..\DevExpress.Mvvm.CodeGenerators\bin\DevExpress.Mvvm.CodeGenerators.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DevExpressMvvm" Version="20.2.3" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" />
+    <PackageReference Include="NUnit" Version="3.13.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\TestSource\AsyncCommandGenerationTests.cs" />
+    <Compile Include="..\TestSource\AttributeTransferTests.cs" />
+    <Compile Include="..\TestSource\CommandGenerationTests.cs" />
+    <Compile Include="..\TestSource\DataErrorInfoTests.cs" />
+    <Compile Include="..\TestSource\DiagnosticTests.cs" />
+    <Compile Include="..\TestSource\GenerationTests.cs" />
+    <Compile Include="..\TestSource\Helper.cs" />
+    <Compile Include="..\TestSource\InterfacesTests.cs" />
+    <Compile Include="..\TestSource\NullableAnnotationTests.cs" />
+    <Compile Include="..\TestSource\PropertyGenerationTests.cs" />
+    <Compile Include="..\TestSource\SupportServicesTests.cs" />
+    <Compile Include="..\TestSource\UsingRaiseMethodTests.cs" />
+  </ItemGroup>
+</Project>

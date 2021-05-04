@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace DevExpress.Mvvm.CodeGenerator.Tests {
+namespace DevExpress.Mvvm.CodeGenerators.Tests {
     [GenerateViewModel(ImplementISupportServices = true)]
     partial class ClassWithSupportServices {
     }

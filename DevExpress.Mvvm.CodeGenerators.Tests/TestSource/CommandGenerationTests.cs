@@ -21,6 +21,21 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public void WithoutManager() { }
 
         public void UpdateCommandWithoutManagerCommand() => CommandWithoutCommandManager.RaiseCanExecuteChanged();
+
+#nullable enable
+        [GenerateCommand]
+        void WithNullableString1(string? str) { }
+        [GenerateCommand]
+        void WithNullableString2(string str) { }
+        [GenerateCommand]
+        void WithNullableString3(string? str) { }
+        bool CanWithNullableString3(string str) => str.Length > 0;
+        bool CanWithNullableString4(string? str) => str?.Length > 0;
+#nullable disable
+        [GenerateCommand]
+        void WithNullableString4(string str) { }
+        bool CanWithNullableString1(string str) => str?.Length > 0;
+        bool CanWithNullableString2(string str) => str.Length > 0;
     }
 
     [TestFixture]
@@ -96,6 +111,21 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
 
             generated.CommandWithoutCommandManager.CanExecuteChanged += (s, e) => throw new Exception();
             Assert.Throws<Exception>(generated.UpdateCommandWithoutManagerCommand);
+        }
+
+        [Test]
+        public void NullableReferenceType() {
+            var generated = new GenerateCommands();
+
+            Assert.IsTrue(generated.WithNullableString1Command.CanExecute("1"));
+            Assert.IsTrue(generated.WithNullableString2Command.CanExecute("1"));
+            Assert.IsTrue(generated.WithNullableString3Command.CanExecute("1"));
+            Assert.IsTrue(generated.WithNullableString4Command.CanExecute("1"));
+
+            Assert.IsFalse(generated.WithNullableString1Command.CanExecute(null));
+            Assert.IsFalse(generated.WithNullableString2Command.CanExecute(""));
+            Assert.IsTrue(generated.WithNullableString3Command.CanExecute(""));
+            Assert.IsFalse(generated.WithNullableString4Command.CanExecute(null));
         }
     }
 }

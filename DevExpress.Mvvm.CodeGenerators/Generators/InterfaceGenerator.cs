@@ -8,11 +8,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
     class INPCedInterfaceGenerator : IInterfaceGenerator {
         public string GetName() => nameof(INotifyPropertyChanged);
-        public string GetImplementation() => "public event PropertyChangedEventHandler PropertyChanged;";
+        public string GetImplementation() => "public event PropertyChangedEventHandler? PropertyChanged;";
     }
     class INPCingInterfaceGenerator : IInterfaceGenerator {
         public string GetName() => nameof(INotifyPropertyChanging);
-        public string GetImplementation() => "public event PropertyChangingEventHandler PropertyChanging;";
+        public string GetImplementation() => "public event PropertyChangingEventHandler? PropertyChanging;";
     }
     class IDataErrorInfoGenerator : IInterfaceGenerator {
         public string GetName() => nameof(IDataErrorInfo);
@@ -23,7 +23,7 @@ string IDataErrorInfo.this[string columnName] { get => IDataErrorInfoHelper.GetE
     class ISupportServicesGenerator : IInterfaceGenerator {
         public string GetName() => "ISupportServices";
         public string GetImplementation() =>
-@"IServiceContainer serviceContainer;
+@"IServiceContainer? serviceContainer;
 protected IServiceContainer ServiceContainer { get => serviceContainer ??= new ServiceContainer(this); }
 IServiceContainer ISupportServices.ServiceContainer { get => ServiceContainer; }";
     }

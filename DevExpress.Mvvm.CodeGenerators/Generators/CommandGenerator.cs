@@ -17,7 +17,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 hasError = true;
             }
 
-            var parameterType = methodSymbol.Parameters.FirstOrDefault()?.Type.ToDisplayStringNullable() ?? string.Empty;
+            var parameterType = methodSymbol.Parameters.FirstOrDefault()?.Type;
             var canExecuteMethodName = CommandHelper.GetCanExecuteMethodName(methodSymbol, info.CommandAttributeSymbol);
             if(canExecuteMethodName == null) {
                 var candidate = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, "Can" + methodSymbol.Name, parameterType);
@@ -25,15 +25,15 @@ namespace DevExpress.Mvvm.CodeGenerators {
             } else {
                 var candidates = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, canExecuteMethodName, parameterType);
                 if(!candidates.Any()) {
-                    info.Context.ReportCanExecuteMethodNotFound(methodSymbol, canExecuteMethodName, parameterType, CommandHelper.GetMethods(classSymbol, canExecuteMethodName));
+                    info.Context.ReportCanExecuteMethodNotFound(methodSymbol, canExecuteMethodName, parameterType?.ToDisplayStringNullable() ?? string.Empty, CommandHelper.GetMethods(classSymbol, canExecuteMethodName));
                     hasError = true;
                 }
             }
-            return hasError ? null : new CommandGenerator(methodSymbol, info.CommandAttributeSymbol, parameterType, canExecuteMethodName, isCommand);
+            return hasError ? null : new CommandGenerator(methodSymbol, info.CommandAttributeSymbol, parameterType?.ToDisplayStringNullable() ?? string.Empty, canExecuteMethodName, isCommand);
         }
         public string GetSourceCode() {
             var source = new StringBuilder();
-            source.AppendLine($"{type} {name};");
+            source.AppendLine($"{type}? {name};");
             source.AppendLine($"public {type} {name.FirstToUpperCase()} {{");
             source.AppendLine($"get => {name} ??= new {type}({parametersList});".AddTabs(1));
             source.AppendLine("}");

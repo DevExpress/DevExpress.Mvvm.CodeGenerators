@@ -14,11 +14,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static string CreatePropertyName(string fieldName) => fieldName.TrimStart('_').FirstToUpperCase();
         public static bool GetIsVirtualValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
             AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofIsVirtual, false);
-        public static string GetChangedMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, string fieldType) {
+        public static string GetChangedMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType) {
             var methodName = GetChangedMethodName(fieldSymbol, info.PropertyAttributeSymbol);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changed", "oldValue", fieldType);
         }
-        public static string GetChangingMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, string fieldType) {
+        public static string GetChangingMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType) {
             var methodName = GetChangingMethodName(fieldSymbol, info.PropertyAttributeSymbol);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changing", "value", fieldType);
         }
@@ -45,19 +45,38 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return string.Empty;
             return "[" + attributeListsString + "]";
         }
+        public static NullableAnnotation GetNullableAnnotation(ITypeSymbol type) =>
+            type.IsReferenceType && type.NullableAnnotation == NullableAnnotation.None
+                ? NullableAnnotation.Annotated
+                : type.NullableAnnotation;
+        public static bool HasMemberNotNullAttribute(Compilation compilation) =>
+            compilation.References.Select(compilation.GetAssemblyOrModuleSymbol)
+                                  .OfType<IAssemblySymbol>()
+                                  .Select(assemblySymbol => assemblySymbol.GetTypeByMetadataName("System.Diagnostics.CodeAnalysis.MemberNotNullAttribute"))
+                                  .Where(symbol => symbol != null && symbol.ContainingModule.ToDisplayString() == "System.Runtime.dll")
+                                  .Any();
+        public static bool IsSameType(ITypeSymbol parameterType, ITypeSymbol type) {
+            if(parameterType.IsValueType)
+                return parameterType.ToDisplayStringNullable() == type.ToDisplayStringNullable();
+            if(parameterType.ToDisplayString(NullableFlowState.None) != type.ToDisplayString(NullableFlowState.None))
+                return false;
+            if(parameterType.IsReferenceType)
+                return parameterType.NullableAnnotation != NullableAnnotation.NotAnnotated || type.NullableAnnotation == NullableAnnotation.NotAnnotated;
+            return true;
+        }
 
         static string GetChangedMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
             AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofChangedMethod, (string)null);
         static string GetChangingMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
             AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofChangingMethod, (string)null);
-        static string GetMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string methodName, string defaultMethodName, string parameterName, string parameterType) {
+        static string GetMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string methodName, string defaultMethodName, string parameterName, ITypeSymbol fieldType) {
             var hasMethodName = methodName != null;
             if(!hasMethodName)
                 methodName = defaultMethodName;
 
-            var methods = GetOnChangedMethods(classSymbol, methodName, parameterType);
+            var methods = GetOnChangedMethods(classSymbol, methodName, fieldType);
             if(methods.Count() == 2) {
-                info.Context.ReportTwoSuitableMethods(classSymbol, fieldSymbol, methodName, parameterType);
+                info.Context.ReportTwoSuitableMethods(classSymbol, fieldSymbol, methodName, fieldType.ToDisplayStringNullable());
                 return methodName + "(" + parameterName + ");";
             }
             if(methods.Count() == 1) {
@@ -68,13 +87,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
             if(!hasMethodName)
                 return string.Empty;
-            info.Context.ReportOnChangedMethodNotFound(fieldSymbol, methodName, parameterType, CommandHelper.GetMethods(classSymbol, methodName));
+            info.Context.ReportOnChangedMethodNotFound(fieldSymbol, methodName, fieldType.ToDisplayStringNullable(), CommandHelper.GetMethods(classSymbol, methodName));
             return null;
         }
-        static IEnumerable<IMethodSymbol> GetOnChangedMethods(INamedTypeSymbol classSymbol, string methodName, string parameterType) =>
+        static IEnumerable<IMethodSymbol> GetOnChangedMethods(INamedTypeSymbol classSymbol, string methodName, ITypeSymbol fieldType) =>
             CommandHelper.GetMethods(classSymbol,
                                      methodSymbol => methodSymbol.ReturnsVoid && methodSymbol.Name == methodName && methodSymbol.Parameters.Length < 2 &&
-                                                     (methodSymbol.Parameters.Length == 0 || methodSymbol.Parameters.First().Type.ToDisplayStringNullable() == parameterType));
+                                                    (methodSymbol.Parameters.Length == 0 || IsSameType(methodSymbol.Parameters.First().Type, fieldType)));
         static string GetAttributeFullName(SemanticModel semanticModel, AttributeSyntax attributeSyntax) {
             var attributeSymbolInfo = semanticModel.GetSymbolInfo(attributeSyntax);
             return attributeSymbolInfo.Symbol?.ContainingSymbol.ToDisplayString() ??

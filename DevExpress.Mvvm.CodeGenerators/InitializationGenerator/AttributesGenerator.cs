@@ -33,8 +33,8 @@ public class {viewModelAttribute} : Attribute {{
 [AttributeUsage(AttributeTargets.Field)]
 public class {propertyAttribute} : Attribute {{
     public bool {IsVirtual} {{ get; set; }}
-    public string {OnChangedMethod} {{ get; set; }}
-    public string {OnChangingMethod} {{ get; set; }}
+    public string? {OnChangedMethod} {{ get; set; }}
+    public string? {OnChangingMethod} {{ get; set; }}
     public AccessModifier {SetterAccessModifier} {{ get; set; }}
 }}
 
@@ -42,8 +42,8 @@ public class {propertyAttribute} : Attribute {{
 public class {commandAttribute} : Attribute {{
     public bool {AllowMultipleExecution} {{ get; set; }}
     public bool {UseCommandManager} {{ get; set; }}
-    public string {CanExecuteMethod} {{ get; set; }}
-    public string {CommandName} {{ get; set; }}
+    public string? {CanExecuteMethod} {{ get; set; }}
+    public string? {CommandName} {{ get; set; }}
 }}";
     }
 }
