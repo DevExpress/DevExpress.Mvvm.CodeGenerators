@@ -15,18 +15,18 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public INamedTypeSymbol IDEISymbol { get; }
         public INamedTypeSymbol ISSSymbol { get; }
 
-        public ContextInfo(GeneratorExecutionContext context, Compilation compilation) {
+        public ContextInfo(GeneratorExecutionContext context) {
             Context = context;
-            Compilation = compilation;
+            Compilation = context.Compilation;
 
-            ViewModelAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName);
-            PropertyAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.PropertyAttributeFullName);
-            CommandAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.CommandAttributeFullName);
+            ViewModelAttributeSymbol = Compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName);
+            PropertyAttributeSymbol = Compilation.GetTypeByMetadataName(AttributesGenerator.PropertyAttributeFullName);
+            CommandAttributeSymbol = Compilation.GetTypeByMetadataName(AttributesGenerator.CommandAttributeFullName);
 
-            INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName);
-            INPCingSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName);
-            IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName);
-            ISSSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices");
+            INPCedSymbol = Compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName);
+            INPCingSymbol = Compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName);
+            IDEISymbol = Compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName);
+            ISSSymbol = Compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices");
         }
     }
 }

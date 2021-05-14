@@ -9,17 +9,18 @@ using System.Text;
 namespace DevExpress.Mvvm.CodeGenerators {
     [Generator]
     public class ViewModelGenerator : ISourceGenerator {
-        public void Initialize(GeneratorInitializationContext context) =>
+        public void Initialize(GeneratorInitializationContext context) {
+            var attributesSourceText = SourceText.From(InitializationGenerator.GetSourceCode(), Encoding.UTF8);
+            context.RegisterForPostInitialization((i) => i.AddSource(CreateFileName("Attributes"), attributesSourceText));
             context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
+        }
 
         public void Execute(GeneratorExecutionContext context) {
             if(context.SyntaxReceiver is not SyntaxReceiver receiver)
                 return;
 
             var attributesSourceText = SourceText.From(InitializationGenerator.GetSourceCode(), Encoding.UTF8);
-            context.AddSource(CreateFileName("Attributes"), attributesSourceText);
-            var compilation = context.Compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(attributesSourceText));
-            var contextInfo = new ContextInfo(context, compilation);
+            var contextInfo = new ContextInfo(context);
 
             var generatedClasses = new List<string>();
             foreach(var classSyntax in receiver.ClassSyntaxes) {
@@ -53,7 +54,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             }
         }
 
-        string CreateFileName(string prefix) => $"{prefix}_DXGenerator.cs";
+        static string CreateFileName(string prefix) => $"{prefix}_DXGenerator.cs";
     }
 
     class SyntaxReceiver : ISyntaxReceiver {

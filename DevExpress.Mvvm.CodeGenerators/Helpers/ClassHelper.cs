@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -25,5 +26,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
             classSymbol.GetMembers()
                        .OfType<T>()
                        .Where(symbol => AttributeHelper.HasAttribute(symbol, attributeSymbol));
+        public static void RemoveLastNewLine(System.Text.StringBuilder source) {
+            source.Remove(source.Length - Environment.NewLine.Length, Environment.NewLine.Length);
+        }
     }
 }

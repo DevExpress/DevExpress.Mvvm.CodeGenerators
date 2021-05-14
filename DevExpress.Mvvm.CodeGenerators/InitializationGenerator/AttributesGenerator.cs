@@ -24,14 +24,14 @@
 
         public static string GetSourceCode() =>
 $@"[AttributeUsage(AttributeTargets.Class)]
-public class {viewModelAttribute} : Attribute {{
+class {viewModelAttribute} : Attribute {{
     public bool {ImplementIDEI} {{ get; set; }}
     public bool {ImplementINPCing} {{ get; set; }}
     public bool {ImplementISS} {{ get; set; }}
 }}
 
 [AttributeUsage(AttributeTargets.Field)]
-public class {propertyAttribute} : Attribute {{
+class {propertyAttribute} : Attribute {{
     public bool {IsVirtual} {{ get; set; }}
     public string? {OnChangedMethod} {{ get; set; }}
     public string? {OnChangingMethod} {{ get; set; }}
@@ -39,7 +39,7 @@ public class {propertyAttribute} : Attribute {{
 }}
 
 [AttributeUsage(AttributeTargets.Method)]
-public class {commandAttribute} : Attribute {{
+class {commandAttribute} : Attribute {{
     public bool {AllowMultipleExecution} {{ get; set; }}
     public bool {UseCommandManager} {{ get; set; }}
     public string? {CanExecuteMethod} {{ get; set; }}

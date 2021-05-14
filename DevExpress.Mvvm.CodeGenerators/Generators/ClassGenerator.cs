@@ -135,6 +135,7 @@ using System.ComponentModel;";
             if(!string.IsNullOrEmpty(eventArgs))
                 source.AppendLine(eventArgs.AddTabs(2));
 
+            ClassHelper.RemoveLastNewLine(source);
             source.AppendLine("}".AddTabs(1));
             source.AppendLine("}");
 

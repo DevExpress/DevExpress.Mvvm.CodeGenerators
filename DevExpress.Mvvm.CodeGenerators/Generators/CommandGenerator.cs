@@ -21,7 +21,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             var canExecuteMethodName = CommandHelper.GetCanExecuteMethodName(methodSymbol, info.CommandAttributeSymbol);
             if(canExecuteMethodName == null) {
                 var candidate = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, "Can" + methodSymbol.Name, parameterType);
-                canExecuteMethodName = candidate.SingleOrDefault()?.Name ?? "null";
+                canExecuteMethodName = candidate.FirstOrDefault()?.Name ?? "null";
             } else {
                 var candidates = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, canExecuteMethodName, parameterType);
                 if(!candidates.Any()) {
