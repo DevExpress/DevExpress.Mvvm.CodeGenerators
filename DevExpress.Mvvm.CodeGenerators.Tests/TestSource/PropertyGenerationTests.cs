@@ -1,12 +1,43 @@
 ﻿using NUnit.Framework;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
+    class MyClass {
+        public string i;
+        public MyClass(string k) {
+            i = k;
+        }
+    }
+    struct MyStruct {
+        public int i;
+        public MyStruct(int k) {
+            i = k;
+        }
+    }
+
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     partial class GenerateProperties {
         [GenerateProperty(IsVirtual = true)]
         int property;
+#nullable enable
 
-        int notProperty;
+        [GenerateProperty]
+        MyStruct nonNullableStruct;
+        public MyStruct? NonNullableStructOldValue = new MyStruct(0);
+        public MyStruct? NonNullableStructNewValue = new MyStruct(-1);
+        void OnNonNullableStructChanged(MyStruct oldValue) =>
+            NonNullableStructOldValue = oldValue;
+        void OnNonNullableStructChanging(MyStruct? newValue) =>
+            NonNullableStructNewValue = newValue;
+        
+        [GenerateProperty]
+        MyClass? nullableClass;
+        public MyClass? NullableClassOldValue = new MyClass("Init value");
+        void OnNullableClassChanged(MyClass oldValue) =>
+            NullableClassOldValue = oldValue;
+        #nullable disable
+        public MyClass NullableClassNewValue;
+        void OnNullableClassChanging(MyClass newValue) =>
+            NullableClassNewValue = newValue;
 
         [GenerateProperty(SetterAccessModifier = AccessModifier.Public)]
         int publicSet;
@@ -19,15 +50,17 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         [GenerateProperty(SetterAccessModifier = AccessModifier.ProtectedInternal)]
         int protectedInternalSet;
 
+#nullable enable
         [GenerateProperty]
-        int? nullableInt;
+         int nonNullableInt;
 
-        public int? NullableIntOldValue;
-        public int? NullableIntNewValue;
-        void OnNullableIntChanged(int? oldValue) =>
-            NullableIntOldValue = oldValue;
-        void OnNullableIntChanging(int? newValue) =>
-            NullableIntNewValue = newValue;
+        public int? NonNullableIntOldValue;
+        public int? NonNullableIntNewValue;
+        void OnNonNullableIntChanged(int oldValue) =>
+            NonNullableIntOldValue = oldValue;
+        void OnNonNullableIntChanging(int? newValue) =>
+            NonNullableIntNewValue = newValue;
+#nullable disable
 
         [GenerateProperty(OnChangedMethod = "OnChanged", OnChangingMethod = "OnChanging")]
         int noParameter;
@@ -111,37 +144,68 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
 
             Assert.AreEqual(2, generated.Property);
         }
-
         [Test]
-        public void NullableValueType() {
-            var generated = new GenerateProperties() { NullableInt = 1 };
+        public void NullableStruct() {
+            var generated = new GenerateProperties() {NonNullableStruct = new MyStruct(1) };
 
-            Assert.AreEqual(null, generated.NullableIntOldValue);
-            Assert.AreEqual(1, generated.NullableIntNewValue);
+            Assert.AreEqual(0, generated.NonNullableStructOldValue.Value.i);
+            Assert.AreEqual(1, generated.NonNullableStructNewValue.Value.i);
 
             DoWith.PropertyChangedEvent(
                 generated,
                 () => {
                     DoWith.PropertyChangingEvent(
                         generated,
-                        () => generated.NullableInt = 2,
+                        () => generated.NonNullableStruct = new MyStruct(2),
                         e => {
-                            Assert.AreEqual(1, generated.NullableInt);
-                            Assert.AreEqual(null, generated.NullableIntOldValue);
-                            Assert.AreEqual(1, generated.NullableIntNewValue);
+                            Assert.AreEqual(1, generated.NonNullableStruct.i);
+                            Assert.AreEqual(0, generated.NonNullableStructOldValue.Value.i);
+                            Assert.AreEqual(1, generated.NonNullableStructNewValue.Value.i);
+                        }
+                        );
+                },
+                e => {
+                    Assert.AreEqual(2, generated.NonNullableStruct.i);
+                    Assert.AreEqual(0, generated.NonNullableStructOldValue.Value.i);
+                    Assert.AreEqual(2, generated.NonNullableStructNewValue.Value.i);
+                }
+                );
+
+            Assert.AreEqual(2, generated.NonNullableStruct.i);
+            Assert.AreEqual(1, generated.NonNullableStructOldValue.Value.i);
+            Assert.AreEqual(2, generated.NonNullableStructNewValue.Value.i);
+        }
+
+        [Test]
+        public void NullableValueType() {
+            var generated = new GenerateProperties() { NonNullableInt = 1 };
+
+            Assert.AreEqual(0, generated.NonNullableIntOldValue);
+            Assert.AreEqual(1, generated.NonNullableIntNewValue);
+
+            DoWith.PropertyChangedEvent(
+                generated,
+                () => {
+                    DoWith.PropertyChangingEvent(
+                        generated,
+                        () => generated.NonNullableInt = 2,
+                        e => {
+                            Assert.AreEqual(1, generated.NonNullableInt);
+                            Assert.AreEqual(0, generated.NonNullableIntOldValue);
+                            Assert.AreEqual(1, generated.NonNullableIntNewValue);
                         }
                     );
                 },
                 e => {
-                    Assert.AreEqual(2, generated.NullableInt);
-                    Assert.AreEqual(null, generated.NullableIntOldValue);
-                    Assert.AreEqual(2, generated.NullableIntNewValue);
+                    Assert.AreEqual(2, generated.NonNullableInt);
+                    Assert.AreEqual(0, generated.NonNullableIntOldValue);
+                    Assert.AreEqual(2, generated.NonNullableIntNewValue);
                 }
             );
 
-            Assert.AreEqual(2, generated.NullableInt);
-            Assert.AreEqual(1, generated.NullableIntOldValue);
-            Assert.AreEqual(2, generated.NullableIntNewValue);
+            Assert.AreEqual(2, generated.NonNullableInt);
+            Assert.AreEqual(1, generated.NonNullableIntOldValue);
+            Assert.AreEqual(2, generated.NonNullableIntNewValue);
         }
 
         [Test]
@@ -156,7 +220,6 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.IsTrue(generated.ChangedMethodVisited);
             Assert.IsTrue(generated.ChangingMethodVisited);
         }
-
         [Test]
         public void NullableReferenceType() {
             var generated = new GenerateProperties() { NullableString = "1" };
@@ -187,6 +250,38 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.AreEqual("2", generated.NullableString);
             Assert.AreEqual("Init value", generated.NullableStringOldValue);
             Assert.AreEqual("2", generated.NullableStringNewValue);
+        }
+        [Test]
+        public void NullableClass() {
+            var generated = new GenerateProperties() { NullableClass = new MyClass("1") };
+
+            Assert.AreEqual("Init value", generated.NullableClassOldValue.i);
+            Assert.AreEqual("1", generated.NullableClassNewValue.i);
+
+            DoWith.PropertyChangedEvent(
+                generated,
+                () => {
+                    DoWith.PropertyChangingEvent(
+                        generated,
+                        () => generated.NullableClass = new MyClass("2"),
+                        e => {
+                            Assert.AreEqual("1", generated.NullableClass.i);
+                            Assert.AreEqual("Init value", generated.NullableClassOldValue.i);
+                            Assert.AreEqual("1", generated.NullableClassNewValue.i);
+                        }
+                    );
+                },
+                e => {
+                    Assert.AreEqual("2", generated.NullableClass.i);
+                    Assert.AreEqual("Init value", generated.NullableClassOldValue.i);
+                    Assert.AreEqual("2", generated.NullableClassNewValue.i);
+                }
+            );
+
+            Assert.AreEqual("2", generated.NullableClass.i);
+            Assert.AreEqual("Init value", generated.NullableClassOldValue.i);
+            Assert.AreEqual("2", generated.NullableClassNewValue.i);
+
         }
     }
 }

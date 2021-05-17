@@ -35,7 +35,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static bool HaveSameParametersList(ImmutableArray<IParameterSymbol> parameters, ITypeSymbol? parameterType) {
             if(parameterType == null)
                 return parameters.Count() == 0;
-            return parameters.Count() == 1 && PropertyHelper.IsSameType(parameters.First().Type, parameterType);
+            return parameters.Count() == 1 && PropertyHelper.IsСompatibleType(parameters.First().Type, parameterType);
         }
     }
 }

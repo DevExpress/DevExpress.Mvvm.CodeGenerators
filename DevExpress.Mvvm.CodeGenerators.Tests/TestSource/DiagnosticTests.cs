@@ -211,9 +211,8 @@ namespace Test {
         public Task AsyncCommand3(int arg) => Task.CompletedTask;
 
         public bool WrongParameter() => true;
-        public bool WrongParameter(int? arg) => arg.HasValue;
         public bool WrongParameter(string arg) => arg.Length > 0;
-        public bool WrongParameter(int arg1, int arg2) => arg1 > arg2
+        public bool WrongParameter(int arg1, int arg2) => arg1 > arg2;
 
         public int ReturnNoBool(int arg) => arg;
     }

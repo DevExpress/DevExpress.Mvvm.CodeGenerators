@@ -55,14 +55,18 @@ namespace DevExpress.Mvvm.CodeGenerators {
                                   .Select(assemblySymbol => assemblySymbol.GetTypeByMetadataName("System.Diagnostics.CodeAnalysis.MemberNotNullAttribute"))
                                   .Where(symbol => symbol != null && symbol.ContainingModule.ToDisplayString() == "System.Runtime.dll")
                                   .Any();
-        public static bool IsSameType(ITypeSymbol parameterType, ITypeSymbol type) {
-            if(parameterType.IsValueType)
-                return parameterType.ToDisplayStringNullable() == type.ToDisplayStringNullable();
-            if(parameterType.ToDisplayString(NullableFlowState.None) != type.ToDisplayString(NullableFlowState.None))
+        public static bool IsСompatibleType(ITypeSymbol parameterType, ITypeSymbol type) {
+            if(ToNotAnnotatedDisplayString(parameterType) != ToNotAnnotatedDisplayString(type))
                 return false;
+            if(parameterType.IsValueType)
+                return parameterType.NullableAnnotation == NullableAnnotation.Annotated || type.NullableAnnotation != NullableAnnotation.Annotated;
             if(parameterType.IsReferenceType)
                 return parameterType.NullableAnnotation != NullableAnnotation.NotAnnotated || type.NullableAnnotation == NullableAnnotation.NotAnnotated;
             return true;
+        }
+         static string ToNotAnnotatedDisplayString(ITypeSymbol type) {
+            var typeAsString = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            return typeAsString.EndsWith("?") ? typeAsString.Remove(typeAsString.Length - 1, 1) : typeAsString;
         }
 
         static string GetChangedMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
@@ -93,7 +97,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static IEnumerable<IMethodSymbol> GetOnChangedMethods(INamedTypeSymbol classSymbol, string methodName, ITypeSymbol fieldType) =>
             CommandHelper.GetMethods(classSymbol,
                                      methodSymbol => methodSymbol.ReturnsVoid && methodSymbol.Name == methodName && methodSymbol.Parameters.Length < 2 &&
-                                                    (methodSymbol.Parameters.Length == 0 || IsSameType(methodSymbol.Parameters.First().Type, fieldType)));
+                                                    (methodSymbol.Parameters.Length == 0 || IsСompatibleType(methodSymbol.Parameters.First().Type, fieldType)));
         static string GetAttributeFullName(SemanticModel semanticModel, AttributeSyntax attributeSyntax) {
             var attributeSymbolInfo = semanticModel.GetSymbolInfo(attributeSyntax);
             return attributeSymbolInfo.Symbol?.ContainingSymbol.ToDisplayString() ??
