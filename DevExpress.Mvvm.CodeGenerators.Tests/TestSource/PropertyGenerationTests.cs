@@ -284,4 +284,33 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
 
         }
     }
+    namespace FirstNamespace {
+        [GenerateViewModel]
+        partial class PartialClass {
+            [GenerateProperty]
+            int a;
+        }
+        partial class PartialClass {
+            [GenerateProperty]
+            int b;
+        }
+    }
+    namespace SecondNamespace {
+        [GenerateViewModel]
+        partial class PartialClass {
+            [GenerateProperty]
+            int c;
+        }
+    }
+    [TestFixture]
+    public class PartialTests {
+        [Test]
+        public void GeneratePartialClasses() {
+            var a = new FirstNamespace.PartialClass();
+            var b = new SecondNamespace.PartialClass();
+            Assert.IsNotNull(a.GetType().GetProperty("A"));
+            Assert.IsNotNull(a.GetType().GetProperty("B"));
+            Assert.IsNotNull(b.GetType().GetProperty("C"));
+        }
+    }
 }

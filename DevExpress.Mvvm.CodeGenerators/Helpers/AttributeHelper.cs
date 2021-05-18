@@ -15,6 +15,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
             GetAttributeData(sourceSymbol, attributeSymbol) != null;
 
         static AttributeData GetAttributeData(ISymbol sourceSymbol, INamedTypeSymbol attributeSymbol) =>
-            sourceSymbol.GetAttributes().SingleOrDefault(ad => ad.AttributeClass.Equals(attributeSymbol, SymbolEqualityComparer.Default));
+            sourceSymbol.GetAttributes().FirstOrDefault(ad => ad.AttributeClass.Equals(attributeSymbol, SymbolEqualityComparer.Default));
     }
 }
