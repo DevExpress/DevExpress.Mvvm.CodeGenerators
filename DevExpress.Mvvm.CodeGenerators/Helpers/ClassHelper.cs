@@ -26,11 +26,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
             classSymbol.GetMembers()
                        .OfType<T>()
                        .Where(symbol => AttributeHelper.HasAttribute(symbol, attributeSymbol));
-        public static void RemoveLastNewLine(System.Text.StringBuilder source) {
-            source.Remove(source.Length - Environment.NewLine.Length, Environment.NewLine.Length);
-        }
-        public static string CreateFileName(string prefix) => $"{prefix}.g.cs";
 
+        public static string CreateFileName(string prefix) => $"{prefix}.g.cs";
         public static string CreateFileName(string prefix, HashSet<string> generatedClasses) {
             var name = prefix;
             int i = 1;

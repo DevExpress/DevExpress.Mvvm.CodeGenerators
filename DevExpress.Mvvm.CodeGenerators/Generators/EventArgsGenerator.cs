@@ -10,15 +10,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public EventArgsGenerator(bool createChangedEventArgs, bool createChangingEventArgs) =>
             (this.createChangedEventArgs, this.createChangingEventArgs) = (createChangedEventArgs, createChangingEventArgs);
         public void AddEventArgs(string propertyName) => propertyNameList.Add(propertyName);
-        public string GetSourceCode() {
-            var source = new StringBuilder();
+        public void GetSourceCode(StringBuilder source, int tabs) {
             if(createChangedEventArgs)
                 foreach(var propertyName in propertyNameList)
-                    source.AppendLine($"static PropertyChangedEventArgs {propertyName}ChangedEventArgs = new PropertyChangedEventArgs(nameof({propertyName}));");
+                    source.AppendLine($"static PropertyChangedEventArgs {propertyName}ChangedEventArgs = new PropertyChangedEventArgs(nameof({propertyName}));".AddTabs(tabs));
             if(createChangingEventArgs)
                 foreach(var propertyName in propertyNameList)
-                    source.AppendLine($"static PropertyChangingEventArgs {propertyName}ChangingEventArgs = new PropertyChangingEventArgs(nameof({propertyName}));");
-            return source.ToString();
+                    source.AppendLine($"static PropertyChangingEventArgs {propertyName}ChangingEventArgs = new PropertyChangingEventArgs(nameof({propertyName}));".AddTabs(tabs));
         }
     }
 }

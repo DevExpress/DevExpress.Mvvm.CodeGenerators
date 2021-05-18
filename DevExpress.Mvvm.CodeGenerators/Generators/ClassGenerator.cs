@@ -15,7 +15,7 @@ using System.ComponentModel;";
         readonly string name;
         readonly string raiseChangedMethod;
         readonly string raiseChangingMethod;
-        readonly string eventArgs;
+        readonly EventArgsGenerator eventArgsGenerator;
         readonly List<IInterfaceGenerator> interfaces = new();
         readonly List<PropertyGenerator> properties = new();
         readonly List<CommandGenerator> commands = new();
@@ -57,7 +57,7 @@ using System.ComponentModel;";
 
             var needStaticChangedEventArgs = inpcedInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangedMethod;
             var needStaticChangingEventArgs = inpcingInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangingMethod;
-            var eventArgsGenerator = new EventArgsGenerator(needStaticChangedEventArgs, needStaticChangingEventArgs);
+            eventArgsGenerator = new EventArgsGenerator(needStaticChangedEventArgs, needStaticChangingEventArgs);
 
             var raiseChangedMethodParameter = needStaticChangedEventArgs ? "eventargs" : inpcedInfo.HasRaiseMethodWithStringParameter ? "string" : string.Empty;
             var raiseChangingMethodParameter = needStaticChangingEventArgs ? "eventargs" : inpcingInfo.HasRaiseMethodWithStringParameter ? "string" : string.Empty;
@@ -95,7 +95,6 @@ using System.ComponentModel;";
                     }
             }
 
-            eventArgs = eventArgsGenerator.GetSourceCode();
             if(mvvmComponentsList.Any())
                 if(isMvvmAvailable)
                     usings += Environment.NewLine + "using DevExpress.Mvvm;";
@@ -127,15 +126,11 @@ using System.ComponentModel;";
                 source.AppendLine();
 
             foreach(var property in properties)
-                source.AppendLine(property.GetSourceCode().AddTabs(2));
-
+                property.GetSourceCode(source, 2);
             foreach(var command in commands)
-                source.AppendLine(command.GetSourceCode().AddTabs(2));
+                command.GetSourceCode(source, 2);
+            eventArgsGenerator.GetSourceCode(source, 2);
 
-            if(!string.IsNullOrEmpty(eventArgs))
-                source.AppendLine(eventArgs.AddTabs(2));
-
-            ClassHelper.RemoveLastNewLine(source);
             source.AppendLine("}".AddTabs(1));
             source.AppendLine("}");
 

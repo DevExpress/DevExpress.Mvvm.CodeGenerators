@@ -25,7 +25,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public IEnumerable<ClassDeclarationSyntax> ClassSyntaxes { get => classSyntaxes.ToArray(); }
 
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context) {
-                    //System.Diagnostics.Debugger.Launch();
             if(context.Node is ClassDeclarationSyntax classDeclarationSyntax) {
                 var classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
                 if(!AttributeHelper.HasAttribute(classSymbol, context.SemanticModel.Compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName)))

@@ -32,36 +32,34 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return null;
             return new PropertyGenerator(info, fieldSymbol, type, propertyName, fieldName, inpcedParameter, inpcingParameter, changedMethod, changingMethod);
         }
-        public string GetSourceCode() {
-            var source = new StringBuilder();
+        public void GetSourceCode(StringBuilder source, int tabs) {
             if(!string.IsNullOrEmpty(attributesList))
-                source.AppendLine(attributesList);
-            source.AppendLine($"public {virtuality}{type} {propertyName} {{");
-            source.AppendLine($"get => {fieldName};".AddTabs(1));
+                source.AppendLine(attributesList.AddTabs(tabs));
+            source.AppendLine($"public {virtuality}{type} {propertyName} {{".AddTabs(tabs));
+            source.AppendLine($"get => {fieldName};".AddTabs(tabs + 1));
 
             if(!string.IsNullOrEmpty(setterAttribute))
-                source.AppendLine(setterAttribute.AddTabs(1));
+                source.AppendLine(setterAttribute.AddTabs(tabs + 1));
 
-            source.AppendLine($"{setterAccessModifier}set {{".AddTabs(1));
-            source.AppendLine($"if(EqualityComparer<{type}>.Default.Equals({fieldName}, value)) return;".AddTabs(2));
+            source.AppendLine($"{setterAccessModifier}set {{".AddTabs(tabs + 1));
+            source.AppendLine($"if(EqualityComparer<{type}>.Default.Equals({fieldName}, value)) return;".AddTabs(tabs + 2));
 
             if(!string.IsNullOrEmpty(raiseChangingMethod))
-                source.AppendLine(raiseChangingMethod.AddTabs(2));
+                source.AppendLine(raiseChangingMethod.AddTabs(tabs + 2));
             if(!string.IsNullOrEmpty(changingMethod))
-                source.AppendLine(changingMethod.AddTabs(2));
+                source.AppendLine(changingMethod.AddTabs(tabs + 2));
 
             if(!string.IsNullOrEmpty(changedMethod) && !changedMethod.EndsWith("();"))
-                source.AppendLine($"var oldValue = {fieldName};".AddTabs(2));
-            source.AppendLine($"{fieldName} = value;".AddTabs(2));
+                source.AppendLine($"var oldValue = {fieldName};".AddTabs(tabs + 2));
+            source.AppendLine($"{fieldName} = value;".AddTabs(tabs + 2));
 
             if(!string.IsNullOrEmpty(raiseChangedMethod))
-                source.AppendLine(raiseChangedMethod.AddTabs(2));
+                source.AppendLine(raiseChangedMethod.AddTabs(tabs + 2));
             if(!string.IsNullOrEmpty(changedMethod))
-                source.AppendLine(changedMethod.AddTabs(2));
+                source.AppendLine(changedMethod.AddTabs(tabs + 2));
 
-            source.AppendLine("}".AddTabs(1));
-            source.AppendLine("}");
-            return source.ToString();
+            source.AppendLine("}".AddTabs(tabs + 1));
+            source.AppendLine("}".AddTabs(tabs));
         }
 
         PropertyGenerator(ContextInfo info, IFieldSymbol fieldSymbol, ITypeSymbol type, string propertyName, string fieldName, string inpcedParameter, string inpcingParameter, string changedMethod, string changingMethod) {

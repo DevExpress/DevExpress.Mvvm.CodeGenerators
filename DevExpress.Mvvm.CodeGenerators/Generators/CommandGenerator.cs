@@ -31,13 +31,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
             }
             return hasError ? null : new CommandGenerator(methodSymbol, info.CommandAttributeSymbol, parameterType?.ToDisplayStringNullable() ?? string.Empty, canExecuteMethodName, isCommand);
         }
-        public string GetSourceCode() {
-            var source = new StringBuilder();
-            source.AppendLine($"{type}? {name};");
-            source.AppendLine($"public {type} {name.FirstToUpperCase()} {{");
-            source.AppendLine($"get => {name} ??= new {type}({parametersList});".AddTabs(1));
-            source.AppendLine("}");
-            return source.ToString();
+        public void GetSourceCode(StringBuilder source, int tabs) {
+            source.AppendLine($"{type}? {name};".AddTabs(tabs));
+            source.AppendLine($"public {type} {name.FirstToUpperCase()} {{".AddTabs(tabs));
+            source.AppendLine($"get => {name} ??= new {type}({parametersList});".AddTabs(tabs + 1));
+            source.AppendLine("}".AddTabs(tabs));
         }
 
         CommandGenerator(IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string parameterType, string canExecuteMethodName, bool isCommand) {
