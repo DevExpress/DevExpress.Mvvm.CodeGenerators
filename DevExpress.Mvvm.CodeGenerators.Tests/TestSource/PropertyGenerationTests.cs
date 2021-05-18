@@ -13,7 +13,41 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             i = k;
         }
     }
+    [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
+    partial class GenericClassTest<T, TClass> {
+        [GenerateProperty]
+        T tNonNull;
+#nullable enable
+        [GenerateProperty]
+        T tProperty;
+        [GenerateProperty]
+        TClass tClassProperty;
 
+        public GenericClassTest(T val, TClass refer) {
+            tProperty = val;
+            tClassProperty = refer;
+        }
+
+        public T? TNonNullOldValue;
+        public T? TNonNullNewValue;
+        public T? TPropertyOldValue;
+        public T? TPropertyNewValue;
+        public TClass? TClassPropertyOldValue;
+        public TClass? TClassPropertyNewValue;
+        void OnTPropertyChanged(T oldValue) =>
+            TPropertyOldValue = oldValue;
+        void OnTPropertyChanging(T newValue) =>
+            TPropertyNewValue = newValue;
+        void OnTClassPropertyChanged(TClass oldValue) =>
+            TClassPropertyOldValue = oldValue;
+        void OnTClassPropertyChanging(TClass newValue) =>
+            TClassPropertyNewValue = newValue;
+        void OnTNonNullChanged(T oldValue) =>
+            TNonNullOldValue = oldValue;
+        void OnTNonNullChanging(T newValue) =>
+            TNonNullNewValue = newValue;
+#nullable disable
+    }
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     partial class GenerateProperties {
         [GenerateProperty(IsVirtual = true)]
@@ -34,7 +68,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public MyClass? NullableClassOldValue = new MyClass("Init value");
         void OnNullableClassChanged(MyClass oldValue) =>
             NullableClassOldValue = oldValue;
-        #nullable disable
+#nullable disable
         public MyClass NullableClassNewValue;
         void OnNullableClassChanging(MyClass newValue) =>
             NullableClassNewValue = newValue;
@@ -283,7 +317,68 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.AreEqual("2", generated.NullableClassNewValue.i);
 
         }
+        [Test]
+        public void GenericClassGenerate() {
+            var genClass = new GenericClassTest<int, string>(0, "Init Value") { TProperty = 1, TClassProperty = "1", TNonNull = 3};
+
+            Assert.AreEqual(0, genClass.TPropertyOldValue);
+            Assert.AreEqual(1, genClass.TPropertyNewValue);
+            Assert.AreEqual("Init Value", genClass.TClassPropertyOldValue);
+            Assert.AreEqual("1", genClass.TClassPropertyNewValue);
+            Assert.AreEqual(genClass.TNonNullOldValue, genClass.TNonNullNewValue);
+            
+            DoWith.PropertyChangedEvent(
+                genClass,
+                () => {
+                    DoWith.PropertyChangingEvent(
+                        genClass,
+                        () => {
+                            genClass.TProperty = 2;
+                        },
+                        e => {
+                            Assert.AreEqual(1, genClass.TProperty);
+                            Assert.AreEqual(0, genClass.TPropertyOldValue);
+                            Assert.AreEqual(1, genClass.TPropertyNewValue);
+                        }
+                    );
+                },
+                e => {
+                    Assert.AreEqual(2, genClass.TProperty);
+                    Assert.AreEqual(0, genClass.TPropertyOldValue);
+                    Assert.AreEqual(2, genClass.TPropertyNewValue);
+                }
+            );
+            DoWith.PropertyChangedEvent(
+                genClass,
+                () => {
+                    DoWith.PropertyChangingEvent(
+                        genClass,
+                        () => { 
+                            genClass.TClassProperty = "2";
+                        },
+                        e => {
+                            Assert.AreEqual("1", genClass.TClassProperty);
+                            Assert.AreEqual("Init Value", genClass.TClassPropertyOldValue);
+                            Assert.AreEqual("1", genClass.TClassPropertyNewValue);
+                        }
+                    );
+                },
+                e => {
+                    Assert.AreEqual("2", genClass.TClassProperty);
+                    Assert.AreEqual("Init Value", genClass.TClassPropertyOldValue);
+                    Assert.AreEqual("2", genClass.TClassPropertyNewValue);
+                }
+            );
+
+            Assert.AreEqual("2", genClass.TClassProperty);
+            Assert.AreEqual("1", genClass.TClassPropertyOldValue);
+            Assert.AreEqual("2", genClass.TClassPropertyNewValue);
+            Assert.AreEqual(2, genClass.TProperty);
+            Assert.AreEqual(1, genClass.TPropertyOldValue);
+            Assert.AreEqual(2, genClass.TPropertyNewValue);
+        }
     }
+    #region same class names
     namespace FirstNamespace {
         [GenerateViewModel]
         partial class PartialClass {
@@ -313,4 +408,5 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.IsNotNull(b.GetType().GetProperty("C"));
         }
     }
+    #endregion
 }

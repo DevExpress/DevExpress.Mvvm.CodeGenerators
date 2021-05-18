@@ -24,10 +24,6 @@ namespace DevExpress.Mvvm.CodeGenerators.Generators {
                 if(processedSymbols.Contains(classSymbol))
                     continue;
                 processedSymbols.Add(classSymbol);
-                if(classSymbol.IsGenericType) {
-                    context.ReportGenericViewModel(classSymbol);
-                    continue;
-                }
 
                 if(!classSyntax.Modifiers.Any(x => x.ValueText == "partial")) {
                     context.ReportNoPartialModifier(classSymbol);

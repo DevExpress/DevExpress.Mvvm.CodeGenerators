@@ -19,6 +19,7 @@ using System.ComponentModel;";
         readonly List<IInterfaceGenerator> interfaces = new();
         readonly List<PropertyGenerator> properties = new();
         readonly List<CommandGenerator> commands = new();
+        readonly List<ITypeSymbol> genericTypes = new();
 
         public ClassGenerator(ContextInfo contextInfo, INamedTypeSymbol classSymbol) {
             usings = defaultUsings;
@@ -100,6 +101,9 @@ using System.ComponentModel;";
                     usings += Environment.NewLine + "using DevExpress.Mvvm;";
                 else
                     contextInfo.Context.ReportMVVMNotAvailable(classSymbol, mvvmComponentsList);
+            if(classSymbol.IsGenericType) {
+                genericTypes = classSymbol.TypeArguments.ToList();
+            }
         }
         public string GetSourceCode() {
             var source = new StringBuilder();
@@ -109,14 +113,16 @@ using System.ComponentModel;";
             source.AppendLine();
             source.AppendLine($"namespace {@namespace} {{");
 
-            source.Append($"partial class {name} ".AddTabs(1));
+            source.Append($"partial class {name}".AddTabs(1));
+            if(genericTypes.Any())
+                source.Append($"<{genericTypes.Select(type => type.ToString()).ConcatToString(", ")}>");
             if(interfaces.Any()) {
-                source.AppendLine($": {interfaces.Select(@interface => @interface.GetName()).ConcatToString(", ")} {{");
+                source.AppendLine($" : {interfaces.Select(@interface => @interface.GetName()).ConcatToString(", ")} {{");
                 foreach(var @interface in interfaces)
                     source.AppendLine(@interface.GetImplementation().AddTabs(2));
                 source.AppendLine();
             } else
-                source.AppendLine("{");
+                source.AppendLine(" {");
 
             if(!string.IsNullOrEmpty(raiseChangedMethod))
                 source.AppendLine(raiseChangedMethod.AddTabs(2));

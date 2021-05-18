@@ -60,9 +60,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return false;
             if(parameterType.IsValueType)
                 return parameterType.NullableAnnotation == NullableAnnotation.Annotated || type.NullableAnnotation != NullableAnnotation.Annotated;
-            if(parameterType.IsReferenceType)
-                return parameterType.NullableAnnotation != NullableAnnotation.NotAnnotated || type.NullableAnnotation == NullableAnnotation.NotAnnotated;
-            return true;
+            return parameterType.NullableAnnotation != NullableAnnotation.NotAnnotated || type.NullableAnnotation == NullableAnnotation.NotAnnotated;
         }
          static string ToNotAnnotatedDisplayString(ITypeSymbol type) {
             var typeAsString = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
