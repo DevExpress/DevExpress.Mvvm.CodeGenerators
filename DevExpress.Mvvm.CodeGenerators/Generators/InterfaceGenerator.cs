@@ -25,6 +25,7 @@ string IDataErrorInfo.this[string columnName] { get => IDataErrorInfoHelper.GetE
         public string GetImplementation() =>
 @"IServiceContainer? serviceContainer;
 protected IServiceContainer ServiceContainer { get => serviceContainer ??= new ServiceContainer(this); }
-IServiceContainer ISupportServices.ServiceContainer { get => ServiceContainer; }";
+IServiceContainer ISupportServices.ServiceContainer { get => ServiceContainer; }
+public T? GetService<T>() where T : class => ServiceContainer.GetService<T>();";
     }
 }

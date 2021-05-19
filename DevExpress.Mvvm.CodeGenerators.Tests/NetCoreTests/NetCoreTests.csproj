@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <RootNamespace>DevExpress.Mvvm.CodeGenerators.Tests</RootNamespace>
     <AssemblyName>DevExpress.Mvvm.CodeGenerators.NetCoreTests</AssemblyName>
     <LangVersion>9</LangVersion>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <WarningsAsErrors>8618,8604</WarningsAsErrors>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
