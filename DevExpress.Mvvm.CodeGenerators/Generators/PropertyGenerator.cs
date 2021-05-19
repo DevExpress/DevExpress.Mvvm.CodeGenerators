@@ -63,7 +63,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
 
         PropertyGenerator(ContextInfo info, IFieldSymbol fieldSymbol, ITypeSymbol type, string propertyName, string fieldName, string inpcedParameter, string inpcingParameter, string changedMethod, string changingMethod) {
-            attributesList = PropertyHelper.GetAttributesList(info.Compilation, fieldSymbol);
+            attributesList = PropertyHelper.GetAttributesList(fieldSymbol);
             setterAccessModifier = PropertyHelper.GetSetterAccessModifierValue(fieldSymbol, info.PropertyAttributeSymbol);
 
             var isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, info.PropertyAttributeSymbol);

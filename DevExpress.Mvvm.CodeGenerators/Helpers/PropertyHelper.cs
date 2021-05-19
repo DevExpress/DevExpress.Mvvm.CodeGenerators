@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class PropertyHelper {
@@ -26,24 +27,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
             var enumIndex = AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofSetterAccessModifier, 0);
             return AccessModifierGenerator.GetCodeRepresentation(enumIndex);
         }
-        public static string GetAttributesList(Compilation compilation, IFieldSymbol fieldSymbol) {
-            if(fieldSymbol.GetAttributes().Length == 1)
+        public static string GetAttributesList(IFieldSymbol fieldSymbol) {
+            var attributeList = fieldSymbol.GetAttributes();
+            if(attributeList.Length == 1)
                 return string.Empty;
-
-            var attributeLists = ((FieldDeclarationSyntax)fieldSymbol.DeclaringSyntaxReferences[0].GetSyntax().Parent.Parent).AttributeLists;
-            var semanticModel = compilation.GetSemanticModel(attributeLists[0].Attributes[0].SyntaxTree);
-            var attributeListsString = attributeLists
-                .Select(listSyntax => listSyntax.Attributes
-                                                .Where(syntax => GetAttributeFullName(semanticModel, syntax) != AttributesGenerator.PropertyAttributeFullName)
-                                                .Select(syntax => AttributeConnectionString(semanticModel, syntax))
-                                                .Where(str => !string.IsNullOrEmpty(str))
-                                                .ConcatToString("," + Environment.NewLine))
-                .Where(str => !string.IsNullOrEmpty(str))
-                .ConcatToString("]" + Environment.NewLine + "[");
-
-            if(string.IsNullOrEmpty(attributeListsString))
-                return string.Empty;
-            return "[" + attributeListsString + "]";
+            return "[" + attributeList.Select(atr => atr.ToString())
+                                      .Where(str => !str.StartsWith(AttributesGenerator.PropertyAttributeFullName))
+                                      .ConcatToString("]" + Environment.NewLine + "[") + "]";
         }
         public static NullableAnnotation GetNullableAnnotation(ITypeSymbol type) =>
             type.IsReferenceType && type.NullableAnnotation == NullableAnnotation.None
@@ -96,24 +86,5 @@ namespace DevExpress.Mvvm.CodeGenerators {
             CommandHelper.GetMethods(classSymbol,
                                      methodSymbol => methodSymbol.ReturnsVoid && methodSymbol.Name == methodName && methodSymbol.Parameters.Length < 2 &&
                                                     (methodSymbol.Parameters.Length == 0 || IsСompatibleType(methodSymbol.Parameters.First().Type, fieldType)));
-        static string GetAttributeFullName(SemanticModel semanticModel, AttributeSyntax attributeSyntax) {
-            var attributeSymbolInfo = semanticModel.GetSymbolInfo(attributeSyntax);
-            return attributeSymbolInfo.Symbol?.ContainingSymbol.ToDisplayString() ??
-                   attributeSymbolInfo.CandidateSymbols.FirstOrDefault()?.ToDisplayString() ??
-                   string.Empty;
-        }
-        static string AttributeConnectionString(SemanticModel semanticModel, AttributeSyntax attributeSyntax) {
-            var attributeFullName = GetAttributeFullName(semanticModel, attributeSyntax);
-            var attributeSyntaxString = attributeSyntax.ToString();
-            var attributeParameterListStartPosition = attributeSyntaxString.IndexOf('(');
-            if(attributeParameterListStartPosition == -1)
-                return attributeFullName;
-
-            var attributeParameterList = attributeSyntaxString.Substring(attributeParameterListStartPosition)
-                                                              .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                                                              .Select(str => str.TrimStart())
-                                                              .ConcatToString(" ");
-            return attributeFullName + attributeParameterList;
-        }
     }
 }

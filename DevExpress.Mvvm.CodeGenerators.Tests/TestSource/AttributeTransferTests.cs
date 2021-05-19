@@ -1,12 +1,19 @@
-﻿using NUnit.Framework;
+﻿using DevExpress.Mvvm.CodeGenerators.Tests.Included;
+using NUnit.Framework;
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
     class MyCustomAttribute : Attribute {
-        public MyCustomAttribute(int value, string str, bool condition) { }
+        public MyCustomAttribute(int value, string str, bool condition, TestEnum testEnum) { }
     }
-
+    namespace Included {
+        enum TestEnum {
+            Num = 1,
+            String = 2
+        }
+    }
     [GenerateViewModel]
     partial class AttributeTransfer {
         const int number = 1;
@@ -14,11 +21,10 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         [GenerateProperty]
         int noAttribute;
 
-        [GenerateProperty]
-        [System.ComponentModel.DataAnnotations.Range(0, 1)]
+        [GenerateProperty, System.ComponentModel.DataAnnotations.Range(0, 1)]
         [Required, MyCustom(number,
                             "Some string",
-                            true)]
+                            true, TestEnum.Num)]
         int withMultipleAttributes;
     }
 
@@ -36,7 +42,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             expectedAttributes = new Attribute[] {
                 new System.ComponentModel.DataAnnotations.RangeAttribute(0, 1),
                 new RequiredAttribute(),
-                new MyCustomAttribute(1, "Some string", true)
+                new MyCustomAttribute(1, "Some string", true, TestEnum.Num)
             };
             Assert.AreEqual(expectedAttributes, attributes);
         }

@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-namespace DevExpress.Mvvm.CodeGenerators.Generators {
-    public class GeneratorCore {
+namespace DevExpress.Mvvm.CodeGenerators {
+    public class ViewModelGeneratorCore {
         public void Execute(GeneratorExecutionContext context) {
             if(context.SyntaxContextReceiver is not SyntaxContextReceiver receiver)
                 return;

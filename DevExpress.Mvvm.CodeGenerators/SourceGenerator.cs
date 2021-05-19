@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
@@ -16,7 +15,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
 
         public void Execute(GeneratorExecutionContext context) {
-            new Generators.GeneratorCore().Execute(context);
+            new ViewModelGeneratorCore().Execute(context);
         }
     }
 
