@@ -107,38 +107,41 @@ using System.ComponentModel;";
         }
         public string GetSourceCode() {
             var source = new StringBuilder();
+            int tabs = 0;
             source.AppendLine(usings);
             source.AppendLine();
             source.AppendLine("#nullable enable");
             source.AppendLine();
-            source.AppendLine($"namespace {@namespace} {{");
+            if(@namespace != "<global namespace>") {
+                source.AppendLine($"namespace {@namespace} {{");
+                tabs++;
+            }
 
-            source.Append($"partial class {name}".AddTabs(1));
+            source.Append($"partial class {name}".AddTabs(tabs));
             if(genericTypes.Any())
                 source.Append($"<{genericTypes.Select(type => type.ToString()).ConcatToString(", ")}>");
             if(interfaces.Any()) {
                 source.AppendLine($" : {interfaces.Select(@interface => @interface.GetName()).ConcatToString(", ")} {{");
                 foreach(var @interface in interfaces)
-                    source.AppendLine(@interface.GetImplementation().AddTabs(2));
+                    source.AppendLine(@interface.GetImplementation().AddTabs(tabs + 1));
                 source.AppendLine();
             } else
                 source.AppendLine(" {");
-
+            tabs++;
             if(!string.IsNullOrEmpty(raiseChangedMethod))
-                source.AppendLine(raiseChangedMethod.AddTabs(2));
+                source.AppendLine(raiseChangedMethod.AddTabs(tabs));
             if(!string.IsNullOrEmpty(raiseChangingMethod))
-                source.AppendLine(raiseChangingMethod.AddTabs(2));
+                source.AppendLine(raiseChangingMethod.AddTabs(tabs));
             if(!string.IsNullOrEmpty(raiseChangedMethod) || !string.IsNullOrEmpty(raiseChangingMethod))
                 source.AppendLine();
 
             foreach(var property in properties)
-                property.GetSourceCode(source, 2);
+                property.GetSourceCode(source, tabs);
             foreach(var command in commands)
-                command.GetSourceCode(source, 2);
-            eventArgsGenerator.GetSourceCode(source, 2);
-
-            source.AppendLine("}".AddTabs(1));
-            source.AppendLine("}");
+                command.GetSourceCode(source, tabs);
+            eventArgsGenerator.GetSourceCode(source, tabs);
+            while(tabs-- > 0)
+                source.AppendLine("}".AddTabs(tabs));
 
             return source.ToString();
         }

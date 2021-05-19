@@ -1,5 +1,12 @@
 ﻿using NUnit.Framework;
 
+[DevExpress.Mvvm.CodeGenerators.GenerateViewModel(ImplementINotifyPropertyChanging = true)]
+partial class GlobalClass {
+    [DevExpress.Mvvm.CodeGenerators.GenerateProperty]
+    public int testIntProperty;
+    [DevExpress.Mvvm.CodeGenerators.GenerateProperty]
+    public string testStringProperty;
+}
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
     class MyClass {
         public string i;
@@ -406,6 +413,13 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.IsNotNull(a.GetType().GetProperty("A"));
             Assert.IsNotNull(a.GetType().GetProperty("B"));
             Assert.IsNotNull(b.GetType().GetProperty("C"));
+        }
+        [Test]
+        public void GlobalNamespace() {
+            var globalClass = new GlobalClass();
+            Assert.AreEqual(null, globalClass.GetType().Namespace);
+            Assert.IsNotNull(globalClass.GetType().GetProperty("TestIntProperty"));
+            Assert.IsNotNull(globalClass.GetType().GetProperty("TestStringProperty"));
         }
     }
     #endregion
