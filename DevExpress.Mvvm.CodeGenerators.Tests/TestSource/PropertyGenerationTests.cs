@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.ComponentModel;
 
 [DevExpress.Mvvm.CodeGenerators.GenerateViewModel(ImplementINotifyPropertyChanging = true)]
 partial class GlobalClass {
@@ -8,6 +9,20 @@ partial class GlobalClass {
     public string testStringProperty;
 }
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
+    class ImplementedINPCingClass : INotifyPropertyChanged {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public int B { get; set; }
+        protected void RaisePropertyChanging(PropertyChangingEventArgs e) => B = 1;
+        protected void RaisePropertyChanging(string e) => B = 1;
+        protected void RaisePropertyChanged(PropertyChangedEventArgs e) { }
+    }
+    [GenerateViewModel]
+    partial class NotImplenmentedINPCing : ImplementedINPCingClass {
+        [GenerateProperty]
+        int a;
+    }
+
+
     class MyClass {
         public string i;
         public MyClass(string k) {
@@ -384,6 +399,12 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.AreEqual(1, genClass.TPropertyOldValue);
             Assert.AreEqual(2, genClass.TPropertyNewValue);
         }
+        [Test]
+        public void DoNotGenerateRaiseMethod() {
+            var generated = new NotImplenmentedINPCing();
+            generated.A = 10;
+            Assert.AreEqual(0, generated.B);
+        }
     }
     #region same class names
     namespace FirstNamespace {
@@ -404,6 +425,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             int c;
         }
     }
+    #endregion
     [TestFixture]
     public class PartialTests {
         [Test]
@@ -422,5 +444,4 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.IsNotNull(globalClass.GetType().GetProperty("TestStringProperty"));
         }
     }
-    #endregion
 }

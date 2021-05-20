@@ -57,11 +57,11 @@ using System.ComponentModel;";
             }
 
             var needStaticChangedEventArgs = inpcedInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangedMethod;
-            var needStaticChangingEventArgs = inpcingInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangingMethod;
+            var needStaticChangingEventArgs = inpcingInfo.HasAttribute && (inpcingInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangingMethod);
             eventArgsGenerator = new EventArgsGenerator(needStaticChangedEventArgs, needStaticChangingEventArgs);
 
             var raiseChangedMethodParameter = needStaticChangedEventArgs ? "eventargs" : inpcedInfo.HasRaiseMethodWithStringParameter ? "string" : string.Empty;
-            var raiseChangingMethodParameter = needStaticChangingEventArgs ? "eventargs" : inpcingInfo.HasRaiseMethodWithStringParameter ? "string" : string.Empty;
+            var raiseChangingMethodParameter = needStaticChangingEventArgs ? "eventargs" : inpcingInfo.HasAttribute && inpcingInfo.HasRaiseMethodWithStringParameter ? "string" : string.Empty;
 
             var generateProperties = true;
             var fieldCandidates = ClassHelper.GetFieldCandidates(classSymbol, contextInfo.PropertyAttributeSymbol);
