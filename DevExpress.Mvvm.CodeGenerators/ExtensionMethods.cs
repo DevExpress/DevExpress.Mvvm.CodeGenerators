@@ -28,5 +28,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static string FirstToLowerCase(this string str) => $"{str.Substring(0, 1).ToLower()}{str.Substring(1)}";
         public static string FirstToUpperCase(this string str) => $"{str.Substring(0, 1).ToUpper()}{str.Substring(1)}";
         #endregion
+        public static string TypeToString(this TypeKind type) => type.ToString() == "Structure" ? "struct" : type.ToString().ToLower();
     }
 }

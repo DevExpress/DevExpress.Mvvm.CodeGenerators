@@ -27,6 +27,16 @@ namespace DevExpress.Mvvm.CodeGenerators {
                        .OfType<T>()
                        .Where(symbol => AttributeHelper.HasAttribute(symbol, attributeSymbol));
 
+        public static Dictionary<string, TypeKind> GetOuterClasses(INamedTypeSymbol classSymbol) {
+            var outerClasses = new Dictionary<string, TypeKind>();
+            var outerClass = classSymbol.ContainingSymbol;
+            while(!outerClass.Equals(classSymbol.ContainingNamespace, SymbolEqualityComparer.Default)) {
+                outerClasses.Add(outerClass.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat), ((INamedTypeSymbol)outerClass).TypeKind);
+
+                outerClass = outerClass.ContainingSymbol;
+            }
+            return outerClasses;
+        }
         public static string CreateFileName(string prefix) => $"{prefix}.g.cs";
         public static string CreateFileName(string prefix, HashSet<string> generatedClasses) {
             var name = prefix;

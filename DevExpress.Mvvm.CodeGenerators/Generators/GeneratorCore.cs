@@ -30,10 +30,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     continue;
                 }
 
-                if(!classSymbol.ContainingSymbol.Equals(classSymbol.ContainingNamespace, SymbolEqualityComparer.Default)) {
-                    context.ReportClassWithinClass(classSymbol);
-                    continue;
-                }
                 var classGenerator = new ClassGenerator(contextInfo, classSymbol);
                 var classSource = classGenerator.GetSourceCode();
                 context.AddSource(ClassHelper.CreateFileName(classSymbol.Name, generatedClasses), SourceText.From(classSource, Encoding.UTF8));

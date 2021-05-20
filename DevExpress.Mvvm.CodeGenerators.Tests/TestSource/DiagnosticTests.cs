@@ -29,32 +29,6 @@ namespace Test {
         }
 
         [Test]
-        public void ClassWithinClassDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators;
-
-namespace Test {
-    [GenerateViewModel]
-    partial class OuterClass {
-        [GenerateViewModel]
-        partial class InnerClass { }
-}
-
-    public class Program {
-        public static void Main(string[] args) { }
-    }
-}
-";
-            Compilation inputCompilation = Helper.CreateCompilation(sourceCode);
-            ViewModelGenerator generator = new ViewModelGenerator();
-
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
-
-            Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
-            Assert.AreEqual(GeneratorDiagnostics.ClassWithinClass.Id, diagnostics[0].Id);
-        }
-
-        [Test]
         public void MVVMNotAvailableDiagnostic() {
             var sourceCode = @"using DevExpress.Mvvm.CodeGenerators;
 using System.Threading.Tasks;

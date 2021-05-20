@@ -20,6 +20,7 @@ using System.ComponentModel;";
         readonly List<PropertyGenerator> properties = new();
         readonly List<CommandGenerator> commands = new();
         readonly List<ITypeSymbol> genericTypes = new();
+        readonly Dictionary<string, TypeKind> outerClasses = new(); 
 
         public ClassGenerator(ContextInfo contextInfo, INamedTypeSymbol classSymbol) {
             usings = defaultUsings;
@@ -104,6 +105,7 @@ using System.ComponentModel;";
             if(classSymbol.IsGenericType) {
                 genericTypes = classSymbol.TypeArguments.ToList();
             }
+            outerClasses = ClassHelper.GetOuterClasses(classSymbol);
         }
         public string GetSourceCode() {
             var source = new StringBuilder();
@@ -116,7 +118,10 @@ using System.ComponentModel;";
                 source.AppendLine($"namespace {@namespace} {{");
                 tabs++;
             }
-
+            foreach(var outerClass in outerClasses.Reverse()) {
+                source.AppendLine($"partial {outerClass.Value.TypeToString()} {outerClass.Key}".AddTabs(tabs) + " {");
+                tabs++;
+            }
             source.Append($"partial class {name}".AddTabs(tabs));
             if(genericTypes.Any())
                 source.Append($"<{genericTypes.Select(type => type.ToString()).ConcatToString(", ")}>");

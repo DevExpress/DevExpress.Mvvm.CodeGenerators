@@ -21,6 +21,18 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         [GenerateProperty]
         int a;
     }
+    partial struct OuterClass {
+        [GenerateViewModel]
+        public partial class InnerClass {
+            [GenerateProperty]
+            int a;
+            [GenerateViewModel]
+            public partial class InnerClass2 {
+                [GenerateProperty]
+                int a;
+            }
+        }
+    }
 
 
     class MyClass {
@@ -404,6 +416,17 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             var generated = new NotImplenmentedINPCing();
             generated.A = 10;
             Assert.AreEqual(0, generated.B);
+        }
+        [Test]
+        public void GenerateInnerClass() {
+            
+            var inner2 = new OuterClass.InnerClass.InnerClass2();
+            var inner = new OuterClass.InnerClass();
+            Assert.IsNotNull(inner2.GetType().GetProperty("A"));
+            Assert.IsNotNull(inner.GetType().GetProperty("A"));
+            Assert.AreEqual(typeof(OuterClass.InnerClass.InnerClass2), inner2.GetType().GetProperty("A").DeclaringType);
+            Assert.AreEqual(typeof(OuterClass.InnerClass), inner2.GetType().GetProperty("A").DeclaringType.DeclaringType);
+            Assert.AreEqual(typeof(OuterClass), inner2.GetType().GetProperty("A").DeclaringType.DeclaringType.DeclaringType);
         }
     }
     #region same class names
