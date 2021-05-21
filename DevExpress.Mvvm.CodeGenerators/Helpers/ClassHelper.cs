@@ -8,11 +8,14 @@ namespace DevExpress.Mvvm.CodeGenerators {
     static class ClassHelper {
         static readonly string nameofImplementIDEI = AttributesGenerator.ImplementIDEI;
         static readonly string nameofImplementISS = AttributesGenerator.ImplementISS;
+        static readonly string nameofImplementISPVM = AttributesGenerator.ImplementISPVM;
 
         public static bool IsMvvmAvailable(Compilation compilation) =>
             compilation.ReferencedAssemblyNames.Any(ai => Regex.IsMatch(ai.Name, @"DevExpress\.Mvvm(\.v\d{2}\.\d)?$"));
         public static bool GetImplementIDEIValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.ViewModelAttributeSymbol, nameofImplementIDEI, false);
+        public static bool GetImplementISPVMValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
+            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.ViewModelAttributeSymbol, nameofImplementISPVM, false);
         public static bool GetImplementISSValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.ViewModelAttributeSymbol, nameofImplementISS, false);
         public static IEnumerable<IFieldSymbol> GetFieldCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol propertySymbol) =>
@@ -27,6 +30,20 @@ namespace DevExpress.Mvvm.CodeGenerators {
                        .OfType<T>()
                        .Where(symbol => AttributeHelper.HasAttribute(symbol, attributeSymbol));
 
+        public static bool ShouldGenerateISPVMChangedMethod(INamedTypeSymbol classSymbol) {
+            bool containsISPVMChangedMethod = ShouldGenerateISPVMChangedMethodCore(classSymbol, true);
+            var parent = classSymbol.BaseType;
+            while (parent != null && !containsISPVMChangedMethod) {
+                containsISPVMChangedMethod = ShouldGenerateISPVMChangedMethodCore(parent);
+                parent = parent.BaseType;
+            }
+            return containsISPVMChangedMethod;
+        }
+        static bool ShouldGenerateISPVMChangedMethodCore(INamedTypeSymbol classSymbol, bool ignorePrivateAccessibility = false) {
+            var onParentViewModelChangeds = CommandHelper.GetMethods(classSymbol, methodSymbol => (methodSymbol.DeclaredAccessibility != Accessibility.Private || ignorePrivateAccessibility) && methodSymbol.ReturnsVoid && methodSymbol.Name == "OnParentViewModelChanged" && methodSymbol.Parameters.Length == 1 &&
+                                                    methodSymbol.Parameters[0].ToDisplayString().StartsWith("object"));
+            return onParentViewModelChangeds.Any();
+        }
         public static Dictionary<string, TypeKind> GetOuterClasses(INamedTypeSymbol classSymbol) {
             var outerClasses = new Dictionary<string, TypeKind>();
             var outerClass = classSymbol.ContainingSymbol;

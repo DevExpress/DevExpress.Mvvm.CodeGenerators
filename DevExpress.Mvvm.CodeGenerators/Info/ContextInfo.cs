@@ -13,6 +13,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public INamedTypeSymbol INPCedSymbol { get; }
         public INamedTypeSymbol INPCingSymbol { get; }
         public INamedTypeSymbol IDEISymbol { get; }
+        public INamedTypeSymbol ISPVMSymbol { get; }
         public INamedTypeSymbol ISSSymbol { get; }
 
         public ContextInfo(GeneratorExecutionContext context) {
@@ -27,6 +28,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             INPCingSymbol = Compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName);
             IDEISymbol = Compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName);
             ISSSymbol = Compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices");
+            ISPVMSymbol = Compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel");
         }
     }
 }

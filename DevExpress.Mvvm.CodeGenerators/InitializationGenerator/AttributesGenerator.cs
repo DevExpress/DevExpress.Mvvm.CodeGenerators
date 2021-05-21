@@ -10,6 +10,7 @@
 
         public static string ImplementIDEI { get => "ImplementIDataErrorInfo"; }
         public static string ImplementINPCing { get => "ImplementINotifyPropertyChanging"; }
+        public static string ImplementISPVM { get => "ImplementISupportParentViewModel"; }
         public static string ImplementISS { get => "ImplementISupportServices"; }
 
         public static string IsVirtual { get => "IsVirtual"; }
@@ -27,6 +28,7 @@ $@"[AttributeUsage(AttributeTargets.Class)]
 class {viewModelAttribute} : Attribute {{
     public bool {ImplementIDEI} {{ get; set; }}
     public bool {ImplementINPCing} {{ get; set; }}
+    public bool {ImplementISPVM} {{ get; set; }}
     public bool {ImplementISS} {{ get; set; }}
 }}
 

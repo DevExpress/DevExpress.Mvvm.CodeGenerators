@@ -33,6 +33,22 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             }
         }
     }
+    class ViewModelParent1232 {
+        public int a = 0;
+        public void OnParentViewModelChanged(object o) { a = 1; }
+    }
+    class ViewModelParent {
+        public int a = 0;
+        public void OnParentViewModelChanged(object o) { a = 1; }
+    }
+    [GenerateViewModel(ImplementISupportParentViewModel = true)]
+    partial class WithInheritedParentViewModelMethod : ViewModelParent {
+    }
+    [GenerateViewModel(ImplementISupportParentViewModel = true)]
+    partial class WithParentViewModelMethod {
+        public int a = 0;
+        void OnParentViewModelChanged(object o) { a = 1; }
+    }
 
 
     class MyClass {
@@ -40,6 +56,8 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public MyClass(string k) {
             i = k;
         }
+
+        public object ParentViewModel { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     }
     struct MyStruct {
         public int i;
@@ -427,6 +445,18 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.AreEqual(typeof(OuterClass.InnerClass.InnerClass2), inner2.GetType().GetProperty("A").DeclaringType);
             Assert.AreEqual(typeof(OuterClass.InnerClass), inner2.GetType().GetProperty("A").DeclaringType.DeclaringType);
             Assert.AreEqual(typeof(OuterClass), inner2.GetType().GetProperty("A").DeclaringType.DeclaringType.DeclaringType);
+        }
+        [Test]
+        public void ISupportParentViewModelTest() {
+            var generatedWithParent = new WithInheritedParentViewModelMethod();
+            var generated = new WithParentViewModelMethod();
+            Assert.AreEqual(0, generatedWithParent.a);
+            Assert.AreEqual(0, generated.a);
+            ((ISupportParentViewModel)generatedWithParent).ParentViewModel = new ViewModelParent();
+            ((ISupportParentViewModel)generated).ParentViewModel = new ViewModelParent();
+            Assert.AreEqual(1, generatedWithParent.a);
+            Assert.AreEqual(1, generated.a);
+            Assert.Throws<System.InvalidOperationException>(() => ((ISupportParentViewModel)generated).ParentViewModel = generated);
         }
     }
     #region same class names

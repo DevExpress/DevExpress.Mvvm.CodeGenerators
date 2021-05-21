@@ -46,10 +46,17 @@ using System.ComponentModel;";
 
             var implIDEI = ClassHelper.GetImplementIDEIValue(contextInfo, classSymbol);
             var implISS = ClassHelper.GetImplementISSValue(contextInfo, classSymbol);
+            var implISPVM = ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol);
             if(implIDEI) {
                 mvvmComponentsList.Add("IDataErrorInfo");
                 if(isMvvmAvailable && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.IDEISymbol))
                     interfaces.Add(new IDataErrorInfoGenerator());
+            }
+            if(implISPVM) {
+                mvvmComponentsList.Add("ISupportParentViewModel");
+                var shouldGenerateChangedMethod = ClassHelper.ShouldGenerateISPVMChangedMethod(classSymbol);
+                if(isMvvmAvailable && contextInfo.ISPVMSymbol != null && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol))
+                    interfaces.Add(new ISupportParentViewModelGenerator(shouldGenerateChangedMethod));
             }
             if(implISS) {
                 mvvmComponentsList.Add("ISupportServices");

@@ -20,6 +20,27 @@ namespace DevExpress.Mvvm.CodeGenerators {
 @"string IDataErrorInfo.Error { get => string.Empty; }
 string IDataErrorInfo.this[string columnName] { get => IDataErrorInfoHelper.GetErrorText(this, columnName); }";
     }
+    class ISupportParentViewModelGenerator : IInterfaceGenerator {
+        readonly bool generateChangedMethod;
+        readonly string onChangedMethod;
+        public ISupportParentViewModelGenerator(bool shouldGenerateChangedMethod) {
+            generateChangedMethod = shouldGenerateChangedMethod;
+            onChangedMethod = generateChangedMethod ? System.Environment.NewLine + "OnParentViewModelChanged(parentViewModel);".AddTabs(2) : string.Empty;
+        }
+        public string GetName() => "ISupportParentViewModel";
+        public string GetImplementation() =>
+$@"object? parentViewModel;
+object? ISupportParentViewModel.ParentViewModel {{
+    get {{ return parentViewModel; }}
+    set {{
+        if(parentViewModel == value)
+            return;
+        if(value == this)
+            throw new System.InvalidOperationException(""ViewModel cannot be parent of itself."");
+        parentViewModel = value;{onChangedMethod}
+    }}
+}}";
+    }
     class ISupportServicesGenerator : IInterfaceGenerator {
         public string GetName() => "ISupportServices";
         public string GetImplementation() =>
