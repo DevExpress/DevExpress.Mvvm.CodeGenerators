@@ -17,10 +17,11 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public void Method(int arg) { }
         public bool CanDoIt(int arg) => arg > 0;
 
+#if !WINUI
         [GenerateCommand(Name = "CommandWithoutCommandManager", UseCommandManager = false)]
         public void WithoutManager() { }
-
         public void UpdateCommandWithoutManagerCommand() => CommandWithoutCommandManager.RaiseCanExecuteChanged();
+#endif
 
 #nullable enable
         [GenerateCommand]
@@ -69,6 +70,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             var expectedCanMethod = generated.GetType().GetMethod("CanDoIt");
             Assert.AreEqual(expectedCanMethod, canMethod.Method);
 
+#if !WINUI
             var useCommandManager = GetFieldValue<bool, DelegateCommand<int>>(generated.Command, "useCommandManager");
             Assert.AreEqual(true, useCommandManager);
 
@@ -77,6 +79,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
 
             var canExecuteMethod = GetFieldValue<Func<int, bool>, DelegateCommand>(generated.CommandWithoutCommandManager, "canExecuteMethod");
             Assert.IsNull(canExecuteMethod);
+#endif
         }
         static TResult GetFieldValue<TResult, T>(T source, string fieldName) {
             var fieldInfo = source.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
@@ -84,7 +87,12 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
 
             return (TResult)fieldInfo.GetValue(source);
         }
-
+#if WINUI
+        [Test]
+        public void NoUseCommandManagerPropertyInWinUI() {
+            Assert.IsNull(typeof(GenerateCommandAttribute).GetProperty(AttributesGenerator.UseCommandManager));
+        }
+#endif
         [Test]
         public void ArgumentTypeForCommand() {
             var generated = new GenerateCommands();
@@ -102,7 +110,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             var nullableIntExpectedType = typeof(int?);
             Assert.AreEqual(nullableIntExpectedType, nullableIntArgumentType);
         }
-
+#if !WINUI
         [Test]
         public void RaiseCanExecuteChanged() {
             var generated = new GenerateCommands();
@@ -110,6 +118,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             generated.CommandWithoutCommandManager.CanExecuteChanged += (s, e) => throw new Exception();
             Assert.Throws<Exception>(generated.UpdateCommandWithoutManagerCommand);
         }
+#endif
 
         [Test]
         public void NullableReferenceType() {

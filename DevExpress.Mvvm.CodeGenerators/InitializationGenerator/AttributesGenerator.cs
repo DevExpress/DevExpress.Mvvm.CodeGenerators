@@ -23,7 +23,10 @@
         public static string CanExecuteMethod { get => "CanExecuteMethod"; }
         public static string CommandName { get => "Name"; }
 
-        public static string GetSourceCode() =>
+
+        static string UseCommandManagerProperty { get => $@"public bool {UseCommandManager} {{ get; set; }}"; }
+
+        public static string GetSourceCode(bool isWinUI) =>
 $@"[AttributeUsage(AttributeTargets.Class)]
 class {viewModelAttribute} : Attribute {{
     public bool {ImplementIDEI} {{ get; set; }}
@@ -43,7 +46,7 @@ class {propertyAttribute} : Attribute {{
 [AttributeUsage(AttributeTargets.Method)]
 class {commandAttribute} : Attribute {{
     public bool {AllowMultipleExecution} {{ get; set; }}
-    public bool {UseCommandManager} {{ get; set; }}
+{(isWinUI ? null : UseCommandManagerProperty)}
     public string? {CanExecuteMethod} {{ get; set; }}
     public string? {CommandName} {{ get; set; }}
 }}";

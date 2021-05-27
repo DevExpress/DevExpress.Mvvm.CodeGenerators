@@ -7,7 +7,7 @@
     <LangVersion>9</LangVersion>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <WarningsAsErrors>8618,8604</WarningsAsErrors>
-    <UseWPF>true</UseWPF>
+	<DefineConstants>WINUI</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

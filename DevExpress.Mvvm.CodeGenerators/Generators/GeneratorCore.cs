@@ -6,13 +6,16 @@ using System.Text;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
-    public class ViewModelGeneratorCore {
-        public void Execute(GeneratorExecutionContext context) {
+    public static class ViewModelGeneratorCore {
+        public static void Execute(GeneratorExecutionContext context) {
             if(context.SyntaxContextReceiver is not SyntaxContextReceiver receiver)
                 return;
 
-            var attributesSourceText = SourceText.From(InitializationGenerator.GetSourceCode(), Encoding.UTF8);
-            var contextInfo = new ContextInfo(context);
+            var attributesSourceText = SourceText.From(InitializationGenerator.GetSourceCode(ContextInfo.GetIsWinUI(context.Compilation)), Encoding.UTF8);
+            var compilation = context.Compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(attributesSourceText));
+            context.AddSource(ClassHelper.CreateFileName("Attributes"), attributesSourceText);
+
+            var contextInfo = new ContextInfo(context, compilation);
             var generatedClasses = new HashSet<string>();
             var processedSymbols = new List<INamedTypeSymbol>();
 
@@ -20,6 +23,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 if(context.CancellationToken.IsCancellationRequested)
                     return;
                 var classSymbol = contextInfo.Compilation.GetSemanticModel(classSyntax.SyntaxTree).GetDeclaredSymbol(classSyntax);
+                if(!AttributeHelper.HasAttribute(classSymbol, contextInfo.ViewModelAttributeSymbol))
+                    continue;
 
                 if(processedSymbols.Contains(classSymbol))
                     continue;

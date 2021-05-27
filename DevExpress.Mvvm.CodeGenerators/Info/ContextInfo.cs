@@ -18,21 +18,27 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         public bool IsWinUI { get; }
 
-        public ContextInfo(GeneratorExecutionContext context) {
+        public ContextInfo(GeneratorExecutionContext context, Compilation compilation) {
             Context = context;
-            Compilation = context.Compilation;
+            Compilation = compilation;
 
-            ViewModelAttributeSymbol = Compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName);
-            PropertyAttributeSymbol = Compilation.GetTypeByMetadataName(AttributesGenerator.PropertyAttributeFullName);
-            CommandAttributeSymbol = Compilation.GetTypeByMetadataName(AttributesGenerator.CommandAttributeFullName);
+            ViewModelAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName);
+            PropertyAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.PropertyAttributeFullName);
+            CommandAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.CommandAttributeFullName);
 
-            INPCedSymbol = Compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName);
-            INPCingSymbol = Compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName);
-            IDEISymbol = Compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName);
-            ISSSymbol = Compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices");
-            ISPVMSymbol = Compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel");
+            INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName);
+            INPCingSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName);
+            IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName);
+            ISSSymbol = GetISSSymbol(compilation);
+            ISPVMSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel");
 
-            IsWinUI = ISSSymbol != null && Compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;
+            IsWinUI = GetIsWinUI(compilation);
+        }
+        public static bool GetIsWinUI(Compilation compilation) {
+            return GetISSSymbol(compilation) != null && compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;
+        }
+        public static INamedTypeSymbol GetISSSymbol(Compilation compilation) {
+            return compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices");
         }
     }
 }
