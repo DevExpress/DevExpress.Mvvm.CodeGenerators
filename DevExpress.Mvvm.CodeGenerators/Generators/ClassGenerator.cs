@@ -121,7 +121,6 @@ using System.ComponentModel;";
             var raiseChangingMethodParameter = needStaticChangingEventArgs ? "eventargs" : inpcingInfo.HasAttribute && inpcingInfo.HasRaiseMethodWithStringParameter ? "string" : string.Empty;
             var generateProperties = true;
             List<string> propertyNames = new();
-            List<PropertyGenerator> properties = new();
             var fieldCandidates = ClassHelper.GetFieldCandidates(classSymbol, contextInfo.PropertyAttributeSymbol);
             if(fieldCandidates.Any()) {
                 if(string.IsNullOrEmpty(raiseChangedMethodParameter)) {
@@ -134,15 +133,12 @@ using System.ComponentModel;";
                 }
                 if(generateProperties)
                     foreach(var fieldSymbol in fieldCandidates) {
-                        var property = PropertyGenerator.Create(contextInfo, classSymbol, fieldSymbol, raiseChangedMethodParameter, raiseChangingMethodParameter);
-                        if(property != null) {
-                            properties.Add(property);
-                            propertyNames.Add(property.PropertyName);
+                        var propertyName = PropertyGenerator.Generate(source, tabs, contextInfo, classSymbol, fieldSymbol, raiseChangedMethodParameter, raiseChangingMethodParameter);
+                        if(propertyName != null) {
+                            propertyNames.Add(propertyName);
                         }
                     }
             }
-            foreach(var property in properties)
-                property.GetSourceCode(source, tabs);
             return propertyNames;
         }
 
