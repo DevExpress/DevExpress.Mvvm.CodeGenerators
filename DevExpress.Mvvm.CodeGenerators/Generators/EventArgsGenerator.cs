@@ -2,20 +2,13 @@
 using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
-    class EventArgsGenerator {
-        readonly bool createChangedEventArgs;
-        readonly bool createChangingEventArgs;
-        readonly List<string> propertyNameList = new();
-
-        public EventArgsGenerator(bool createChangedEventArgs, bool createChangingEventArgs) =>
-            (this.createChangedEventArgs, this.createChangingEventArgs) = (createChangedEventArgs, createChangingEventArgs);
-        public void AddEventArgs(string propertyName) => propertyNameList.Add(propertyName);
-        public void GetSourceCode(StringBuilder source, int tabs) {
+    static class EventArgsGenerator {
+        public static void Generate(StringBuilder source, int tabs, bool createChangedEventArgs, bool createChangingEventArgs, IEnumerable<string> propertyNames) {
             if(createChangedEventArgs)
-                foreach(var propertyName in propertyNameList)
+                foreach(var propertyName in propertyNames)
                     source.AppendLine($"static PropertyChangedEventArgs {propertyName}ChangedEventArgs = new PropertyChangedEventArgs(nameof({propertyName}));".AddTabs(tabs));
             if(createChangingEventArgs)
-                foreach(var propertyName in propertyNameList)
+                foreach(var propertyName in propertyNames)
                     source.AppendLine($"static PropertyChangingEventArgs {propertyName}ChangingEventArgs = new PropertyChangingEventArgs(nameof({propertyName}));".AddTabs(tabs));
         }
     }

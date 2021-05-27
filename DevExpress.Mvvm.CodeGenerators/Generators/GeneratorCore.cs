@@ -35,8 +35,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     continue;
                 }
 
-                var classGenerator = new ClassGenerator(contextInfo, classSymbol);
-                var classSource = classGenerator.GetSourceCode();
+                var classSource = ClassGenerator.GetSourceCode(contextInfo, classSymbol);
                 context.AddSource(ClassHelper.CreateFileName(classSymbol.Name, generatedClasses), SourceText.From(classSource, Encoding.UTF8));
             }
         }

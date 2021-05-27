@@ -4,17 +4,12 @@ using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     class CommandGenerator {
-        readonly string type;
-        readonly string name;
-        readonly string parametersList;
-
-        public static CommandGenerator Create(ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol) {
-            var hasError = false;
+        public static void Generate(StringBuilder source, int tabs, ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol) {
             var isCommand = methodSymbol.ReturnsVoid;
             var isAsyncCommand = methodSymbol.ReturnType.ToDisplayStringNullable().StartsWith("System.Threading.Tasks.Task");
             if(methodSymbol.Parameters.Length > 1 || !(isCommand || isAsyncCommand)) {
                 info.Context.ReportIncorrectCommandSignature(methodSymbol);
-                hasError = true;
+                return;
             }
 
             var parameterType = methodSymbol.Parameters.FirstOrDefault()?.Type;
@@ -26,32 +21,21 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 var candidates = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, canExecuteMethodName, parameterType);
                 if(!candidates.Any()) {
                     info.Context.ReportCanExecuteMethodNotFound(methodSymbol, canExecuteMethodName, parameterType?.ToDisplayStringNullable() ?? string.Empty, CommandHelper.GetMethods(classSymbol, canExecuteMethodName));
-                    hasError = true;
+                    return;
                 }
             }
-            return hasError ? null : new CommandGenerator(methodSymbol, info.CommandAttributeSymbol, parameterType?.ToDisplayStringNullable() ?? string.Empty, canExecuteMethodName, isCommand, info.IsWinUI);
-        }
-        public void GetSourceCode(StringBuilder source, int tabs) {
+
+            var type = CommandHelper.GetGenericType(isCommand ? "DelegateCommand" : "AsyncCommand", parameterType?.ToDisplayStringNullable() ?? string.Empty);
+            var name = CommandHelper.GetCommandName(methodSymbol, info.CommandAttributeSymbol, methodSymbol.Name);
+            var parametersList = GetParametersList(methodSymbol, info.CommandAttributeSymbol, canExecuteMethodName, isCommand, methodSymbol.Name, info.IsWinUI);
             source.AppendLine($"{type}? {name};".AddTabs(tabs));
             source.AppendLine($"public {type} {name.FirstToUpperCase()} {{".AddTabs(tabs));
             source.AppendLine($"get => {name} ??= new {type}({parametersList});".AddTabs(tabs + 1));
             source.AppendLine("}".AddTabs(tabs));
         }
 
-        CommandGenerator(IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string parameterType, string canExecuteMethodName, bool isCommand, bool isWinUI) {
-            var baseType = isCommand ? "DelegateCommand" : "AsyncCommand";
-            var executeMethod = methodSymbol.Name;
-            
+        static string GetParametersList(IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {
             var allowMultipleExecution = CommandHelper.GetAllowMultipleExecutionValue(methodSymbol, commandAttributeSymbol).ToString().ToLower();
-
-            type = CommandHelper.GetGenericType(baseType, parameterType);
-            name = CommandHelper.GetCommandName(methodSymbol, commandAttributeSymbol, executeMethod);
-            if(isWinUI) {
-            }
-            parametersList = GetParametersList(methodSymbol, commandAttributeSymbol, canExecuteMethodName, isCommand, executeMethod, allowMultipleExecution, isWinUI);
-        }
-
-        private static string GetParametersList(IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, string allowMultipleExecution, bool isWinUI) {
             if(isWinUI)
                 return isCommand
                     ? CommandHelper.ParametersToDisplayString(executeMethod, canExecuteMethodName)
