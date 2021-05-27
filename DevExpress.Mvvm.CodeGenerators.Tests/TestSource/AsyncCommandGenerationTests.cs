@@ -19,8 +19,10 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public Task Method(int arg) => Task.CompletedTask;
         public bool CanDoIt(int arg) => arg > 0;
 
+#if !WINUI
         [GenerateCommand(Name = "AsyncCommandWithoutCommandManager", UseCommandManager = false)]
         public Task WithoutManager() => Task.CompletedTask;
+#endif
 
         [GenerateCommand(AllowMultipleExecution = true)]
         public Task AllowMultipleExecution() => Task.CompletedTask;
@@ -56,21 +58,19 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             var expectedCanMethod = generated.GetType().GetMethod("CanDoIt");
             Assert.AreEqual(expectedCanMethod, canMethod.Method);
 
-            var useCommandManager = GetFieldValue<bool, AsyncCommand<int>>(generated.MyAsyncCommand, "useCommandManager");
-            var expectedUseCommandManager = true;
-            Assert.AreEqual(expectedUseCommandManager, useCommandManager);
-
+#if !WINUI
             var allowMultipleExecution = generated.MyAsyncCommand.AllowMultipleExecution;
             var expectedAllowMultipleExecution = false;
             Assert.AreEqual(expectedAllowMultipleExecution, allowMultipleExecution);
 
+            var useCommandManager = GetFieldValue<bool, AsyncCommand<int>>(generated.MyAsyncCommand, "useCommandManager");
+            Assert.AreEqual(true, useCommandManager);
             useCommandManager = GetFieldValue<bool, AsyncCommand>(generated.AsyncCommandWithoutCommandManager, "useCommandManager");
-            expectedUseCommandManager = false;
-            Assert.AreEqual(expectedUseCommandManager, useCommandManager);
+            Assert.AreEqual(false, useCommandManager);
 
             allowMultipleExecution = generated.AllowMultipleExecutionCommand.AllowMultipleExecution;
-            expectedAllowMultipleExecution = true;
-            Assert.AreEqual(expectedAllowMultipleExecution, allowMultipleExecution);
+            Assert.AreEqual(true, allowMultipleExecution);
+#endif
 
             var canExecuteMethod = GetFieldValue<Func<int, bool>, AsyncCommand>(generated.GenericTaskCommand, "canExecuteMethod");
             Assert.IsNull(canExecuteMethod);

@@ -25,11 +25,12 @@
 
 
         static string UseCommandManagerProperty { get => $@"public bool {UseCommandManager} {{ get; set; }}"; }
+        static string ImplementIDEIProperty { get => $@"public bool {ImplementIDEI} {{ get; set; }}"; }
 
         public static string GetSourceCode(bool isWinUI) =>
 $@"[AttributeUsage(AttributeTargets.Class)]
 class {viewModelAttribute} : Attribute {{
-    public bool {ImplementIDEI} {{ get; set; }}
+    {(isWinUI ? null : ImplementIDEIProperty)}
     public bool {ImplementINPCing} {{ get; set; }}
     public bool {ImplementISPVM} {{ get; set; }}
     public bool {ImplementISS} {{ get; set; }}
@@ -46,7 +47,7 @@ class {propertyAttribute} : Attribute {{
 [AttributeUsage(AttributeTargets.Method)]
 class {commandAttribute} : Attribute {{
     public bool {AllowMultipleExecution} {{ get; set; }}
-{(isWinUI ? null : UseCommandManagerProperty)}
+    {(isWinUI ? null : UseCommandManagerProperty)}
     public string? {CanExecuteMethod} {{ get; set; }}
     public string? {CommandName} {{ get; set; }}
 }}";

@@ -11,17 +11,23 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     partial class ImplementINPCing { }
 
+#if !WINUI
     [GenerateViewModel(ImplementIDataErrorInfo = false)]
     partial class NotImplementIDEI { }
     [GenerateViewModel(ImplementIDataErrorInfo = true)]
     partial class ImplementIDEI { }
+#endif
 
     [GenerateViewModel(ImplementISupportServices = false)]
     partial class NotImplementISS { }
     [GenerateViewModel(ImplementISupportServices = true)]
     partial class ImplementISS { }
 
-    [GenerateViewModel(ImplementINotifyPropertyChanging = true, ImplementIDataErrorInfo = true, ImplementISupportServices = true)]
+    [GenerateViewModel(ImplementINotifyPropertyChanging = true,
+#if !WINUI
+    ImplementIDataErrorInfo = true, 
+#endif
+    ImplementISupportServices = true)]
     partial class FullImplemented : INotifyPropertyChanged, INotifyPropertyChanging, IDataErrorInfo, ISupportServices {
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
@@ -64,6 +70,12 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.IsTrue(inpcingNotImpl is not INotifyPropertyChanging);
         }
 
+#if WINUI
+        [Test]
+        public void NoUseCommandManagerPropertyInWinUI() {
+            Assert.IsNull(typeof(GenerateViewModelAttribute).GetProperty(AttributesGenerator.ImplementIDEI));
+        }
+#else
         [Test]
         public void IDEIImplementation() {
             var ideiDefault = new ClassWithGenerator();
@@ -75,6 +87,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             var ideiNotImpl = new NotImplementIDEI();
             Assert.IsTrue(ideiNotImpl is not IDataErrorInfo);
         }
+#endif
 
         [Test]
         public void ISSImplementation() {
