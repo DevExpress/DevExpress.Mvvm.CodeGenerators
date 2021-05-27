@@ -16,6 +16,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public INamedTypeSymbol ISPVMSymbol { get; }
         public INamedTypeSymbol ISSSymbol { get; }
 
+        public bool IsWinUI { get; }
+
         public ContextInfo(GeneratorExecutionContext context) {
             Context = context;
             Compilation = context.Compilation;
@@ -29,6 +31,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
             IDEISymbol = Compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName);
             ISSSymbol = Compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices");
             ISPVMSymbol = Compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel");
+
+            IsWinUI = ISSSymbol != null && Compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;
         }
     }
 }

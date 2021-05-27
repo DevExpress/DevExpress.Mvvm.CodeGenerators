@@ -12,3 +12,4 @@ using System.Runtime.CompilerServices;
 [assembly: NeutralResourcesLanguage("en-US")]
 [assembly: InternalsVisibleTo("DevExpress.Mvvm.CodeGenerators.FrameworkTests")]
 [assembly: InternalsVisibleTo("DevExpress.Mvvm.CodeGenerators.NetCoreTests")]
+[assembly: InternalsVisibleTo("DevExpress.Mvvm.CodeGenerators.WinUITests")]

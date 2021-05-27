@@ -70,12 +70,10 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.AreEqual(expectedCanMethod, canMethod.Method);
 
             var useCommandManager = GetFieldValue<bool, DelegateCommand<int>>(generated.Command, "useCommandManager");
-            var expectedUseCommandManager = true;
-            Assert.AreEqual(expectedUseCommandManager, useCommandManager);
+            Assert.AreEqual(true, useCommandManager);
 
             useCommandManager = GetFieldValue<bool, DelegateCommand>(generated.CommandWithoutCommandManager, "useCommandManager");
-            expectedUseCommandManager = false;
-            Assert.AreEqual(expectedUseCommandManager, useCommandManager);
+            Assert.AreEqual(false, useCommandManager);
 
             var canExecuteMethod = GetFieldValue<Func<int, bool>, DelegateCommand>(generated.CommandWithoutCommandManager, "canExecuteMethod");
             Assert.IsNull(canExecuteMethod);

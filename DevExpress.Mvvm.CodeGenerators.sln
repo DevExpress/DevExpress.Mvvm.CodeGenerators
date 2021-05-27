@@ -15,6 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreTests", "DevExpress.
 		{F644D6FB-4CC7-4366-997D-EC08CAE7523E} = {F644D6FB-4CC7-4366-997D-EC08CAE7523E}
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinUITests", "DevExpress.Mvvm.CodeGenerators.Tests\WinUITest\WinUITests.csproj", "{7AAE0885-34EC-469D-996F-429195585A18}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F644D6FB-4CC7-4366-997D-EC08CAE7523E} = {F644D6FB-4CC7-4366-997D-EC08CAE7523E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +38,10 @@ Global
 		{6455AEC3-606F-49A6-9512-9F72E0789A89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6455AEC3-606F-49A6-9512-9F72E0789A89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6455AEC3-606F-49A6-9512-9F72E0789A89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AAE0885-34EC-469D-996F-429195585A18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AAE0885-34EC-469D-996F-429195585A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AAE0885-34EC-469D-996F-429195585A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AAE0885-34EC-469D-996F-429195585A18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
