@@ -6,12 +6,11 @@ using System.Text;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
-    public class ViewModelGeneratorCore {
+    class ViewModelGeneratorCore {
         public void Execute(GeneratorExecutionContext context) {
             if(context.SyntaxContextReceiver is not SyntaxContextReceiver receiver)
                 return;
 
-            var attributesSourceText = SourceText.From(InitializationGenerator.GetSourceCode(), Encoding.UTF8);
             var contextInfo = new ContextInfo(context);
             var generatedClasses = new HashSet<string>();
             var processedSymbols = new List<INamedTypeSymbol>();

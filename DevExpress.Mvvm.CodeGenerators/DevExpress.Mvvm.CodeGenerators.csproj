@@ -33,7 +33,6 @@
 
   <ItemGroup>
     <Compile Include="Generators\GeneratorCore.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Diagnostics\ConstExpressions.cs" />
     <Compile Include="Diagnostics\GeneratorDiagnostics.cs" />
     <Compile Include="Generators\ClassGenerator.cs" />
@@ -66,21 +65,34 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <Title>DevExpress.Mvvm.CodeGenerators</Title>
+    <Product>DevExpress.Mvvm.CodeGenerators</Product>
+    <Version>21.1.1</Version>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Company>Developer Express Inc.</Company>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <PackageId>DevExpress.Mvvm.CodeGenerators</PackageId>
-    <PackageVersion>21.1.0</PackageVersion>
+    <PackageVersion>21.1.1</PackageVersion>
     <Owners>Developer Express Inc.</Owners>
     <Authors>Developer Express Inc.</Authors>
     <PackageProjectUrl>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators</PackageProjectUrl>
     <RepositoryUrl>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators</RepositoryUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>This package allows you to generate boilerplate code for your ViewModels at compile time. Command declarations, property change notifications, IDataErrorInfo implementation, and service support are automatically added to a partial class linked to your ViewModel.</Description>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/blob/21.1.1/Relaese-notes.md</PackageReleaseNotes>
     <PackageTags>devexpress dxmvvm dx mvvm wpf xaml sourcegenerator generator</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <Copyright>Copyright © 2000-2021 Developer Express Inc.</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIconUrl>https://secure.gravatar.com/avatar/6b38f1e9ffd8b069bcdc2741934fdbcf?s=512&amp;r=g&amp;d=retro</PackageIconUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="DevExpress.Mvvm.CodeGenerators.FrameworkTests" />
+    <InternalsVisibleTo Include="DevExpress.Mvvm.CodeGenerators.NetCoreTests" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="tools\**" Pack="true" PackagePath="" />
@@ -91,5 +103,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>

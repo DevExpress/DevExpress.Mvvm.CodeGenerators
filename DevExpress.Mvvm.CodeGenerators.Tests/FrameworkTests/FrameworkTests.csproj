@@ -58,7 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MemberNotNullTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\TestSource\AsyncCommandGenerationTests.cs" />
     <Compile Include="..\TestSource\AttributeTransferTests.cs" />
     <Compile Include="..\TestSource\CommandGenerationTests.cs" />
@@ -74,6 +73,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

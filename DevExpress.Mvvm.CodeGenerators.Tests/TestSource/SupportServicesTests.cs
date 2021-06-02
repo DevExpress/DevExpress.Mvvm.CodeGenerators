@@ -11,8 +11,9 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public GetServiceGenerate(ServiceContainer serv) {
             serviceContainer = serv;
         }
-        [GenerateProperty]
-        int a;
+        public IService GetService() {
+            return GetService<IService>();
+        }
     }
 
 
@@ -33,7 +34,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             var serviceImpl = new GetServiceGenerate(serviceContainer);
 
             Assert.IsNotNull(serviceImpl.GetType().GetMethod(nameof(GetServiceGenerate.GetService)));
-            Assert.AreEqual(serv, serviceImpl.GetService<IService>());
+            Assert.AreEqual(serv, serviceImpl.GetService());
         }
 
     }

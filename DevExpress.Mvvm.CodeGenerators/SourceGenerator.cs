@@ -26,9 +26,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context) {
             if(context.Node is ClassDeclarationSyntax classDeclarationSyntax) {
                 var classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
-                if(!AttributeHelper.HasAttribute(classSymbol, context.SemanticModel.Compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName)))
-                    return;
-                classSyntaxes.Add(classDeclarationSyntax);
+                if(AttributeHelper.HasAttribute(classSymbol, context.SemanticModel.Compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName)))
+                    classSyntaxes.Add(classDeclarationSyntax);
             }
         }
     }
