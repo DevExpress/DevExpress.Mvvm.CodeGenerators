@@ -43,29 +43,29 @@ https://user-images.githubusercontent.com/22204671/120662325-b28fc280-c491-11eb-
   
     ```csharp   
     partial class ViewModel : INotifyPropertyChanged {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
 
-        public string Username {
+        public string? Username {
             get => username;
             set {
-                if(EqualityComparer<string>.Default.Equals(username, value)) return;
+                if(EqualityComparer<string?>.Default.Equals(username, value)) return;
                 username = value;
                 RaisePropertyChanged(UsernameChangedEventArgs);
             }
         }
 
-        public string Status {
+        public string? Status {
             get => status;
             set {
-                if(EqualityComparer<string>.Default.Equals(status, value)) return;
+                if(EqualityComparer<string?>.Default.Equals(status, value)) return;
                 status = value;
                 RaisePropertyChanged(StatusChangedEventArgs);
             }
         }
 
-        DelegateCommand loginCommand;
+        DelegateCommand? loginCommand;
         public DelegateCommand LoginCommand {
             get => loginCommand ??= new DelegateCommand(Login, CanLogin, true);
         }
