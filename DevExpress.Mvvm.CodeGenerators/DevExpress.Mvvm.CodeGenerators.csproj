@@ -81,7 +81,7 @@
     <RepositoryUrl>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators</RepositoryUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>This package allows you to generate boilerplate code for your ViewModels at compile time. Command declarations, property change notifications, IDataErrorInfo implementation, and service support are automatically added to a partial class linked to your ViewModel.</Description>
-    <PackageReleaseNotes>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/blob/21.1.1/Release-notes.md</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <PackageTags>devexpress dxmvvm dx mvvm wpf xaml sourcegenerator generator</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <Copyright>Copyright © 2000-2021 Developer Express Inc.</Copyright>
