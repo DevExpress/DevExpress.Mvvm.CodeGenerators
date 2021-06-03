@@ -49,8 +49,6 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public int a = 0;
         void OnParentViewModelChanged(object o) { a = 1; }
     }
-
-
     class MyClass {
         public string i;
         public MyClass(string k) {
@@ -65,6 +63,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             i = k;
         }
     }
+
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     partial class GenericClassTest<T, TClass> {
         [GenerateProperty]

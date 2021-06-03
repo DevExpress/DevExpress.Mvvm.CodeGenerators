@@ -1,5 +1,5 @@
 ﻿namespace DevExpress.Mvvm.CodeGenerators {
-    static class AttributesGenerator {
+    public static class AttributesGenerator {
         static readonly string viewModelAttribute = "GenerateViewModelAttribute";
         static readonly string propertyAttribute = "GeneratePropertyAttribute";
         static readonly string commandAttribute = "GenerateCommandAttribute";

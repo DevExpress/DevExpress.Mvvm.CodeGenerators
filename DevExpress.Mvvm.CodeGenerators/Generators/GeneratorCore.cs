@@ -6,7 +6,7 @@ using System.Text;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
-    public static class ViewModelGeneratorCore {
+    static class ViewModelGeneratorCore {
         public static void Execute(GeneratorExecutionContext context) {
             if(context.SyntaxContextReceiver is not SyntaxContextReceiver receiver)
                 return;

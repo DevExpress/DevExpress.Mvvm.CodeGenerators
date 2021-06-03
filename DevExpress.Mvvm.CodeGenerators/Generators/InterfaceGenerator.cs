@@ -47,6 +47,6 @@ object? ISupportParentViewModel.ParentViewModel {{
 @"IServiceContainer? serviceContainer;
 protected IServiceContainer ServiceContainer { get => serviceContainer ??= new ServiceContainer(this); }
 IServiceContainer ISupportServices.ServiceContainer { get => ServiceContainer; }
-public T? GetService<T>() where T : class => ServiceContainer.GetService<T>();";
+T? GetService<T>() where T : class => ServiceContainer.GetService<T>();";
     }
 }

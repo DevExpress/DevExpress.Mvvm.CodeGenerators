@@ -16,3 +16,11 @@ DXCG0007 | DevExpress.Mvvm.CodeGenerators | error | Cannot find the CanExecute m
 DXCG0008 | DevExpress.Mvvm.CodeGenerators | error | Cannot find Raise methods
 DXCG0009 | DevExpress.Mvvm.CodeGenerators | error | Cannot generate the generic View Model
 DXCG1001 | DevExpress.Mvvm.CodeGenerators | warning | The class contains two suitable methods
+
+## Release 21.1.1
+
+### Removed Rules
+Rule ID | Category | Severity | Notes
+--------|----------|----------|-------
+DXCG0002 | DevExpress.Mvvm.CodeGenerators | error | The base View Model class cannot be declared within a class
+DXCG0009 | DevExpress.Mvvm.CodeGenerators | error | Cannot generate the generic View Model
