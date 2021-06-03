@@ -87,12 +87,6 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
 
             return (TResult)fieldInfo.GetValue(source);
         }
-#if WINUI
-        [Test]
-        public void NoUseCommandManagerPropertyInWinUI() {
-            Assert.IsNull(typeof(GenerateCommandAttribute).GetProperty(AttributesGenerator.UseCommandManager));
-        }
-#endif
         [Test]
         public void ArgumentTypeForCommand() {
             var generated = new GenerateCommands();
@@ -117,6 +111,11 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
 
             generated.CommandWithoutCommandManager.CanExecuteChanged += (s, e) => throw new Exception();
             Assert.Throws<Exception>(generated.UpdateCommandWithoutManagerCommand);
+        }
+#else        
+        [Test]
+        public void NoUseCommandManagerPropertyInWinUI() {
+            Assert.IsNull(typeof(GenerateCommandAttribute).GetProperty(AttributesGenerator.UseCommandManager));
         }
 #endif
 
