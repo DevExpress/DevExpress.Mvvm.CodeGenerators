@@ -2,6 +2,14 @@
 
 The DevExpress MVVM Framework includes a [source generator](https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.md) that produces boilerplate code for your View Models at compile time. You need to define a stub View Model class that defines the required logic. Our MVVM Framework analyzes your implementation and applied attributes to generate the final View Model class with all required boilerplate code.
 
+
+
+https://user-images.githubusercontent.com/22204671/120662325-b28fc280-c491-11eb-9c8e-f104ee629fde.mp4
+
+
+
+
+
 * **Base View Model**
     
     Create a partial class. Add attributes to the class and its fields/methods:
@@ -35,29 +43,29 @@ The DevExpress MVVM Framework includes a [source generator](https://github.com/d
   
     ```csharp   
     partial class ViewModel : INotifyPropertyChanged {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
 
-        public string Username {
+        public string? Username {
             get => username;
             set {
-                if(EqualityComparer<string>.Default.Equals(username, value)) return;
+                if(EqualityComparer<string?>.Default.Equals(username, value)) return;
                 username = value;
                 RaisePropertyChanged(UsernameChangedEventArgs);
             }
         }
 
-        public string Status {
+        public string? Status {
             get => status;
             set {
-                if(EqualityComparer<string>.Default.Equals(status, value)) return;
+                if(EqualityComparer<string?>.Default.Equals(status, value)) return;
                 status = value;
                 RaisePropertyChanged(StatusChangedEventArgs);
             }
         }
 
-        DelegateCommand loginCommand;
+        DelegateCommand? loginCommand;
         public DelegateCommand LoginCommand {
             get => loginCommand ??= new DelegateCommand(Login, CanLogin, true);
         }
