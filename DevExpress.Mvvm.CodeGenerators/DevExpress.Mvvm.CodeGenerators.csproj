@@ -67,14 +67,14 @@
   <PropertyGroup>
     <Title>DevExpress.Mvvm.CodeGenerators</Title>
     <Product>DevExpress.Mvvm.CodeGenerators</Product>
-    <Version>21.1.1</Version>
+    <Version>21.1.2</Version>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Company>Developer Express Inc.</Company>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>DevExpress.Mvvm.CodeGenerators</PackageId>
-    <PackageVersion>21.1.1</PackageVersion>
+    <PackageVersion>$(Version)</PackageVersion>
     <Owners>Developer Express Inc.</Owners>
     <Authors>Developer Express Inc.</Authors>
     <PackageProjectUrl>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators</PackageProjectUrl>
@@ -98,9 +98,5 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>
