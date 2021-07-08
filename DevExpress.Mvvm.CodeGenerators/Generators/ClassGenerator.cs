@@ -46,9 +46,6 @@ using System.ComponentModel;";
                 if(isMvvmAvailable && contextInfo.ISSSymbol != null && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISSSymbol))
                     interfaces.Add(new ISupportServicesGenerator());
             }
-            var commandCandidates = ClassHelper.GetCommandCandidates(classSymbol, contextInfo.CommandAttributeSymbol);
-            if(commandCandidates.Any())
-                mvvmComponentsList.Add("Commands");
 
             List<ITypeSymbol> genericTypes = new();
             if(classSymbol.IsGenericType) {
@@ -63,13 +60,15 @@ using System.ComponentModel;";
                 impelementRaiseChangedMethod ? inpcedInfo.RaiseMethodImplementation : null, 
                 impelementRaiseChangingMethod ? inpcingInfo.RaiseMethodImplementation : null, 
                 genericTypes, outerClasses, source, ref tabs, 
-                addDevExpressUsing: mvvmComponentsList.Any() && isMvvmAvailable);
+                addDevExpressUsing: isMvvmAvailable);
 
             var needStaticChangedEventArgs = inpcedInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangedMethod;
             var needStaticChangingEventArgs = inpcingInfo.HasAttribute && (inpcingInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangingMethod);
             var propertyNames = GenerateProperties(contextInfo, classSymbol, inpcedInfo, inpcingInfo, needStaticChangedEventArgs, needStaticChangingEventArgs, source, tabs);
 
-            GenerateCommands(contextInfo, classSymbol, commandCandidates, isMvvmAvailable, source, tabs);
+            GenerateCommands(contextInfo, classSymbol, contextInfo.CommandAttributeSymbol, isMvvmAvailable, source, tabs, out bool hasCommands);
+            if(hasCommands)
+                mvvmComponentsList.Add("Commands");
 
             EventArgsGenerator.Generate(source, tabs, needStaticChangedEventArgs, needStaticChangingEventArgs, propertyNames);
 
@@ -146,7 +145,9 @@ using System.ComponentModel;";
             return propertyNames;
         }
 
-        static void GenerateCommands(ContextInfo contextInfo, INamedTypeSymbol classSymbol, IEnumerable<IMethodSymbol> commandCandidates, bool isMvvmAvailable, StringBuilder source, int tabs) {
+        static void GenerateCommands(ContextInfo contextInfo, INamedTypeSymbol classSymbol, INamedTypeSymbol commandAttributeSymbol, bool isMvvmAvailable, StringBuilder source, int tabs, out bool hasCommands) {
+            var commandCandidates = ClassHelper.GetCommandCandidates(classSymbol, contextInfo.CommandAttributeSymbol);
+            hasCommands = commandCandidates.Any();
             if(isMvvmAvailable) {
                 foreach(var methodSymbol in commandCandidates) {
                     CommandGenerator.Generate(source, tabs, contextInfo, classSymbol, methodSymbol);

@@ -97,7 +97,7 @@ namespace Test {
             StringAssert.Contains("int Property", generatedCode);
         }
         [Test]
-        public void NoDevExpressUsing() {
+        public void DevExpressUsing_NoMVVMComponents() {
             var source = @"
 using DevExpress.Mvvm.CodeGenerators;
 namespace Test {
@@ -108,7 +108,7 @@ namespace Test {
     }
 }";
             string generatedCode = GenerateCode(source);
-            StringAssert.DoesNotContain("using DevExpress.Mvvm;", generatedCode);
+            StringAssert.Contains("using DevExpress.Mvvm;", generatedCode);
             StringAssert.Contains("int Property", generatedCode);
         }
 
