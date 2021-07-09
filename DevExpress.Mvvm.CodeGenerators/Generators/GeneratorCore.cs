@@ -19,6 +19,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             var generatedClasses = new HashSet<string>();
             var processedSymbols = new List<INamedTypeSymbol>();
 
+            var source = new StringBuilder();
             foreach(var classSyntax in receiver.ClassSyntaxes) {
                 if(context.CancellationToken.IsCancellationRequested)
                     return;
@@ -35,7 +36,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     continue;
                 }
 
-                var classSource = ClassGenerator.GetSourceCode(contextInfo, classSymbol);
+                ClassGenerator.GenerateSourceCode(source, contextInfo, classSymbol);
+                var classSource = source.ToString();
+                source.Clear();
                 context.AddSource(ClassHelper.CreateFileName(classSymbol.Name, generatedClasses), SourceText.From(classSource, Encoding.UTF8));
             }
         }

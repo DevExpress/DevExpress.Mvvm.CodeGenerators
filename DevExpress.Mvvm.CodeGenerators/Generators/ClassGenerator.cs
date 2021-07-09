@@ -11,7 +11,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
 using System.ComponentModel;";
 
 
-        public static string GetSourceCode(ContextInfo contextInfo, INamedTypeSymbol classSymbol) {
+        public static void GenerateSourceCode(StringBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol) {
             List<IInterfaceGenerator> interfaces = new();
 
             var inpcedInfo = INPCInfo.GetINPCedInfo(contextInfo, classSymbol);
@@ -54,7 +54,6 @@ using System.ComponentModel;";
 
             var outerClasses = ClassHelper.GetOuterClasses(classSymbol);
 
-            var source = new StringBuilder();
             int tabs = 0;
             GenerateHeader(classSymbol, interfaces, 
                 impelementRaiseChangedMethod ? inpcedInfo.RaiseMethodImplementation : null, 
@@ -78,8 +77,6 @@ using System.ComponentModel;";
             if(mvvmComponentsList.Any())
                 if(!isMvvmAvailable)
                     contextInfo.Context.ReportMVVMNotAvailable(classSymbol, mvvmComponentsList);
-
-            return source.ToString();
         }
 
         static void GenerateHeader(INamedTypeSymbol classSymbol, List<IInterfaceGenerator> interfaces, string raiseChangedMethod, string raiseChangingMethod, List<ITypeSymbol> genericTypes, Dictionary<string, TypeKind> outerClasses, StringBuilder source, ref int tabs, bool addDevExpressUsing) {
