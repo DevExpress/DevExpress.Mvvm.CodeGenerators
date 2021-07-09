@@ -28,10 +28,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
             var type = CommandHelper.GetGenericType(isCommand ? "DelegateCommand" : "AsyncCommand", parameterType?.ToDisplayStringNullable() ?? string.Empty);
             var name = CommandHelper.GetCommandName(methodSymbol, info.CommandAttributeSymbol, methodSymbol.Name);
             var parametersList = GetParametersList(methodSymbol, info.CommandAttributeSymbol, canExecuteMethodName, isCommand, methodSymbol.Name, info.IsWinUI);
-            source.AppendLine($"{type}? {name};".AddTabs(tabs));
-            source.AppendLine($"public {type} {name.FirstToUpperCase()} {{".AddTabs(tabs));
-            source.AppendLine($"get => {name} ??= new {type}({parametersList});".AddTabs(tabs + 1));
-            source.AppendLine("}".AddTabs(tabs));
+            source.AppendLineWithTabs($"{type}? {name};", tabs);
+            source.AppendLineWithTabs($"public {type} {name.FirstToUpperCase()} {{", tabs);
+            source.AppendLineWithTabs($"get => {name} ??= new {type}({parametersList});", tabs + 1);
+            source.AppendLineWithTabs("}", tabs);
         }
 
         static string GetParametersList(IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {

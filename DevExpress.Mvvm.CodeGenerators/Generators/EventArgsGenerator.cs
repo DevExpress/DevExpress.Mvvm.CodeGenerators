@@ -6,10 +6,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static void Generate(StringBuilder source, int tabs, bool createChangedEventArgs, bool createChangingEventArgs, IEnumerable<string> propertyNames) {
             if(createChangedEventArgs)
                 foreach(var propertyName in propertyNames)
-                    source.AppendLine($"static PropertyChangedEventArgs {propertyName}ChangedEventArgs = new PropertyChangedEventArgs(nameof({propertyName}));".AddTabs(tabs));
+                    source.AppendLineWithTabs($"static PropertyChangedEventArgs {propertyName}ChangedEventArgs = new PropertyChangedEventArgs(nameof({propertyName}));", tabs);
             if(createChangingEventArgs)
                 foreach(var propertyName in propertyNames)
-                    source.AppendLine($"static PropertyChangingEventArgs {propertyName}ChangingEventArgs = new PropertyChangingEventArgs(nameof({propertyName}));".AddTabs(tabs));
+                    source.AppendLineWithTabs($"static PropertyChangingEventArgs {propertyName}ChangingEventArgs = new PropertyChangingEventArgs(nameof({propertyName}));", tabs);
         }
     }
 }

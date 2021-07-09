@@ -1,22 +1,30 @@
-﻿namespace DevExpress.Mvvm.CodeGenerators {
-    static class AccessModifierGenerator {
-        static readonly string[] accessModifiers = new[] {
-            "Public",
-            "Private",
-            "Protected",
-            "Internal",
-            "ProtectedInternal",
-        };
+﻿using System;
 
+namespace DevExpress.Mvvm.CodeGenerators {
+    enum AccessModifier {
+        Public,
+        Private,
+        Protected,
+        Internal,
+        ProtectedInternal,
+    };
+    static class AccessModifierGenerator {
         public static string GetSourceCode() =>
-$@"public enum AccessModifier {{
-{accessModifiers.ConcatToString("," + System.Environment.NewLine).AddTabs(1)}
-}}";
-        public static string GetCodeRepresentation(int enumIndex) =>
-            enumIndex switch {
-                0 => string.Empty,
-                4 => "protected internal ",
-                _ => accessModifiers[enumIndex].ToLower() + " ",
+$@"    public enum AccessModifier {{
+        Public,
+        Private,
+        Protected,
+        Internal,
+        ProtectedInternal,
+    }}";
+        public static string GetCodeRepresentation(AccessModifier modifier) =>
+            modifier switch {
+                AccessModifier.Public => string.Empty,
+                AccessModifier.Private => "private ",
+                AccessModifier.Protected => "protected ",
+                AccessModifier.Internal => "internal ",
+                AccessModifier.ProtectedInternal => "protected internal ",
+                _ => throw new InvalidOperationException(),
             };
     }
 }

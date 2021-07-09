@@ -17,42 +17,42 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
             var attributesList = PropertyHelper.GetAttributesList(fieldSymbol);
             if(!string.IsNullOrEmpty(attributesList))
-                source.AppendLine(attributesList.AddTabs(tabs));
+                source.AppendMultipleLinesWithTabs(attributesList, tabs);
 
             var isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, info.PropertyAttributeSymbol);
             var virtuality = isVirtual ? "virtual " : string.Empty;
             var typeName = fieldSymbol.Type.WithNullableAnnotation(PropertyHelper.GetNullableAnnotation(fieldSymbol.Type)).ToDisplayStringNullable();
             var fieldName = fieldSymbol.Name == "value" ? "this.value" : fieldSymbol.Name;
-            source.AppendLine($"public {virtuality}{typeName} {propertyName} {{".AddTabs(tabs));
-            source.AppendLine($"get => {fieldName};".AddTabs(tabs + 1));
+            source.AppendLineWithTabs($"public {virtuality}{typeName} {propertyName} {{", tabs);
+            source.AppendLineWithTabs($"get => {fieldName};", tabs + 1);
 
             string setterAttribute = GetSetterAttribute(info, fieldSymbol, fieldName);
             if(!string.IsNullOrEmpty(setterAttribute))
-                source.AppendLine(setterAttribute.AddTabs(tabs + 1));
+                source.AppendLineWithTabs(setterAttribute, tabs + 1);
 
             var setterAccessModifier = PropertyHelper.GetSetterAccessModifierValue(fieldSymbol, info.PropertyAttributeSymbol);
-            source.AppendLine($"{setterAccessModifier}set {{".AddTabs(tabs + 1));
-            source.AppendLine($"if(EqualityComparer<{typeName}>.Default.Equals({fieldName}, value)) return;".AddTabs(tabs + 2));
+            source.AppendLineWithTabs($"{setterAccessModifier}set {{", tabs + 1);
+            source.AppendLineWithTabs($"if(EqualityComparer<{typeName}>.Default.Equals({fieldName}, value)) return;", tabs + 2);
 
             string raiseChangingMethod = GetRaiseChangingMethod(inpcingParameter, propertyName);
             if(!string.IsNullOrEmpty(raiseChangingMethod))
-                source.AppendLine(raiseChangingMethod.AddTabs(tabs + 2));
+                source.AppendLineWithTabs(raiseChangingMethod, tabs + 2);
             if(!string.IsNullOrEmpty(changingMethod))
-                source.AppendLine(changingMethod.AddTabs(tabs + 2));
+                source.AppendLineWithTabs(changingMethod, tabs + 2);
 
             if(!string.IsNullOrEmpty(changedMethod) && !changedMethod.EndsWith("();"))
-                source.AppendLine($"var oldValue = {fieldName};".AddTabs(tabs + 2));
-            source.AppendLine($"{fieldName} = value;".AddTabs(tabs + 2));
+                source.AppendLineWithTabs($"var oldValue = {fieldName};", tabs + 2);
+            source.AppendLineWithTabs($"{fieldName} = value;", tabs + 2);
 
             string raiseChangedMethod = GetRaiseChangedMethod(inpcedParameter, propertyName);
             if(!string.IsNullOrEmpty(raiseChangedMethod))
-                source.AppendLine(raiseChangedMethod.AddTabs(tabs + 2));
+                source.AppendLineWithTabs(raiseChangedMethod, tabs + 2);
 
             if(!string.IsNullOrEmpty(changedMethod))
-                source.AppendLine(changedMethod.AddTabs(tabs + 2));
+                source.AppendLineWithTabs(changedMethod, tabs + 2);
 
-            source.AppendLine("}".AddTabs(tabs + 1));
-            source.AppendLine("}".AddTabs(tabs));
+            source.AppendLineWithTabs("}", tabs + 1);
+            source.AppendLineWithTabs("}", tabs);
 
             return propertyName;
         }

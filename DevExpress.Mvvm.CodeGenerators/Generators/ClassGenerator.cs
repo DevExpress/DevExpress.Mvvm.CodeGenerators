@@ -73,7 +73,7 @@ using System.ComponentModel;";
             EventArgsGenerator.Generate(source, tabs, needStaticChangedEventArgs, needStaticChangingEventArgs, propertyNames);
 
             while(tabs-- > 0)
-                source.AppendLine("}".AddTabs(tabs));
+                source.AppendLineWithTabs("}", tabs);
 
             if(mvvmComponentsList.Any())
                 if(!isMvvmAvailable)
@@ -97,24 +97,24 @@ using System.ComponentModel;";
             }
 
             foreach(var outerClass in outerClasses.Reverse()) {
-                source.AppendLine($"partial {outerClass.Value.TypeToString()} {outerClass.Key}".AddTabs(tabs) + " {");
+                source.AppendLineWithTabs($"partial {outerClass.Value.TypeToString()} {outerClass.Key} {{", tabs);
                 tabs++;
             }
-            source.Append($"partial class {classSymbol.Name}".AddTabs(tabs));
+            source.AppendWithTabs($"partial class {classSymbol.Name}", tabs);
             if(genericTypes.Any())
                 source.Append($"<{genericTypes.Select(type => type.ToString()).ConcatToString(", ")}>");
             if(interfaces.Any()) {
                 source.AppendLine($" : {interfaces.Select(@interface => @interface.GetName()).ConcatToString(", ")} {{");
                 foreach(var @interface in interfaces)
-                    source.AppendLine(@interface.GetImplementation().AddTabs(tabs + 1));
+                    source.AppendMultipleLinesWithTabs(@interface.GetImplementation(), tabs + 1);
                 source.AppendLine();
             } else
                 source.AppendLine(" {");
             tabs++;
             if(!string.IsNullOrEmpty(raiseChangedMethod))
-                source.AppendLine(raiseChangedMethod.AddTabs(tabs));
+                source.AppendMultipleLinesWithTabs(raiseChangedMethod, tabs);
             if(!string.IsNullOrEmpty(raiseChangingMethod))
-                source.AppendLine(raiseChangingMethod.AddTabs(tabs));
+                source.AppendMultipleLinesWithTabs(raiseChangingMethod, tabs);
             if(!string.IsNullOrEmpty(raiseChangedMethod) || !string.IsNullOrEmpty(raiseChangingMethod))
                 source.AppendLine();
         }

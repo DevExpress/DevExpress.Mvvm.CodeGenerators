@@ -25,7 +25,7 @@ string IDataErrorInfo.this[string columnName] { get => IDataErrorInfoHelper.GetE
         readonly string onChangedMethod;
         public ISupportParentViewModelGenerator(bool shouldGenerateChangedMethod) {
             generateChangedMethod = shouldGenerateChangedMethod;
-            onChangedMethod = generateChangedMethod ? System.Environment.NewLine + "OnParentViewModelChanged(parentViewModel);".AddTabs(2) : string.Empty;
+            onChangedMethod = generateChangedMethod ? System.Environment.NewLine + "        OnParentViewModelChanged(parentViewModel);" : string.Empty;
         }
         public string GetName() => "ISupportParentViewModel";
         public string GetImplementation() =>

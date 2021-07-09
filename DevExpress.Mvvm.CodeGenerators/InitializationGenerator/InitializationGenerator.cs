@@ -8,9 +8,9 @@ $@"using System;
 #nullable enable
 
 namespace {Namespace} {{
-{AccessModifierGenerator.GetSourceCode().AddTabs(1)}
+{AccessModifierGenerator.GetSourceCode()}
 
-{AttributesGenerator.GetSourceCode(isWinUI).AddTabs(1)}
+{AttributesGenerator.GetSourceCode(isWinUI)}
 }}
 ";
     }

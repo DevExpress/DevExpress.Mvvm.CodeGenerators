@@ -25,7 +25,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
         public static string GetSetterAccessModifierValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) {
             var enumIndex = AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofSetterAccessModifier, 0);
-            return AccessModifierGenerator.GetCodeRepresentation(enumIndex);
+            return AccessModifierGenerator.GetCodeRepresentation((AccessModifier)enumIndex);
         }
         public static string GetAttributesList(IFieldSymbol fieldSymbol) {
             var attributeList = fieldSymbol.GetAttributes();
