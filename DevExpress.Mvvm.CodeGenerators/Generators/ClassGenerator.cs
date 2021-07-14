@@ -32,18 +32,18 @@ using System.ComponentModel;";
             var implISPVM = ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol);
             if(implIDEI) {
                 mvvmComponentsList.Add("IDataErrorInfo");
-                if(isMvvmAvailable && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.IDEISymbol))
+                if(isMvvmAvailable && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.IDEISymbol))
                     interfaces.Add(new IDataErrorInfoGenerator());
             }
             if(implISPVM) {
                 mvvmComponentsList.Add("ISupportParentViewModel");
                 var shouldGenerateChangedMethod = ClassHelper.ShouldGenerateISPVMChangedMethod(classSymbol);
-                if(isMvvmAvailable && contextInfo.ISPVMSymbol != null && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol))
+                if(isMvvmAvailable && contextInfo.ISPVMSymbol != null && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol, contextInfo))
                     interfaces.Add(new ISupportParentViewModelGenerator(shouldGenerateChangedMethod));
             }
             if(implISS) {
                 mvvmComponentsList.Add("ISupportServices");
-                if(isMvvmAvailable && contextInfo.ISSSymbol != null && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISSSymbol))
+                if(isMvvmAvailable && contextInfo.ISSSymbol != null && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.ISSSymbol))
                     interfaces.Add(new ISupportServicesGenerator());
             }
 

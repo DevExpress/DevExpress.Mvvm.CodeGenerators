@@ -22,8 +22,19 @@ namespace DevExpress.Mvvm.CodeGenerators {
             GetProcessingMembers<IFieldSymbol>(classSymbol, propertySymbol);
         public static IEnumerable<IMethodSymbol> GetCommandCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol commandSymbol) =>
             GetProcessingMembers<IMethodSymbol>(classSymbol, commandSymbol);
-        public static bool IsInterfaceImplemented(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol) =>
+        public static bool IsInterfaceImplementedInCurrentClass(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol) =>
             classSymbol.Interfaces.Contains(interfaceSymbol);
+        public static bool IsInterfaceImplemented(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol, ContextInfo contextInfo) {
+            if(IsInterfaceImplementedInCurrentClass(classSymbol, interfaceSymbol))
+                return true;
+            for(var parent = classSymbol.BaseType; parent != null; parent = parent.BaseType) {
+                var hasAttribute = AttributeHelper.HasAttribute(parent, contextInfo.ViewModelAttributeSymbol) && GetImplementISPVMValue(contextInfo, parent);
+                var hasImplementation = IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
+                if(hasAttribute || hasImplementation)
+                    return true;
+            }
+            return false;
+        }
 
         static IEnumerable<T> GetProcessingMembers<T>(INamedTypeSymbol classSymbol, INamedTypeSymbol attributeSymbol) where T : ISymbol =>
             classSymbol.GetMembers()

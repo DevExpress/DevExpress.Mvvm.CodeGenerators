@@ -451,11 +451,11 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             var generated = new WithParentViewModelMethod();
             Assert.AreEqual(0, generatedWithParent.a);
             Assert.AreEqual(0, generated.a);
-            ((ISupportParentViewModel)generatedWithParent).ParentViewModel = new ViewModelParent();
-            ((ISupportParentViewModel)generated).ParentViewModel = new ViewModelParent();
+            generatedWithParent.ParentViewModel = new ViewModelParent();
+            generated.ParentViewModel = new ViewModelParent();
             Assert.AreEqual(1, generatedWithParent.a);
             Assert.AreEqual(1, generated.a);
-            Assert.Throws<System.InvalidOperationException>(() => ((ISupportParentViewModel)generated).ParentViewModel = generated);
+            Assert.Throws<System.InvalidOperationException>(() => generated.ParentViewModel = generated);
         }
     }
     #region same class names

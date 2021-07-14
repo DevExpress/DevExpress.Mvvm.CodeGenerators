@@ -35,7 +35,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         INPCInfo(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol, Func<INamedTypeSymbol, bool> checkAttribute, string methodName, string eventArgsParameter, string raiseMethodImplementation) {
             HasAttribute = checkAttribute(classSymbol);
-            hasImplementation = ClassHelper.IsInterfaceImplemented(classSymbol, interfaceSymbol);
+            hasImplementation = ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, interfaceSymbol);
             if(HasAttribute && hasImplementation)
                 hasImplementationInCurrentClass = true;
 
@@ -45,7 +45,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             var isRaiseMethodGenerated = false;
             for(var parent = classSymbol.BaseType; parent != null; parent = parent.BaseType) {
                 var hasAttribute = checkAttribute(parent);
-                var hasImplementation = ClassHelper.IsInterfaceImplemented(parent, interfaceSymbol);
+                var hasImplementation = ClassHelper.IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
                 if(hasAttribute || hasImplementation)
                     this.hasImplementation = true;
                 if(hasImplementation)

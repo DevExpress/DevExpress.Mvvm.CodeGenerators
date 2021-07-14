@@ -30,7 +30,7 @@ string IDataErrorInfo.this[string columnName] { get => IDataErrorInfoHelper.GetE
         public string GetName() => "ISupportParentViewModel";
         public string GetImplementation() =>
 $@"object? parentViewModel;
-object? ISupportParentViewModel.ParentViewModel {{
+public object? ParentViewModel {{
     get {{ return parentViewModel; }}
     set {{
         if(parentViewModel == value)
