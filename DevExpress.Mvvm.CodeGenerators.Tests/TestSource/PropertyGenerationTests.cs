@@ -134,6 +134,8 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         int internalSet;
         [GenerateProperty(SetterAccessModifier = AccessModifier.ProtectedInternal)]
         int protectedInternalSet;
+        [GenerateProperty(SetterAccessModifier = AccessModifier.PrivateProtected)]
+        int privateProtectedSet;
 
 #nullable enable
         [GenerateProperty]
@@ -203,6 +205,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.IsTrue(generated.GetType().GetProperty("ProtectedSet").GetSetMethod(true).IsFamily);
             Assert.IsTrue(generated.GetType().GetProperty("InternalSet").GetSetMethod(true).IsAssembly);
             Assert.IsTrue(generated.GetType().GetProperty("ProtectedInternalSet").GetSetMethod(true).IsFamilyOrAssembly);
+            Assert.IsTrue(generated.GetType().GetProperty("PrivateProtectedSet").GetSetMethod(true).IsFamilyAndAssembly);
         }
 
         [Test]

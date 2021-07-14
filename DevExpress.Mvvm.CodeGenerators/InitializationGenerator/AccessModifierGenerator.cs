@@ -7,6 +7,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         Protected,
         Internal,
         ProtectedInternal,
+        PrivateProtected,
     };
     static class AccessModifierGenerator {
         public static string GetSourceCode() =>
@@ -16,6 +17,7 @@ $@"    public enum AccessModifier {{
         Protected,
         Internal,
         ProtectedInternal,
+        PrivateProtected,
     }}";
         public static string GetCodeRepresentation(AccessModifier modifier) =>
             modifier switch {
@@ -24,6 +26,7 @@ $@"    public enum AccessModifier {{
                 AccessModifier.Protected => "protected ",
                 AccessModifier.Internal => "internal ",
                 AccessModifier.ProtectedInternal => "protected internal ",
+                AccessModifier.PrivateProtected => "private protected ",
                 _ => throw new InvalidOperationException(),
             };
     }
