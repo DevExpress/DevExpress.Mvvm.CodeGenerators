@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
-    class CommandGenerator {
+    static class CommandGenerator {
         public static void Generate(StringBuilder source, int tabs, ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol) {
             var isCommand = methodSymbol.ReturnsVoid;
             var isAsyncCommand = methodSymbol.ReturnType.ToDisplayStringNullable().StartsWith("System.Threading.Tasks.Task");
@@ -27,26 +27,28 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
             var type = CommandHelper.GetGenericType(isCommand ? "DelegateCommand" : "AsyncCommand", parameterType?.ToDisplayStringNullable() ?? string.Empty);
             var name = CommandHelper.GetCommandName(methodSymbol, info.CommandAttributeSymbol, methodSymbol.Name);
-            var parametersList = GetParametersList(methodSymbol, info.CommandAttributeSymbol, canExecuteMethodName, isCommand, methodSymbol.Name, info.IsWinUI);
             source.AppendLineWithTabs($"{type}? {name};", tabs);
             source.AppendLineWithTabs($"public {type} {name.FirstToUpperCase()} {{", tabs);
-            source.AppendLineWithTabs($"get => {name} ??= new {type}({parametersList});", tabs + 1);
+            AppendGetter(source, tabs, info, methodSymbol, isCommand, canExecuteMethodName, type, name);
             source.AppendLineWithTabs("}", tabs);
         }
 
-        static string GetParametersList(IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {
-            var allowMultipleExecution = CommandHelper.GetAllowMultipleExecutionValue(methodSymbol, commandAttributeSymbol).ToString().ToLower();
-            if(isWinUI)
-                return isCommand
-                    ? CommandHelper.ParametersToDisplayString(executeMethod, canExecuteMethodName)
-                    : CommandHelper.ParametersToDisplayString(executeMethod, canExecuteMethodName, allowMultipleExecution);
-            else {
-                var useCommandManager = CommandHelper.GetUseCommandManagerValue(methodSymbol, commandAttributeSymbol).ToString().ToLower();
-                return isCommand
-                    ? CommandHelper.ParametersToDisplayString(executeMethod, canExecuteMethodName, useCommandManager)
-                    : CommandHelper.ParametersToDisplayString(executeMethod, canExecuteMethodName, allowMultipleExecution, useCommandManager);
-            }
+        static void AppendGetter(StringBuilder source, int tabs, ContextInfo info, IMethodSymbol methodSymbol, bool isCommand, string canExecuteMethodName, string type, string name) {
+            source.AppendTabs(tabs + 1).Append("get => ").Append(name).Append(" ??= new ").Append(type).Append('(');
+            source.AppendParametersList(methodSymbol, info.CommandAttributeSymbol, canExecuteMethodName, isCommand, methodSymbol.Name, info.IsWinUI);
+            source.AppendLine(");");
+        }
 
+        static void AppendParametersList(this StringBuilder source, IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {
+            source.Append(executeMethod).Append(", ").Append(canExecuteMethodName);
+            if(!isCommand) {
+                var allowMultipleExecution = CommandHelper.GetAllowMultipleExecutionValue(methodSymbol, commandAttributeSymbol).BoolToStringValue();
+                source.Append(", ").Append(allowMultipleExecution);
+            }
+            if(!isWinUI) {
+                var useCommandManager = CommandHelper.GetUseCommandManagerValue(methodSymbol, commandAttributeSymbol).BoolToStringValue();
+                source.Append(", ").Append(useCommandManager);
+            }
         }
     }
 }

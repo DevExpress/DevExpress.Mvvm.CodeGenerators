@@ -32,9 +32,19 @@ namespace DevExpress.Mvvm.CodeGenerators {
             AppendTabs(builder, tabs);
             builder.Append(line);
         }
-        static void AppendTabs(StringBuilder builder, int tabs) {
+        public static StringBuilder AppendTabs(this StringBuilder builder, int tabs) {
             for(int i = 0; i < tabs; i++) {
                 builder.Append("    ");
+            }
+            return builder;
+        }
+        public static void AppendMultipleLinesWithSeparator(this StringBuilder builder, IEnumerable<string> lines, string separator) {
+            bool appendSeparator = false;
+            foreach(var line in lines) {
+                if(appendSeparator)
+                    builder.Append(separator);
+                builder.Append(line);
+                appendSeparator = true;
             }
         }
 
@@ -43,5 +53,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static string FirstToUpperCase(this string str) => $"{str.Substring(0, 1).ToUpper()}{str.Substring(1)}";
         #endregion
         public static string TypeToString(this TypeKind type) => type == TypeKind.Structure ? "struct" : type.ToString().ToLower();
+
+        public static string BoolToStringValue(this bool val) => val ? "true" : "false";
     }
 }
