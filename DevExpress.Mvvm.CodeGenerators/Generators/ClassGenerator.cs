@@ -106,7 +106,7 @@ using System.ComponentModel;";
                 source.AppendMultipleLinesWithSeparator(interfaces.Select(@interface => @interface.GetName()), ", ");
                 source.AppendLine(" {");
                 foreach(var @interface in interfaces)
-                    source.AppendMultipleLinesWithTabs(@interface.GetImplementation(), tabs + 1);
+                    @interface.AppendImplementation(source, tabs + 1);
                 source.AppendLine();
             } else
                 source.AppendLine(" {");
