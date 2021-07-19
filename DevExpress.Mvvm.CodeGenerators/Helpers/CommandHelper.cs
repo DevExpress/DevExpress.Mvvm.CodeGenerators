@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class CommandHelper {
@@ -19,7 +20,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, commandName, executeMethodName + "Command").FirstToLowerCase();
         public static string GetCanExecuteMethodName(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, canExecuteMethod, (string)null);
-        public static string GetGenericType(string baseType, string genericArgumentType) => baseType + (string.IsNullOrEmpty(genericArgumentType) ? string.Empty : "<" + genericArgumentType + ">");
+        public static StringBuilder AppendCommandGenericType(this StringBuilder source, bool isCommand, string genericArgumentType) {
+            source.Append(isCommand ? "DelegateCommand" : "AsyncCommand");
+            if(!string.IsNullOrEmpty(genericArgumentType))
+                source.Append('<').Append(genericArgumentType).Append('>');
+            return source;
+        }
+
         public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol classSymbol, Func<IMethodSymbol, bool> condition) =>
             classSymbol.GetMembers().OfType<IMethodSymbol>().Where(condition);
         public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol classSymbol, string methodName) =>

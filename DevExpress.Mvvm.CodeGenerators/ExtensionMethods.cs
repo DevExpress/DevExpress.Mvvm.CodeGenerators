@@ -66,6 +66,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
             }
             return builder;
         }
+        public static StringBuilder AppendFirstToUpperCase(this StringBuilder builder, string str) {
+            return builder.Append(char.ToUpper(str[0])).Append(str, 1, str.Length - 1);
+        }
         public static void AppendMultipleLinesWithSeparator(this StringBuilder builder, IEnumerable<string> lines, string separator) {
             bool appendSeparator = false;
             foreach(var line in lines) {

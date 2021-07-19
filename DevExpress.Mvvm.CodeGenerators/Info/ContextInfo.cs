@@ -1,8 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.ComponentModel;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace DevExpress.Mvvm.CodeGenerators {
-    struct ContextInfo {
+    readonly struct ContextInfo {
         public GeneratorExecutionContext Context { get; }
         public Compilation Compilation { get; }
 
@@ -17,10 +19,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public INamedTypeSymbol ISSSymbol { get; }
 
         public bool IsWinUI { get; }
+        public bool IsMvvmAvailable { get; }
 
         public ContextInfo(GeneratorExecutionContext context, Compilation compilation) {
             Context = context;
             Compilation = compilation;
+
+            IsMvvmAvailable = Compilation.ReferencedAssemblyNames.Any(ai => Regex.IsMatch(ai.Name, @"DevExpress\.Mvvm(\.v\d{2}\.\d)?$"));
 
             ViewModelAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName);
             PropertyAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.PropertyAttributeFullName);

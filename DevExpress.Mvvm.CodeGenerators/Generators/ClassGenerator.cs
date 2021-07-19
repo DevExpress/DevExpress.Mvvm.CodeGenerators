@@ -26,7 +26,6 @@ using System.ComponentModel;";
                 interfaces.Add(new INPCingInterfaceGenerator());
             var impelementRaiseChangingMethod = inpcingInfo.ShouldImplementRaiseMethod();
 
-            var isMvvmAvailable = ClassHelper.IsMvvmAvailable(contextInfo.Compilation);
             var mvvmComponentsList = new List<string>();
 
             var implIDEI = ClassHelper.GetImplementIDEIValue(contextInfo, classSymbol);
@@ -34,18 +33,18 @@ using System.ComponentModel;";
             var implISPVM = ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol);
             if(implIDEI) {
                 mvvmComponentsList.Add("IDataErrorInfo");
-                if(isMvvmAvailable && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.IDEISymbol))
+                if(contextInfo.IsMvvmAvailable && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.IDEISymbol))
                     interfaces.Add(new IDataErrorInfoGenerator());
             }
             if(implISPVM) {
                 mvvmComponentsList.Add("ISupportParentViewModel");
                 var shouldGenerateChangedMethod = ClassHelper.ShouldGenerateISPVMChangedMethod(classSymbol);
-                if(isMvvmAvailable && contextInfo.ISPVMSymbol != null && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol, contextInfo))
+                if(contextInfo.IsMvvmAvailable && contextInfo.ISPVMSymbol != null && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol, contextInfo))
                     interfaces.Add(new ISupportParentViewModelGenerator(shouldGenerateChangedMethod));
             }
             if(implISS) {
                 mvvmComponentsList.Add("ISupportServices");
-                if(isMvvmAvailable && contextInfo.ISSSymbol != null && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.ISSSymbol))
+                if(contextInfo.IsMvvmAvailable && contextInfo.ISSSymbol != null && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.ISSSymbol))
                     interfaces.Add(new ISupportServicesGenerator());
             }
 
@@ -61,13 +60,13 @@ using System.ComponentModel;";
                 impelementRaiseChangedMethod ? inpcedInfo.RaiseMethodImplementation : null, 
                 impelementRaiseChangingMethod ? inpcingInfo.RaiseMethodImplementation : null, 
                 genericTypes, outerClasses, source, ref tabs, 
-                addDevExpressUsing: isMvvmAvailable);
+                addDevExpressUsing: contextInfo.IsMvvmAvailable);
 
             var needStaticChangedEventArgs = inpcedInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangedMethod;
             var needStaticChangingEventArgs = inpcingInfo.HasAttribute && (inpcingInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangingMethod);
             var propertyNames = GenerateProperties(contextInfo, classSymbol, inpcedInfo, inpcingInfo, needStaticChangedEventArgs, needStaticChangingEventArgs, source, tabs);
 
-            GenerateCommands(contextInfo, classSymbol, contextInfo.CommandAttributeSymbol, isMvvmAvailable, source, tabs, out bool hasCommands);
+            GenerateCommands(contextInfo, classSymbol, contextInfo.CommandAttributeSymbol, contextInfo.IsMvvmAvailable, source, tabs, out bool hasCommands);
             if(hasCommands)
                 mvvmComponentsList.Add("Commands");
 
@@ -77,7 +76,7 @@ using System.ComponentModel;";
                 source.AppendLineWithTabs("}", tabs);
 
             if(mvvmComponentsList.Any())
-                if(!isMvvmAvailable)
+                if(!contextInfo.IsMvvmAvailable)
                     contextInfo.Context.ReportMVVMNotAvailable(classSymbol, mvvmComponentsList);
         }
 

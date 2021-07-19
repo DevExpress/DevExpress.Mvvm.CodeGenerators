@@ -25,16 +25,16 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 }
             }
 
-            var type = CommandHelper.GetGenericType(isCommand ? "DelegateCommand" : "AsyncCommand", parameterType?.ToDisplayStringNullable() ?? string.Empty);
             var name = CommandHelper.GetCommandName(methodSymbol, info.CommandAttributeSymbol, methodSymbol.Name);
-            source.AppendLineWithTabs($"{type}? {name};", tabs);
-            source.AppendLineWithTabs($"public {type} {name.FirstToUpperCase()} {{", tabs);
-            AppendGetter(source, tabs, info, methodSymbol, isCommand, canExecuteMethodName, type, name);
+            var genericArgumentType = parameterType?.ToDisplayStringNullable() ?? string.Empty;
+            source.AppendTabs(tabs).AppendCommandGenericType(isCommand, genericArgumentType).Append("? ").Append(name).AppendLine(";");
+            source.AppendTabs(tabs).Append("public ").AppendCommandGenericType(isCommand, genericArgumentType).Append(' ').AppendFirstToUpperCase(name).AppendLine(" {");
+            AppendGetter(source, tabs, info, methodSymbol, isCommand, canExecuteMethodName, genericArgumentType, name);
             source.AppendLineWithTabs("}", tabs);
         }
 
-        static void AppendGetter(StringBuilder source, int tabs, ContextInfo info, IMethodSymbol methodSymbol, bool isCommand, string canExecuteMethodName, string type, string name) {
-            source.AppendTabs(tabs + 1).Append("get => ").Append(name).Append(" ??= new ").Append(type).Append('(');
+        static void AppendGetter(StringBuilder source, int tabs, ContextInfo info, IMethodSymbol methodSymbol, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name) {
+            source.AppendTabs(tabs + 1).Append("get => ").Append(name).Append(" ??= new ").AppendCommandGenericType(isCommand, genericArgumentType).Append('(');
             source.AppendParametersList(methodSymbol, info.CommandAttributeSymbol, canExecuteMethodName, isCommand, methodSymbol.Name, info.IsWinUI);
             source.AppendLine(");");
         }

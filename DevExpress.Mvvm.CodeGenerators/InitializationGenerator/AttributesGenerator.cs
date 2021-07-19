@@ -4,9 +4,9 @@
         static readonly string propertyAttribute = "GeneratePropertyAttribute";
         static readonly string commandAttribute = "GenerateCommandAttribute";
 
-        public static string ViewModelAttributeFullName { get => $"{InitializationGenerator.Namespace}.{viewModelAttribute}"; }
-        public static string PropertyAttributeFullName { get => $"{InitializationGenerator.Namespace}.{propertyAttribute}"; }
-        public static string CommandAttributeFullName { get => $"{InitializationGenerator.Namespace}.{commandAttribute}"; }
+        public static readonly string ViewModelAttributeFullName = $"{InitializationGenerator.Namespace}.{viewModelAttribute}";
+        public static readonly string PropertyAttributeFullName = $"{InitializationGenerator.Namespace}.{propertyAttribute}";
+        public static readonly string CommandAttributeFullName = $"{InitializationGenerator.Namespace}.{commandAttribute}";
 
         public static string ImplementIDEI { get => "ImplementIDataErrorInfo"; }
         public static string ImplementINPCing { get => "ImplementINotifyPropertyChanging"; }
@@ -24,8 +24,8 @@
         public static string CommandName { get => "Name"; }
 
 
-        static string UseCommandManagerProperty { get => $@"public bool {UseCommandManager} {{ get; set; }}"; }
-        static string ImplementIDEIProperty { get => $@"public bool {ImplementIDEI} {{ get; set; }}"; }
+        static readonly string UseCommandManagerProperty = $@"public bool {UseCommandManager} {{ get; set; }}";
+        static readonly string ImplementIDEIProperty = $@"public bool {ImplementIDEI} {{ get; set; }}";
 
         public static string GetSourceCode(bool isWinUI) =>
 $@"    [AttributeUsage(AttributeTargets.Class)]
