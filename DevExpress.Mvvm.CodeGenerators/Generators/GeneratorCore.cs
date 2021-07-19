@@ -14,8 +14,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
             public Stopwatch StopWatch;
         }
         public static void Execute(GeneratorExecutionContext context) {
-            var traceInfo = new TraceInfo();
-            StartExecute(ref traceInfo);
+            //var traceInfo = new TraceInfo();
+            //StartExecute(ref traceInfo);
             if(context.SyntaxContextReceiver is not SyntaxContextReceiver receiver)
                 return;
 
@@ -53,7 +53,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 context.AddSource(ClassHelper.CreateFileName(classSymbol.Name, generatedClasses), SourceText.From(classSource, Encoding.UTF8));
                 generatedCount++;
             }
-            EndExecute(traceInfo, generatedCount);
+            //EndExecute(traceInfo, generatedCount);
         }
 
         [Conditional("DEBUG")]

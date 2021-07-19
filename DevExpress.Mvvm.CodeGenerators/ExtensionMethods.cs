@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
-    static class ExtensionMethods {
+    public static class ExtensionMethods {
         #region ITypeSymbol
         public static string ToDisplayStringNullable(this ITypeSymbol typeSymbol) => 
             typeSymbol.ToDisplayString(ToNullableFlowState(typeSymbol.NullableAnnotation));
@@ -20,10 +20,38 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         #region String
         public static void AppendMultipleLinesWithTabs(this StringBuilder builder, string lines, int tabs) {
-            foreach(var line in lines.Split(new[] { Environment.NewLine }, StringSplitOptions.None)) {
-                builder.AppendLineWithTabs(line, tabs);
+            foreach((int start, int length) in new LineEnumerator(lines)) {
+                builder.AppendTabs(tabs).Append(lines, start, length).AppendLine();
             }
         }
+        public struct LineEnumerator {
+            string text { get; set; }
+            int startIndex;
+            public (int start, int length) Current { get; private set; }
+
+            public LineEnumerator(string source) {
+                text = source;
+                Current = default;
+                startIndex = 0;
+            }
+            public LineEnumerator GetEnumerator() {
+                return this;
+            }
+            public bool MoveNext() {
+                if(startIndex == text.Length) return false;
+                var index = text.IndexOf("\r\n", startIndex);
+                if(index != -1) {
+                    Current = (startIndex, index  - startIndex);
+                    startIndex = index + 2; ;
+                    return true;
+                } else {
+                    Current = (startIndex, text.Length - startIndex);
+                    startIndex = text.Length;
+                    return true;
+                }
+            }
+        }
+
         public static void AppendLineWithTabs(this StringBuilder builder, string line, int tabs) {
             AppendTabs(builder, tabs);
             builder.AppendLine(line);
