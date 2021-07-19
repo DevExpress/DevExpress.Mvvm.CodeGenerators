@@ -15,9 +15,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(propertyName == fieldSymbol.Name || changedMethod == null || changingMethod == null)
                 return null;
 
-            var attributesList = PropertyHelper.GetAttributesList(fieldSymbol);
-            if(!string.IsNullOrEmpty(attributesList))
-                source.AppendMultipleLinesWithTabs(attributesList, tabs);
+            PropertyHelper.AppendAttributesList(source, fieldSymbol, tabs);
 
             var isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, info.PropertyAttributeSymbol);
             var virtuality = isVirtual ? "virtual " : string.Empty;
