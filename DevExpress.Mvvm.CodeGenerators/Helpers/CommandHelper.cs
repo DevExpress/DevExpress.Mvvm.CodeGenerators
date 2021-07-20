@@ -17,7 +17,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static bool GetUseCommandManagerValue(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, useCommandManager, true);
         public static string GetCommandName(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol, string executeMethodName) =>
-            AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, commandName, executeMethodName + "Command").FirstToLowerCase();
+            AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, commandName, executeMethodName + "Command");
         public static string GetCanExecuteMethodName(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, canExecuteMethod, (string)null);
         public static StringBuilder AppendCommandGenericType(this StringBuilder source, bool isCommand, string genericArgumentType) {

@@ -67,7 +67,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
             return builder;
         }
         public static StringBuilder AppendFirstToUpperCase(this StringBuilder builder, string str) {
-            return builder.Append(char.ToUpper(str[0])).Append(str, 1, str.Length - 1);
+            return builder.AppendChangeFirstCore(str, char.ToUpper(str[0]));
+        }
+        public static StringBuilder AppendFirstToLowerCase(this StringBuilder builder, string str) {
+            return builder.AppendChangeFirstCore(str, char.ToLower(str[0]));
+        }
+        static StringBuilder AppendChangeFirstCore(this StringBuilder builder, string str, char firstChar) {
+            return builder.Append(firstChar).Append(str, 1, str.Length - 1);
         }
         public static void AppendMultipleLinesWithSeparator(this StringBuilder builder, IEnumerable<string> lines, string separator) {
             bool appendSeparator = false;
@@ -80,7 +86,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
 
         public static string ConcatToString(this IEnumerable<string> source, string separator) => string.Join(separator, source);
-        public static string FirstToLowerCase(this string str) => $"{str.Substring(0, 1).ToLower()}{str.Substring(1)}";
         public static string FirstToUpperCase(this string str) => $"{str.Substring(0, 1).ToUpper()}{str.Substring(1)}";
         #endregion
         public static string TypeToString(this TypeKind type) => type == TypeKind.Structure ? "struct" : type.ToString().ToLower();
