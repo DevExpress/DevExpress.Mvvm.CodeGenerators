@@ -32,9 +32,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol classSymbol, string methodName) =>
             classSymbol.GetMembers().OfType<IMethodSymbol>().Where(method => method.Name == methodName);
 #nullable enable
-        public static IEnumerable<IMethodSymbol> GetCanExecuteMethodCandidates(INamedTypeSymbol classSymbol, string canExecuteMethodName, ITypeSymbol? parameterType) =>
+        public static IEnumerable<IMethodSymbol> GetCanExecuteMethodCandidates(INamedTypeSymbol classSymbol, string canExecuteMethodName, ITypeSymbol? parameterType, ContextInfo context) =>
             GetMethods(classSymbol,
-                       method => method.ReturnType.ToDisplayStringNullable() == "bool" &&
+                       method => context.BoolSymbol.Equals(method.ReturnType, SymbolEqualityComparer.Default) &&
                                  method.Name == canExecuteMethodName &&
                                  HaveSameParametersList(method.Parameters, parameterType));
 

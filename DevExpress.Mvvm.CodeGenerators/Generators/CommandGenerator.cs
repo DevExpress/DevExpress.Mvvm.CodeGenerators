@@ -6,7 +6,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
     static class CommandGenerator {
         public static void Generate(StringBuilder source, int tabs, ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol) {
             var isCommand = methodSymbol.ReturnsVoid;
-            var isAsyncCommand = methodSymbol.ReturnType.ToDisplayStringNullable().StartsWith("System.Threading.Tasks.Task");
+            var isAsyncCommand = info.TaskSymbol.Equals(methodSymbol.ReturnType, SymbolEqualityComparer.Default)
+                || info.TaskSymbol.Equals(methodSymbol.ReturnType?.BaseType, SymbolEqualityComparer.Default);
+
             if(methodSymbol.Parameters.Length > 1 || !(isCommand || isAsyncCommand)) {
                 info.Context.ReportIncorrectCommandSignature(methodSymbol);
                 return;
@@ -15,10 +17,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
             var parameterType = methodSymbol.Parameters.FirstOrDefault()?.Type;
             var canExecuteMethodName = CommandHelper.GetCanExecuteMethodName(methodSymbol, info.CommandAttributeSymbol);
             if(canExecuteMethodName == null) {
-                var candidate = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, "Can" + methodSymbol.Name, parameterType);
+                var candidate = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, "Can" + methodSymbol.Name, parameterType, info);
                 canExecuteMethodName = candidate.FirstOrDefault()?.Name ?? "null";
             } else {
-                var candidates = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, canExecuteMethodName, parameterType);
+                var candidates = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, canExecuteMethodName, parameterType, info);
                 if(!candidates.Any()) {
                     info.Context.ReportCanExecuteMethodNotFound(methodSymbol, canExecuteMethodName, parameterType?.ToDisplayStringNullable() ?? string.Empty, CommandHelper.GetMethods(classSymbol, canExecuteMethodName));
                     return;

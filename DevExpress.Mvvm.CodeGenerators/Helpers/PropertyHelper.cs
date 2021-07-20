@@ -48,6 +48,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
                                   .Where(symbol => symbol != null && symbol.ContainingModule.ToDisplayString() == "System.Runtime.dll")
                                   .Any();
         public static bool IsСompatibleType(ITypeSymbol parameterType, ITypeSymbol type) {
+            //if(!parameterType.Equals(type, SymbolEqualityComparer.IncludeNullability))
+            //    return false;
             if(ToNotAnnotatedDisplayString(parameterType) != ToNotAnnotatedDisplayString(type))
                 return false;
             if(parameterType.IsValueType)

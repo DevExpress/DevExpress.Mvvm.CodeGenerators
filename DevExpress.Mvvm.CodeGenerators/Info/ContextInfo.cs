@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DevExpress.Mvvm.CodeGenerators {
-    readonly struct ContextInfo {
+    class ContextInfo {
         public GeneratorExecutionContext Context { get; }
         public Compilation Compilation { get; }
 
@@ -17,6 +17,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public INamedTypeSymbol IDEISymbol { get; }
         public INamedTypeSymbol ISPVMSymbol { get; }
         public INamedTypeSymbol ISSSymbol { get; }
+        public INamedTypeSymbol TaskSymbol { get; }
+        public INamedTypeSymbol BoolSymbol { get; }
 
         public bool IsWinUI { get; }
         public bool IsMvvmAvailable { get; }
@@ -36,6 +38,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
             IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName);
             ISSSymbol = GetISSSymbol(compilation);
             ISPVMSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel");
+            TaskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
+            BoolSymbol = compilation.GetTypeByMetadataName("System.Boolean");
 
             IsWinUI = GetIsWinUI(compilation);
         }
