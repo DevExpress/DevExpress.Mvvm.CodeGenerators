@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class PropertyGenerator {
-        public static string Generate(StringBuilder source, int tabs, ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string inpcedParameter, string inpcingParameter) {
+        public static string Generate(StringBuilder source, int tabs, ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, ChangeEventRaiseMode? changedEventRaiseMode, ChangeEventRaiseMode? changingEventRaiseMode) {
             var propertyName = PropertyHelper.CreatePropertyName(fieldSymbol.Name);
             if(propertyName == fieldSymbol.Name)
                 info.Context.ReportInvalidPropertyName(fieldSymbol, propertyName);
@@ -15,38 +15,30 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(propertyName == fieldSymbol.Name || changedMethod == null || changingMethod == null)
                 return null;
 
-            var attributesList = PropertyHelper.GetAttributesList(fieldSymbol);
-            if(!string.IsNullOrEmpty(attributesList))
-                source.AppendMultipleLinesWithTabs(attributesList, tabs);
+            PropertyHelper.AppendAttributesList(source, fieldSymbol, tabs);
 
             var isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, info.PropertyAttributeSymbol);
             var virtuality = isVirtual ? "virtual " : string.Empty;
             var typeName = fieldSymbol.Type.WithNullableAnnotation(PropertyHelper.GetNullableAnnotation(fieldSymbol.Type)).ToDisplayStringNullable();
             var fieldName = fieldSymbol.Name == "value" ? "this.value" : fieldSymbol.Name;
-            source.AppendLineWithTabs($"public {virtuality}{typeName} {propertyName} {{", tabs);
-            source.AppendLineWithTabs($"get => {fieldName};", tabs + 1);
+            source.AppendTabs(tabs).Append("public ").Append(virtuality).Append(typeName).Append(' ').Append(propertyName).AppendLine(" {");
+            source.AppendTabs(tabs + 1).Append("get => ").Append(fieldName).AppendLine(";");
 
-            string setterAttribute = GetSetterAttribute(info, fieldSymbol, fieldName);
-            if(!string.IsNullOrEmpty(setterAttribute))
-                source.AppendLineWithTabs(setterAttribute, tabs + 1);
+            AppendSetterAttribute(source, info, fieldSymbol, fieldName, tabs + 1);
 
             var setterAccessModifier = PropertyHelper.GetSetterAccessModifierValue(fieldSymbol, info.PropertyAttributeSymbol);
-            source.AppendLineWithTabs($"{setterAccessModifier}set {{", tabs + 1);
-            source.AppendLineWithTabs($"if(EqualityComparer<{typeName}>.Default.Equals({fieldName}, value)) return;", tabs + 2);
+            source.AppendTabs(tabs + 1).Append(setterAccessModifier).AppendLine("set {");
+            source.AppendTabs(tabs + 2).Append("if(EqualityComparer<").Append(typeName).Append(">.Default.Equals(").Append(fieldName).AppendLine(", value)) return;");
 
-            string raiseChangingMethod = GetRaiseChangingMethod(inpcingParameter, propertyName);
-            if(!string.IsNullOrEmpty(raiseChangingMethod))
-                source.AppendLineWithTabs(raiseChangingMethod, tabs + 2);
+            AppendRaiseChangingMethod(source, changingEventRaiseMode, propertyName, tabs + 2);
             if(!string.IsNullOrEmpty(changingMethod))
                 source.AppendLineWithTabs(changingMethod, tabs + 2);
 
             if(!string.IsNullOrEmpty(changedMethod) && !changedMethod.EndsWith("();"))
-                source.AppendLineWithTabs($"var oldValue = {fieldName};", tabs + 2);
-            source.AppendLineWithTabs($"{fieldName} = value;", tabs + 2);
+                source.AppendTabs(tabs + 2).Append("var oldValue = ").Append(fieldName).AppendLine(";");
+            source.AppendTabs(tabs + 2).Append(fieldName).AppendLine(" = value;");
 
-            string raiseChangedMethod = GetRaiseChangedMethod(inpcedParameter, propertyName);
-            if(!string.IsNullOrEmpty(raiseChangedMethod))
-                source.AppendLineWithTabs(raiseChangedMethod, tabs + 2);
+            AppendRaiseChangedMethod(source, changedEventRaiseMode, propertyName, tabs + 2);
 
             if(!string.IsNullOrEmpty(changedMethod))
                 source.AppendLineWithTabs(changedMethod, tabs + 2);
@@ -57,30 +49,26 @@ namespace DevExpress.Mvvm.CodeGenerators {
             return propertyName;
         }
 
-        static string GetRaiseChangingMethod(string inpcingParameter, string propertyName) {
-            string raiseChangingMethod = null;
-            if(inpcingParameter == "eventargs")
-                raiseChangingMethod = $"RaisePropertyChanging({propertyName}ChangingEventArgs);";
-            else if(inpcingParameter == "string")
-                raiseChangingMethod = $"RaisePropertyChanging(nameof({propertyName}));";
-            return raiseChangingMethod;
+        static void AppendRaiseChangingMethod(StringBuilder source, ChangeEventRaiseMode? eventRaiseMode, string propertyName, int tabs) {
+            source.AppendTabs(tabs);
+            if(eventRaiseMode == ChangeEventRaiseMode.EventArgs)
+                source.Append("RaisePropertyChanging(").Append(propertyName).AppendLine("ChangingEventArgs);");
+            if(eventRaiseMode == ChangeEventRaiseMode.PropertyName)
+                source.Append("RaisePropertyChanging(nameof(").Append(propertyName).AppendLine("));");
         }
 
-        static string GetRaiseChangedMethod(string inpcedParameter, string propertyName) {
-            string raiseChangedMethod = null;
-            if(inpcedParameter == "eventargs")
-                raiseChangedMethod = $"RaisePropertyChanged({propertyName}ChangedEventArgs);";
-            else if(inpcedParameter == "string")
-                raiseChangedMethod = $"RaisePropertyChanged(nameof({propertyName}));";
-            return raiseChangedMethod;
+        static void AppendRaiseChangedMethod(StringBuilder source, ChangeEventRaiseMode? eventRaiseMode, string propertyName, int tabs) {
+            source.AppendTabs(tabs);
+            if(eventRaiseMode == ChangeEventRaiseMode.EventArgs)
+                source.Append("RaisePropertyChanged(").Append(propertyName).AppendLine("ChangedEventArgs);");
+            if(eventRaiseMode == ChangeEventRaiseMode.PropertyName)
+                source.Append("RaisePropertyChanged(nameof(").Append(propertyName).AppendLine("));");
         }
 
-        static string GetSetterAttribute(ContextInfo info, IFieldSymbol fieldSymbol, string fieldName) {
+        static void AppendSetterAttribute(StringBuilder source, ContextInfo info, IFieldSymbol fieldSymbol, string fieldName, int tabs) {
             var isNonNullableReferenceType = fieldSymbol.Type.IsReferenceType && fieldSymbol.Type.NullableAnnotation == NullableAnnotation.NotAnnotated;
-            string setterAttribute = null;
             if(isNonNullableReferenceType && PropertyHelper.HasMemberNotNullAttribute(info.Compilation))
-                setterAttribute = $"[System.Diagnostics.CodeAnalysis.MemberNotNull(nameof({fieldName}))]";
-            return setterAttribute;
+                source.AppendTabs(tabs).Append("[System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(").Append(fieldName).AppendLine("))]");
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.ComponentModel;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace DevExpress.Mvvm.CodeGenerators {
-    struct ContextInfo {
+    class ContextInfo {
         public GeneratorExecutionContext Context { get; }
         public Compilation Compilation { get; }
 
@@ -15,12 +17,17 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public INamedTypeSymbol IDEISymbol { get; }
         public INamedTypeSymbol ISPVMSymbol { get; }
         public INamedTypeSymbol ISSSymbol { get; }
+        public INamedTypeSymbol TaskSymbol { get; }
+        public INamedTypeSymbol BoolSymbol { get; }
 
         public bool IsWinUI { get; }
+        public bool IsMvvmAvailable { get; }
 
         public ContextInfo(GeneratorExecutionContext context, Compilation compilation) {
             Context = context;
             Compilation = compilation;
+
+            IsMvvmAvailable = Compilation.ReferencedAssemblyNames.Any(ai => Regex.IsMatch(ai.Name, @"DevExpress\.Mvvm(\.v\d{2}\.\d)?$"));
 
             ViewModelAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName);
             PropertyAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.PropertyAttributeFullName);
@@ -31,6 +38,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
             IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName);
             ISSSymbol = GetISSSymbol(compilation);
             ISPVMSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel");
+            TaskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
+            BoolSymbol = compilation.GetTypeByMetadataName("System.Boolean");
 
             IsWinUI = GetIsWinUI(compilation);
         }

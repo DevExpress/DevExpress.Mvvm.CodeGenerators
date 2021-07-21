@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
+    enum ChangeEventRaiseMode { 
+        EventArgs, PropertyName
+    }
     static class ClassGenerator {
         static readonly string defaultUsings =
 @"using System.Collections.Generic;
 using System.ComponentModel;";
-
 
         public static void GenerateSourceCode(StringBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol) {
             List<IInterfaceGenerator> interfaces = new();
@@ -24,7 +26,6 @@ using System.ComponentModel;";
                 interfaces.Add(new INPCingInterfaceGenerator());
             var impelementRaiseChangingMethod = inpcingInfo.ShouldImplementRaiseMethod();
 
-            var isMvvmAvailable = ClassHelper.IsMvvmAvailable(contextInfo.Compilation);
             var mvvmComponentsList = new List<string>();
 
             var implIDEI = ClassHelper.GetImplementIDEIValue(contextInfo, classSymbol);
@@ -32,18 +33,18 @@ using System.ComponentModel;";
             var implISPVM = ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol);
             if(implIDEI) {
                 mvvmComponentsList.Add("IDataErrorInfo");
-                if(isMvvmAvailable && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.IDEISymbol))
+                if(contextInfo.IsMvvmAvailable && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.IDEISymbol))
                     interfaces.Add(new IDataErrorInfoGenerator());
             }
             if(implISPVM) {
                 mvvmComponentsList.Add("ISupportParentViewModel");
                 var shouldGenerateChangedMethod = ClassHelper.ShouldGenerateISPVMChangedMethod(classSymbol);
-                if(isMvvmAvailable && contextInfo.ISPVMSymbol != null && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol, contextInfo))
+                if(contextInfo.IsMvvmAvailable && contextInfo.ISPVMSymbol != null && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol, contextInfo))
                     interfaces.Add(new ISupportParentViewModelGenerator(shouldGenerateChangedMethod));
             }
             if(implISS) {
                 mvvmComponentsList.Add("ISupportServices");
-                if(isMvvmAvailable && contextInfo.ISSSymbol != null && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.ISSSymbol))
+                if(contextInfo.IsMvvmAvailable && contextInfo.ISSSymbol != null && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.ISSSymbol))
                     interfaces.Add(new ISupportServicesGenerator());
             }
 
@@ -59,13 +60,13 @@ using System.ComponentModel;";
                 impelementRaiseChangedMethod ? inpcedInfo.RaiseMethodImplementation : null, 
                 impelementRaiseChangingMethod ? inpcingInfo.RaiseMethodImplementation : null, 
                 genericTypes, outerClasses, source, ref tabs, 
-                addDevExpressUsing: isMvvmAvailable);
+                addDevExpressUsing: contextInfo.IsMvvmAvailable);
 
             var needStaticChangedEventArgs = inpcedInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangedMethod;
             var needStaticChangingEventArgs = inpcingInfo.HasAttribute && (inpcingInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangingMethod);
             var propertyNames = GenerateProperties(contextInfo, classSymbol, inpcedInfo, inpcingInfo, needStaticChangedEventArgs, needStaticChangingEventArgs, source, tabs);
 
-            GenerateCommands(contextInfo, classSymbol, contextInfo.CommandAttributeSymbol, isMvvmAvailable, source, tabs, out bool hasCommands);
+            GenerateCommands(contextInfo, classSymbol, contextInfo.CommandAttributeSymbol, contextInfo.IsMvvmAvailable, source, tabs, out bool hasCommands);
             if(hasCommands)
                 mvvmComponentsList.Add("Commands");
 
@@ -75,7 +76,7 @@ using System.ComponentModel;";
                 source.AppendLineWithTabs("}", tabs);
 
             if(mvvmComponentsList.Any())
-                if(!isMvvmAvailable)
+                if(!contextInfo.IsMvvmAvailable)
                     contextInfo.Context.ReportMVVMNotAvailable(classSymbol, mvvmComponentsList);
         }
 
@@ -89,21 +90,22 @@ using System.ComponentModel;";
 
             string @namespace = classSymbol.ContainingNamespace.ToDisplayString();
             if(@namespace != "<global namespace>") {
-                source.AppendLine($"namespace {@namespace} {{");
+                source.Append("namespace ").Append(@namespace).AppendLine(" {");
                 tabs++;
             }
 
             foreach(var outerClass in outerClasses.Reverse()) {
-                source.AppendLineWithTabs($"partial {outerClass.Value.TypeToString()} {outerClass.Key} {{", tabs);
+                source.AppendTabs(tabs).Append("partial ").Append(outerClass.Value.TypeToString()).Append(' ').Append(outerClass.Key).AppendLine(" {");
                 tabs++;
             }
-            source.AppendWithTabs($"partial class {classSymbol.Name}", tabs);
-            if(genericTypes.Any())
-                source.Append($"<{genericTypes.Select(type => type.ToString()).ConcatToString(", ")}>");
+            source.AppendTabs(tabs).Append("partial class ").Append(classSymbol.Name);
+            AppendGenericArguments(source, genericTypes);
             if(interfaces.Any()) {
-                source.AppendLine($" : {interfaces.Select(@interface => @interface.GetName()).ConcatToString(", ")} {{");
+                source.Append(" : ");
+                source.AppendMultipleLinesWithSeparator(interfaces.Select(@interface => @interface.GetName()), ", ");
+                source.AppendLine(" {");
                 foreach(var @interface in interfaces)
-                    source.AppendMultipleLinesWithTabs(@interface.GetImplementation(), tabs + 1);
+                    @interface.AppendImplementation(source, tabs + 1);
                 source.AppendLine();
             } else
                 source.AppendLine(" {");
@@ -116,24 +118,39 @@ using System.ComponentModel;";
                 source.AppendLine();
         }
 
+        static void AppendGenericArguments(StringBuilder source, List<ITypeSymbol> genericTypes) {
+            if(genericTypes.Any()) {
+                source.Append('<');
+                source.AppendMultipleLinesWithSeparator(genericTypes.Select(type => type.ToString()), ", ");
+                source.Append('>');
+            }
+        }
         static IReadOnlyList<string> GenerateProperties(ContextInfo contextInfo, INamedTypeSymbol classSymbol, INPCInfo inpcedInfo, INPCInfo inpcingInfo, bool needStaticChangedEventArgs, bool needStaticChangingEventArgs, StringBuilder source, int tabs) {
-            var raiseChangedMethodParameter = needStaticChangedEventArgs ? "eventargs" : inpcedInfo.HasRaiseMethodWithStringParameter ? "string" : string.Empty;
-            var raiseChangingMethodParameter = needStaticChangingEventArgs ? "eventargs" : inpcingInfo.HasAttribute && inpcingInfo.HasRaiseMethodWithStringParameter ? "string" : string.Empty;
+            var changedRaiseMode = needStaticChangedEventArgs 
+                ? ChangeEventRaiseMode.EventArgs 
+                : inpcedInfo.HasRaiseMethodWithStringParameter 
+                    ? ChangeEventRaiseMode.PropertyName 
+                    : default(ChangeEventRaiseMode?);
+            var changingRaiseMode = needStaticChangingEventArgs 
+                ? ChangeEventRaiseMode.EventArgs 
+                : inpcingInfo.HasAttribute && inpcingInfo.HasRaiseMethodWithStringParameter 
+                    ? ChangeEventRaiseMode.PropertyName 
+                    : default(ChangeEventRaiseMode?);
             var generateProperties = true;
             List<string> propertyNames = new();
             var fieldCandidates = ClassHelper.GetFieldCandidates(classSymbol, contextInfo.PropertyAttributeSymbol);
             if(fieldCandidates.Any()) {
-                if(string.IsNullOrEmpty(raiseChangedMethodParameter)) {
+                if(changedRaiseMode == null) {
                     contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ed");
                     generateProperties = false;
                 }
-                if(inpcingInfo.HasAttribute && string.IsNullOrEmpty(raiseChangingMethodParameter)) {
+                if(inpcingInfo.HasAttribute && changingRaiseMode == null) {
                     contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ing");
                     generateProperties = false;
                 }
                 if(generateProperties)
                     foreach(var fieldSymbol in fieldCandidates) {
-                        var propertyName = PropertyGenerator.Generate(source, tabs, contextInfo, classSymbol, fieldSymbol, raiseChangedMethodParameter, raiseChangingMethodParameter);
+                        var propertyName = PropertyGenerator.Generate(source, tabs, contextInfo, classSymbol, fieldSymbol, changedRaiseMode, changingRaiseMode);
                         if(propertyName != null) {
                             propertyNames.Add(propertyName);
                         }

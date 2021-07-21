@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
-    static class ExtensionMethods {
+    public static class ExtensionMethods {
         #region ITypeSymbol
         public static string ToDisplayStringNullable(this ITypeSymbol typeSymbol) => 
             typeSymbol.ToDisplayString(ToNullableFlowState(typeSymbol.NullableAnnotation));
@@ -20,10 +20,38 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         #region String
         public static void AppendMultipleLinesWithTabs(this StringBuilder builder, string lines, int tabs) {
-            foreach(var line in lines.Split(new[] { Environment.NewLine }, StringSplitOptions.None)) {
-                builder.AppendLineWithTabs(line, tabs);
+            foreach((int start, int length) in new LineEnumerator(lines)) {
+                builder.AppendTabs(tabs).Append(lines, start, length).AppendLine();
             }
         }
+        public struct LineEnumerator {
+            readonly string lines;
+            int startIndex;
+            public (int start, int length) Current { get; private set; }
+
+            public LineEnumerator(string source) {
+                lines = source;
+                Current = default;
+                startIndex = 0;
+            }
+            public LineEnumerator GetEnumerator() {
+                return this;
+            }
+            public bool MoveNext() {
+                if(startIndex == lines.Length) return false;
+                var index = lines.IndexOf("\r\n", startIndex);
+                if(index != -1) {
+                    Current = (startIndex, index  - startIndex);
+                    startIndex = index + 2; ;
+                    return true;
+                } else {
+                    Current = (startIndex, lines.Length - startIndex);
+                    startIndex = lines.Length;
+                    return true;
+                }
+            }
+        }
+
         public static void AppendLineWithTabs(this StringBuilder builder, string line, int tabs) {
             AppendTabs(builder, tabs);
             builder.AppendLine(line);
@@ -32,16 +60,36 @@ namespace DevExpress.Mvvm.CodeGenerators {
             AppendTabs(builder, tabs);
             builder.Append(line);
         }
-        static void AppendTabs(StringBuilder builder, int tabs) {
+        public static StringBuilder AppendTabs(this StringBuilder builder, int tabs) {
             for(int i = 0; i < tabs; i++) {
                 builder.Append("    ");
+            }
+            return builder;
+        }
+        public static StringBuilder AppendFirstToUpperCase(this StringBuilder builder, string str) {
+            return builder.AppendChangeFirstCore(str, char.ToUpper(str[0]));
+        }
+        public static StringBuilder AppendFirstToLowerCase(this StringBuilder builder, string str) {
+            return builder.AppendChangeFirstCore(str, char.ToLower(str[0]));
+        }
+        static StringBuilder AppendChangeFirstCore(this StringBuilder builder, string str, char firstChar) {
+            return builder.Append(firstChar).Append(str, 1, str.Length - 1);
+        }
+        public static void AppendMultipleLinesWithSeparator(this StringBuilder builder, IEnumerable<string> lines, string separator) {
+            bool appendSeparator = false;
+            foreach(var line in lines) {
+                if(appendSeparator)
+                    builder.Append(separator);
+                builder.Append(line);
+                appendSeparator = true;
             }
         }
 
         public static string ConcatToString(this IEnumerable<string> source, string separator) => string.Join(separator, source);
-        public static string FirstToLowerCase(this string str) => $"{str.Substring(0, 1).ToLower()}{str.Substring(1)}";
         public static string FirstToUpperCase(this string str) => $"{str.Substring(0, 1).ToUpper()}{str.Substring(1)}";
         #endregion
         public static string TypeToString(this TypeKind type) => type == TypeKind.Structure ? "struct" : type.ToString().ToLower();
+
+        public static string BoolToStringValue(this bool val) => val ? "true" : "false";
     }
 }

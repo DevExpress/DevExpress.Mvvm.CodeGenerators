@@ -10,8 +10,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static readonly string nameofImplementISS = AttributesGenerator.ImplementISS;
         static readonly string nameofImplementISPVM = AttributesGenerator.ImplementISPVM;
 
-        public static bool IsMvvmAvailable(Compilation compilation) =>
-            compilation.ReferencedAssemblyNames.Any(ai => Regex.IsMatch(ai.Name, @"DevExpress\.Mvvm(\.v\d{2}\.\d)?$"));
         public static bool GetImplementIDEIValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
             !contextInfo.IsWinUI && AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.ViewModelAttributeSymbol, nameofImplementIDEI, false);
         public static bool GetImplementISPVMValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>

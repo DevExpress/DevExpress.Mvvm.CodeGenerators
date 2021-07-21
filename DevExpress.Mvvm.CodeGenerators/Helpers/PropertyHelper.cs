@@ -27,13 +27,15 @@ namespace DevExpress.Mvvm.CodeGenerators {
             var enumIndex = AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofSetterAccessModifier, 0);
             return AccessModifierGenerator.GetCodeRepresentation((AccessModifier)enumIndex);
         }
-        public static string GetAttributesList(IFieldSymbol fieldSymbol) {
+        public static void AppendAttributesList(StringBuilder source, IFieldSymbol fieldSymbol, int tabs) {
             var attributeList = fieldSymbol.GetAttributes();
             if(attributeList.Length == 1)
-                return string.Empty;
-            return "[" + attributeList.Select(atr => atr.ToString())
-                                      .Where(str => !str.StartsWith(AttributesGenerator.PropertyAttributeFullName))
-                                      .ConcatToString("]" + Environment.NewLine + "[") + "]";
+                return;
+            foreach(var attribute in attributeList) {
+                string attributeName = attribute.ToString();
+                if(!attributeName.StartsWith(AttributesGenerator.PropertyAttributeFullName))
+                    source.AppendTabs(tabs).Append('[').Append(attributeName).AppendLine("]");
+            }
         }
         public static NullableAnnotation GetNullableAnnotation(ITypeSymbol type) =>
             type.IsReferenceType && type.NullableAnnotation == NullableAnnotation.None
@@ -46,6 +48,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
                                   .Where(symbol => symbol != null && symbol.ContainingModule.ToDisplayString() == "System.Runtime.dll")
                                   .Any();
         public static bool IsСompatibleType(ITypeSymbol parameterType, ITypeSymbol type) {
+            //if(!parameterType.Equals(type, SymbolEqualityComparer.IncludeNullability))
+            //    return false;
             if(ToNotAnnotatedDisplayString(parameterType) != ToNotAnnotatedDisplayString(type))
                 return false;
             if(parameterType.IsValueType)

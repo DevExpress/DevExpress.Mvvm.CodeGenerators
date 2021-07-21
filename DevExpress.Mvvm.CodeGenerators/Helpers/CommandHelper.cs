@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class CommandHelper {
@@ -16,19 +17,24 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static bool GetUseCommandManagerValue(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, useCommandManager, true);
         public static string GetCommandName(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol, string executeMethodName) =>
-            AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, commandName, executeMethodName + "Command").FirstToLowerCase();
+            AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, commandName, executeMethodName + "Command");
         public static string GetCanExecuteMethodName(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, canExecuteMethod, (string)null);
-        public static string ParametersToDisplayString(params string[] parameters) => parameters.ConcatToString(", ");
-        public static string GetGenericType(string baseType, string genericArgumentType) => baseType + (string.IsNullOrEmpty(genericArgumentType) ? string.Empty : "<" + genericArgumentType + ">");
+        public static StringBuilder AppendCommandGenericType(this StringBuilder source, bool isCommand, string genericArgumentType) {
+            source.Append(isCommand ? "DelegateCommand" : "AsyncCommand");
+            if(!string.IsNullOrEmpty(genericArgumentType))
+                source.Append('<').Append(genericArgumentType).Append('>');
+            return source;
+        }
+
         public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol classSymbol, Func<IMethodSymbol, bool> condition) =>
             classSymbol.GetMembers().OfType<IMethodSymbol>().Where(condition);
         public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol classSymbol, string methodName) =>
             classSymbol.GetMembers().OfType<IMethodSymbol>().Where(method => method.Name == methodName);
 #nullable enable
-        public static IEnumerable<IMethodSymbol> GetCanExecuteMethodCandidates(INamedTypeSymbol classSymbol, string canExecuteMethodName, ITypeSymbol? parameterType) =>
+        public static IEnumerable<IMethodSymbol> GetCanExecuteMethodCandidates(INamedTypeSymbol classSymbol, string canExecuteMethodName, ITypeSymbol? parameterType, ContextInfo context) =>
             GetMethods(classSymbol,
-                       method => method.ReturnType.ToDisplayStringNullable() == "bool" &&
+                       method => context.BoolSymbol.Equals(method.ReturnType, SymbolEqualityComparer.Default) &&
                                  method.Name == canExecuteMethodName &&
                                  HaveSameParametersList(method.Parameters, parameterType));
 
