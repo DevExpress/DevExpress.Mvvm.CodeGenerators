@@ -25,12 +25,12 @@ namespace DevExpress.Mvvm.CodeGenerators {
             }
         }
         public struct LineEnumerator {
-            string text { get; set; }
+            readonly string lines;
             int startIndex;
             public (int start, int length) Current { get; private set; }
 
             public LineEnumerator(string source) {
-                text = source;
+                lines = source;
                 Current = default;
                 startIndex = 0;
             }
@@ -38,15 +38,15 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return this;
             }
             public bool MoveNext() {
-                if(startIndex == text.Length) return false;
-                var index = text.IndexOf("\r\n", startIndex);
+                if(startIndex == lines.Length) return false;
+                var index = lines.IndexOf("\r\n", startIndex);
                 if(index != -1) {
                     Current = (startIndex, index  - startIndex);
                     startIndex = index + 2; ;
                     return true;
                 } else {
-                    Current = (startIndex, text.Length - startIndex);
-                    startIndex = text.Length;
+                    Current = (startIndex, lines.Length - startIndex);
+                    startIndex = lines.Length;
                     return true;
                 }
             }
