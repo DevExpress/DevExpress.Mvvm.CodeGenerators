@@ -13,7 +13,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
 @"using System.Collections.Generic;
 using System.ComponentModel;";
 
-        public static void GenerateSourceCode(StringBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol) {
+        public static void GenerateSourceCode(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol) {
             List<IInterfaceGenerator> interfaces = new();
 
             var inpcedInfo = INPCInfo.GetINPCedInfo(contextInfo, classSymbol);
@@ -55,32 +55,32 @@ using System.ComponentModel;";
 
             var outerClasses = ClassHelper.GetOuterClasses(classSymbol);
 
-            int tabs = 0;
-            GenerateHeader(classSymbol, interfaces, 
+            source = GenerateHeader(classSymbol, interfaces, 
                 impelementRaiseChangedMethod ? inpcedInfo.RaiseMethodImplementation : null, 
                 impelementRaiseChangingMethod ? inpcingInfo.RaiseMethodImplementation : null, 
-                genericTypes, outerClasses, source, ref tabs, 
+                genericTypes, outerClasses, source, 
                 addDevExpressUsing: contextInfo.IsMvvmAvailable);
 
+            
             var needStaticChangedEventArgs = inpcedInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangedMethod;
             var needStaticChangingEventArgs = inpcingInfo.HasAttribute && (inpcingInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangingMethod);
-            var propertyNames = GenerateProperties(contextInfo, classSymbol, inpcedInfo, inpcingInfo, needStaticChangedEventArgs, needStaticChangingEventArgs, source, tabs);
+            var propertyNames = GenerateProperties(contextInfo, classSymbol, inpcedInfo, inpcingInfo, needStaticChangedEventArgs, needStaticChangingEventArgs, source);
 
-            GenerateCommands(contextInfo, classSymbol, contextInfo.CommandAttributeSymbol, contextInfo.IsMvvmAvailable, source, tabs, out bool hasCommands);
+            GenerateCommands(contextInfo, classSymbol, contextInfo.CommandAttributeSymbol, contextInfo.IsMvvmAvailable, source, out bool hasCommands);
             if(hasCommands)
                 mvvmComponentsList.Add("Commands");
 
-            EventArgsGenerator.Generate(source, tabs, needStaticChangedEventArgs, needStaticChangingEventArgs, propertyNames);
+            EventArgsGenerator.Generate(source, needStaticChangedEventArgs, needStaticChangingEventArgs, propertyNames);
 
-            while(tabs-- > 0)
-                source.AppendLineWithTabs("}", tabs);
+            while(source.Return != null)
+                source = source.Return.AppendLine("}");
 
             if(mvvmComponentsList.Any())
                 if(!contextInfo.IsMvvmAvailable)
                     contextInfo.Context.ReportMVVMNotAvailable(classSymbol, mvvmComponentsList);
         }
 
-        static void GenerateHeader(INamedTypeSymbol classSymbol, List<IInterfaceGenerator> interfaces, string raiseChangedMethod, string raiseChangingMethod, List<ITypeSymbol> genericTypes, Dictionary<string, TypeKind> outerClasses, StringBuilder source, ref int tabs, bool addDevExpressUsing) {
+        static SourceBuilder GenerateHeader(INamedTypeSymbol classSymbol, List<IInterfaceGenerator> interfaces, string raiseChangedMethod, string raiseChangingMethod, List<ITypeSymbol> genericTypes, Dictionary<string, TypeKind> outerClasses, SourceBuilder source, bool addDevExpressUsing) {
             source.AppendLine(defaultUsings);
             if(addDevExpressUsing)
                 source.AppendLine("using DevExpress.Mvvm;");
@@ -91,41 +91,42 @@ using System.ComponentModel;";
             string @namespace = classSymbol.ContainingNamespace.ToDisplayString();
             if(@namespace != "<global namespace>") {
                 source.Append("namespace ").Append(@namespace).AppendLine(" {");
-                tabs++;
+                source = source.Tab;
             }
 
             foreach(var outerClass in outerClasses.Reverse()) {
-                source.AppendTabs(tabs).Append("partial ").Append(outerClass.Value.TypeToString()).Append(' ').Append(outerClass.Key).AppendLine(" {");
-                tabs++;
+                source.Append("partial ").Append(outerClass.Value.TypeToString()).Append(' ').Append(outerClass.Key).AppendLine(" {");
+                source = source.Tab;
             }
-            source.AppendTabs(tabs).Append("partial class ").Append(classSymbol.Name);
+            source.Append("partial class ").Append(classSymbol.Name);
             AppendGenericArguments(source, genericTypes);
             if(interfaces.Any()) {
                 source.Append(" : ");
                 source.AppendMultipleLinesWithSeparator(interfaces.Select(@interface => @interface.GetName()), ", ");
                 source.AppendLine(" {");
                 foreach(var @interface in interfaces)
-                    @interface.AppendImplementation(source, tabs + 1);
+                    @interface.AppendImplementation(source.Tab);
                 source.AppendLine();
             } else
                 source.AppendLine(" {");
-            tabs++;
+            source = source.Tab;
             if(!string.IsNullOrEmpty(raiseChangedMethod))
-                source.AppendMultipleLinesWithTabs(raiseChangedMethod, tabs);
+                source.AppendMultipleLines(raiseChangedMethod);
             if(!string.IsNullOrEmpty(raiseChangingMethod))
-                source.AppendMultipleLinesWithTabs(raiseChangingMethod, tabs);
+                source.AppendMultipleLines(raiseChangingMethod);
             if(!string.IsNullOrEmpty(raiseChangedMethod) || !string.IsNullOrEmpty(raiseChangingMethod))
                 source.AppendLine();
+            return source;
         }
 
-        static void AppendGenericArguments(StringBuilder source, List<ITypeSymbol> genericTypes) {
+        static void AppendGenericArguments(SourceBuilder source, List<ITypeSymbol> genericTypes) {
             if(genericTypes.Any()) {
                 source.Append('<');
                 source.AppendMultipleLinesWithSeparator(genericTypes.Select(type => type.ToString()), ", ");
                 source.Append('>');
             }
         }
-        static IReadOnlyList<string> GenerateProperties(ContextInfo contextInfo, INamedTypeSymbol classSymbol, INPCInfo inpcedInfo, INPCInfo inpcingInfo, bool needStaticChangedEventArgs, bool needStaticChangingEventArgs, StringBuilder source, int tabs) {
+        static IReadOnlyList<string> GenerateProperties(ContextInfo contextInfo, INamedTypeSymbol classSymbol, INPCInfo inpcedInfo, INPCInfo inpcingInfo, bool needStaticChangedEventArgs, bool needStaticChangingEventArgs, SourceBuilder source) {
             var changedRaiseMode = needStaticChangedEventArgs 
                 ? ChangeEventRaiseMode.EventArgs 
                 : inpcedInfo.HasRaiseMethodWithStringParameter 
@@ -150,7 +151,7 @@ using System.ComponentModel;";
                 }
                 if(generateProperties)
                     foreach(var fieldSymbol in fieldCandidates) {
-                        var propertyName = PropertyGenerator.Generate(source, tabs, contextInfo, classSymbol, fieldSymbol, changedRaiseMode, changingRaiseMode);
+                        var propertyName = PropertyGenerator.Generate(source, contextInfo, classSymbol, fieldSymbol, changedRaiseMode, changingRaiseMode);
                         if(propertyName != null) {
                             propertyNames.Add(propertyName);
                         }
@@ -159,12 +160,12 @@ using System.ComponentModel;";
             return propertyNames;
         }
 
-        static void GenerateCommands(ContextInfo contextInfo, INamedTypeSymbol classSymbol, INamedTypeSymbol commandAttributeSymbol, bool isMvvmAvailable, StringBuilder source, int tabs, out bool hasCommands) {
+        static void GenerateCommands(ContextInfo contextInfo, INamedTypeSymbol classSymbol, INamedTypeSymbol commandAttributeSymbol, bool isMvvmAvailable, SourceBuilder source, out bool hasCommands) {
             var commandCandidates = ClassHelper.GetCommandCandidates(classSymbol, contextInfo.CommandAttributeSymbol);
             hasCommands = commandCandidates.Any();
             if(isMvvmAvailable) {
                 foreach(var methodSymbol in commandCandidates) {
-                    CommandGenerator.Generate(source, tabs, contextInfo, classSymbol, methodSymbol);
+                    CommandGenerator.Generate(source, contextInfo, classSymbol, methodSymbol);
                 }
             }
         }

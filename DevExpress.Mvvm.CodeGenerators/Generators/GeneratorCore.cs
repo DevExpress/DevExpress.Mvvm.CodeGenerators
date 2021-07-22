@@ -28,6 +28,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             var processedSymbols = new List<INamedTypeSymbol>();
 
             var source = new StringBuilder();
+            var sourceBuilder = new SourceBuilder(source);
             int generatedCount = 0;
             foreach(var classSyntax in receiver.ClassSyntaxes) {
                 if(context.CancellationToken.IsCancellationRequested)
@@ -47,7 +48,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     continue;
                 }
 
-                ClassGenerator.GenerateSourceCode(source, contextInfo, classSymbol);
+                ClassGenerator.GenerateSourceCode(sourceBuilder, contextInfo, classSymbol);
                 var classSource = source.ToString();
                 source.Clear();
                 context.AddSource(ClassHelper.CreateFileName(classSymbol.Name, generatedClasses), SourceText.From(classSource, Encoding.UTF8));

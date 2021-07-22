@@ -21,7 +21,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests
             CollectionAssert.AreEqual(expected, GetRanges(str).ToArray());
         }
         static IEnumerable<(int start, int count)> GetRanges(string str) {
-            foreach(var range in new ExtensionMethods.LineEnumerator(str)) {
+            foreach(var range in new SourceBuilderExtensions.LineEnumerator(str)) {
                 yield return range;
             }
         }
