@@ -6,17 +6,17 @@ namespace DevExpress.Mvvm.CodeGenerators {
     public class SourceBuilder {
         public readonly SourceBuilder Return;
         readonly StringBuilder builder;
-
-        public readonly int Tabs;
+        readonly int tabs;
         bool isNewLine = true;
         SourceBuilder tab;
+
         public SourceBuilder Tab {
             get {
                 if(tab != null)
                     return tab;
                 if(!isNewLine)
                     throw new InvalidOperationException();
-                return tab = new SourceBuilder(builder, Tabs + 1, this);
+                return tab = new SourceBuilder(builder, tabs + 1, this);
             }
         }
 
@@ -25,7 +25,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
         SourceBuilder(StringBuilder builder, int tabs, SourceBuilder @return) {
             this.builder = builder;
-            Tabs = tabs;
+            this.tabs = tabs;
             Return = @return;
         }
 
@@ -48,7 +48,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(!isNewLine)
                 return;
             isNewLine = false;
-            for(int i = 0; i < Tabs; i++) {
+            for(int i = 0; i < tabs; i++) {
                 builder.Append("    ");
             }
         }
