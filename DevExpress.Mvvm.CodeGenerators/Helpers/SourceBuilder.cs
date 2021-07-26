@@ -4,56 +4,63 @@ using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     public class SourceBuilder {
+        class NewLineState {
+            public int? LastTabLevel;
+        }
+
         public readonly SourceBuilder Return;
         readonly StringBuilder builder;
         readonly int tabs;
-        bool isNewLine = true;
+        readonly NewLineState newLineState;
+        int? LastTabLevel { get => newLineState.LastTabLevel; set => newLineState.LastTabLevel = value; }
         SourceBuilder tab;
 
         public SourceBuilder Tab {
             get {
                 if(tab != null)
                     return tab;
-                if(!isNewLine)
-                    throw new InvalidOperationException();
-                return tab = new SourceBuilder(builder, tabs + 1, this);
+                return tab = new SourceBuilder(builder, tabs + 1, this, newLineState);
             }
         }
 
         public SourceBuilder(StringBuilder builder) 
-            : this(builder, 0, null) {
+            : this(builder, 0, null, new NewLineState()) {
         }
-        SourceBuilder(StringBuilder builder, int tabs, SourceBuilder @return) {
+        SourceBuilder(StringBuilder builder, int tabs, SourceBuilder @return, NewLineState newLineState) {
             this.builder = builder;
             this.tabs = tabs;
             Return = @return;
+            this.newLineState = newLineState;
         }
 
         public SourceBuilder Append(string str) {
-            StartNewLine();
+            BeforeAppend();
             builder.Append(str);
             return this;
         }
         public SourceBuilder Append(char character) {
-            StartNewLine();
+            BeforeAppend();
             builder.Append(character);
             return this;
         }
         public SourceBuilder Append(string str, int statIndex, int count) {
-            StartNewLine();
+            BeforeAppend();
             builder.Append(str, statIndex, count);
             return this;
         }
-        void StartNewLine() {
-            if(!isNewLine)
+        void BeforeAppend() {
+            if(LastTabLevel != null) {
+                if(LastTabLevel != tabs)
+                    throw new InvalidOperationException();
                 return;
-            isNewLine = false;
+            }
+            LastTabLevel = tabs;
             for(int i = 0; i < tabs; i++) {
                 builder.Append("    ");
             }
         }
         public SourceBuilder AppendLine() {
-            isNewLine = true;
+            LastTabLevel = null;
             builder.Append(Environment.NewLine);
             return this;
         }
