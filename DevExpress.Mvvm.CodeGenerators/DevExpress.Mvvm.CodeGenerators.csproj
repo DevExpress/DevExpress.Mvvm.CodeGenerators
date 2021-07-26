@@ -50,6 +50,7 @@
     <Compile Include="InitializationGenerator\AttributesGenerator.cs" />
     <Compile Include="InitializationGenerator\InitializationGenerator.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Helpers\SourceBuilder.cs" />
     <Compile Include="SourceGenerator.cs" />
   </ItemGroup>
 

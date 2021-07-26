@@ -138,5 +138,163 @@ namespace Test {
             var generatedCode = generatorResult.GeneratedSources[1].SourceText.ToString();
             return generatedCode;
         }
+#if !WINUI
+        [Test]
+        public void FormattingTest() {
+            const string source =
+@"using DevExpress.Mvvm.CodeGenerators; 
+using System.Threading.Tasks; 
+namespace Test {
+    [GenerateViewModel(ImplementINotifyPropertyChanging = true, ImplementISupportParentViewModel = true, ImplementISupportServices = true, ImplementIDataErrorInfo = true)]
+    partial class Example0 {
+        [GenerateProperty]
+        int _Int;
+
+        [GenerateProperty(OnChangedMethod=""OnStrChanged_"", OnChangingMethod=""OnStrChanging_"")]
+        string _Str;
+        void OnStrChanged_() {}
+        void OnStrChanging_(string newValue) {}
+
+        [GenerateProperty]
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Key]
+        long _Long;
+        void OnLongChanged(long oldValue) { }
+
+        [GenerateProperty]
+        DateTime _DateTime;
+        void OnDateTimeChanging() { }
+
+        [GenerateProperty(IsVirtual = true, SetterAccessModifier = AccessModifier.Protected)]
+        double _Double;
+
+        [GenerateCommand]
+        public void Command1(int arg) { }
+        bool CanCommand1(int arg) => true;
+
+        [GenerateCommand(Name = ""SomeCommand"")]
+        public Task Command2() => null
+        bool CanCommand2(int arg) => true;
+
+        [GenerateCommand(CanExecuteMethod = ""CanCommand3_"", UseCommandManager = true)]
+        public void Command3(int arg) { }
+        bool CanCommand3_(int arg) => true;
+    }
+}";
+            const string expected =
+@"using System.Collections.Generic;
+using System.ComponentModel;
+using DevExpress.Mvvm;
+
+#nullable enable
+
+namespace Test {
+    partial class Example0 : INotifyPropertyChanged, INotifyPropertyChanging, IDataErrorInfo, ISupportParentViewModel, ISupportServices {
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangingEventHandler? PropertyChanging;
+        string IDataErrorInfo.Error { get => string.Empty; }
+        string IDataErrorInfo.this[string columnName] { get => IDataErrorInfoHelper.GetErrorText(this, columnName); }
+        object? parentViewModel;
+        public object? ParentViewModel {
+            get { return parentViewModel; }
+            set {
+                if(parentViewModel == value)
+                    return;
+                if(value == this)
+                    throw new System.InvalidOperationException(""ViewModel cannot be parent of itself."");
+                parentViewModel = value;
+                OnParentViewModelChanged(parentViewModel);
+            }
+        }
+        IServiceContainer? serviceContainer;
+        protected IServiceContainer ServiceContainer { get => serviceContainer ??= new ServiceContainer(this); }
+        IServiceContainer ISupportServices.ServiceContainer { get => ServiceContainer; }
+        T? GetService<T>() where T : class => ServiceContainer.GetService<T>();
+
+        protected void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
+        protected void RaisePropertyChanging(PropertyChangingEventArgs e) => PropertyChanging?.Invoke(this, e);
+
+        public int Int {
+            get => _Int;
+            set {
+                if(EqualityComparer<int>.Default.Equals(_Int, value)) return;
+                RaisePropertyChanging(IntChangingEventArgs);
+                _Int = value;
+                RaisePropertyChanged(IntChangedEventArgs);
+            }
+        }
+        public string? Str {
+            get => _Str;
+            set {
+                if(EqualityComparer<string?>.Default.Equals(_Str, value)) return;
+                RaisePropertyChanging(StrChangingEventArgs);
+                OnStrChanging_(value);
+                _Str = value;
+                RaisePropertyChanged(StrChangedEventArgs);
+                OnStrChanged_();
+            }
+        }
+        [System.ComponentModel.DataAnnotations.RequiredAttribute]
+        [System.ComponentModel.DataAnnotations.KeyAttribute]
+        public long Long {
+            get => _Long;
+            set {
+                if(EqualityComparer<long>.Default.Equals(_Long, value)) return;
+                RaisePropertyChanging(LongChangingEventArgs);
+                var oldValue = _Long;
+                _Long = value;
+                RaisePropertyChanged(LongChangedEventArgs);
+                OnLongChanged(oldValue);
+            }
+        }
+        public DateTime? DateTime {
+            get => _DateTime;
+            set {
+                if(EqualityComparer<DateTime?>.Default.Equals(_DateTime, value)) return;
+                RaisePropertyChanging(DateTimeChangingEventArgs);
+                OnDateTimeChanging();
+                _DateTime = value;
+                RaisePropertyChanged(DateTimeChangedEventArgs);
+            }
+        }
+        public virtual double Double {
+            get => _Double;
+            protected set {
+                if(EqualityComparer<double>.Default.Equals(_Double, value)) return;
+                RaisePropertyChanging(DoubleChangingEventArgs);
+                _Double = value;
+                RaisePropertyChanged(DoubleChangedEventArgs);
+            }
+        }
+        DelegateCommand<int>? command1Command;
+        public DelegateCommand<int> Command1Command {
+            get => command1Command ??= new DelegateCommand<int>(Command1, CanCommand1, true);
+        }
+        AsyncCommand? someCommand;
+        public AsyncCommand SomeCommand {
+            get => someCommand ??= new AsyncCommand(Command2, null, false, true);
+        }
+        DelegateCommand<int>? command3Command;
+        public DelegateCommand<int> Command3Command {
+            get => command3Command ??= new DelegateCommand<int>(Command3, CanCommand3_, true);
+        }
+        static PropertyChangedEventArgs IntChangedEventArgs = new PropertyChangedEventArgs(nameof(Int));
+        static PropertyChangedEventArgs StrChangedEventArgs = new PropertyChangedEventArgs(nameof(Str));
+        static PropertyChangedEventArgs LongChangedEventArgs = new PropertyChangedEventArgs(nameof(Long));
+        static PropertyChangedEventArgs DateTimeChangedEventArgs = new PropertyChangedEventArgs(nameof(DateTime));
+        static PropertyChangedEventArgs DoubleChangedEventArgs = new PropertyChangedEventArgs(nameof(Double));
+        static PropertyChangingEventArgs IntChangingEventArgs = new PropertyChangingEventArgs(nameof(Int));
+        static PropertyChangingEventArgs StrChangingEventArgs = new PropertyChangingEventArgs(nameof(Str));
+        static PropertyChangingEventArgs LongChangingEventArgs = new PropertyChangingEventArgs(nameof(Long));
+        static PropertyChangingEventArgs DateTimeChangingEventArgs = new PropertyChangingEventArgs(nameof(DateTime));
+        static PropertyChangingEventArgs DoubleChangingEventArgs = new PropertyChangingEventArgs(nameof(Double));
+    }
+}
+";
+            string generatedCode = GenerateCode(source);
+            Assert.AreEqual(expected, generatedCode);
+
+        }
+#endif
     }
 }

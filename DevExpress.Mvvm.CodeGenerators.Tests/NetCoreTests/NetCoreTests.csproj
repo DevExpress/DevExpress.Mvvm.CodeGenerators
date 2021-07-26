@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\TestSource\LineEnumeratorTests.cs" />
+    <Compile Include="..\TestSource\SourceBuilderTests.cs" />
     <Compile Include="..\TestSource\AsyncCommandGenerationTests.cs" />
     <Compile Include="..\TestSource\AttributeTransferTests.cs" />
     <Compile Include="..\TestSource\CommandGenerationTests.cs" />

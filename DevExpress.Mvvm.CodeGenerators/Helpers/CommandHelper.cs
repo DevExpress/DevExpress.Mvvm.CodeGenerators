@@ -20,7 +20,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, commandName, executeMethodName + "Command");
         public static string GetCanExecuteMethodName(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, canExecuteMethod, (string)null);
-        public static StringBuilder AppendCommandGenericType(this StringBuilder source, bool isCommand, string genericArgumentType) {
+        public static SourceBuilder AppendCommandGenericType(this SourceBuilder source, bool isCommand, string genericArgumentType) {
             source.Append(isCommand ? "DelegateCommand" : "AsyncCommand");
             if(!string.IsNullOrEmpty(genericArgumentType))
                 source.Append('<').Append(genericArgumentType).Append('>');

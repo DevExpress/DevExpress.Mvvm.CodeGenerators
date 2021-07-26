@@ -27,14 +27,14 @@ namespace DevExpress.Mvvm.CodeGenerators {
             var enumIndex = AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofSetterAccessModifier, 0);
             return AccessModifierGenerator.GetCodeRepresentation((AccessModifier)enumIndex);
         }
-        public static void AppendAttributesList(StringBuilder source, IFieldSymbol fieldSymbol, int tabs) {
+        public static void AppendAttributesList(SourceBuilder source, IFieldSymbol fieldSymbol) {
             var attributeList = fieldSymbol.GetAttributes();
             if(attributeList.Length == 1)
                 return;
             foreach(var attribute in attributeList) {
                 string attributeName = attribute.ToString();
                 if(!attributeName.StartsWith(AttributesGenerator.PropertyAttributeFullName))
-                    source.AppendTabs(tabs).Append('[').Append(attributeName).AppendLine("]");
+                    source.Append('[').Append(attributeName).AppendLine("]");
             }
         }
         public static NullableAnnotation GetNullableAnnotation(ITypeSymbol type) =>
