@@ -26,10 +26,8 @@ string IDataErrorInfo.this[string columnName] { get => IDataErrorInfoHelper.GetE
     }
     class ISupportParentViewModelGenerator : IInterfaceGenerator {
         readonly bool generateChangedMethod;
-        readonly string onChangedMethod;
         public ISupportParentViewModelGenerator(bool shouldGenerateChangedMethod) {
             generateChangedMethod = shouldGenerateChangedMethod;
-            onChangedMethod = generateChangedMethod ? System.Environment.NewLine + "        OnParentViewModelChanged(parentViewModel);" : string.Empty;
         }
         public string GetName() => "ISupportParentViewModel";
         public void AppendImplementation(SourceBuilder source) {
@@ -42,7 +40,8 @@ public object? ParentViewModel {
         if(value == this)
             throw new System.InvalidOperationException(""ViewModel cannot be parent of itself."");
         parentViewModel = value;");
-            source.AppendLine("        OnParentViewModelChanged(parentViewModel);");
+            if(generateChangedMethod)
+                source.AppendLine("        OnParentViewModelChanged(parentViewModel);");
             source.AppendMultipleLines(
 @"    }
 }");

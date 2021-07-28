@@ -111,6 +111,28 @@ namespace Test {
             StringAssert.Contains("using DevExpress.Mvvm;", generatedCode);
             StringAssert.Contains("int Property", generatedCode);
         }
+        [Test]
+        public void ISPVMGenerateOnChanged() {
+            var sourceWithOnChanged = @"
+using DevExpress.Mvvm.CodeGenerators;
+namespace Test {
+    [GenerateViewModel(ImplementISupportParentViewModel = true)]
+    partial class Example {
+        void OnParentViewModelChanged(object o) { }
+    }
+}";
+            var sourceWithOutOnChanged = @"
+using DevExpress.Mvvm.CodeGenerators;
+namespace Test {
+    [GenerateViewModel(ImplementISupportParentViewModel = true)]
+    partial class Example {
+    }
+}";
+            var generatedWithOnChanged = GenerateCode(sourceWithOnChanged);
+            var generatedWithOutOnChanged = GenerateCode(sourceWithOutOnChanged);
+            StringAssert.Contains("OnParentViewModelChanged", generatedWithOnChanged);
+            StringAssert.DoesNotContain("OnParentViewModelChanged", generatedWithOutOnChanged);
+        }
 
         static string GenerateCode(string source, bool addMVVM = true) {
             var references = new[] {
@@ -179,6 +201,8 @@ namespace Test {
         [GenerateCommand(CanExecuteMethod = ""CanCommand3_"", UseCommandManager = true)]
         public void Command3(int arg) { }
         bool CanCommand3_(int arg) => true;
+
+        void OnParentViewModelChanged(object o) { }
     }
 }";
             const string expected =
