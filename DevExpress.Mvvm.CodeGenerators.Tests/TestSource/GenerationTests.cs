@@ -147,13 +147,11 @@ namespace Test {
 @"        /// <summary>
         /// Test property comment
         /// </summary>";
-            var ordinaryComment = "Ordinary comment";
-            var ignorableComment = "Ignorable comment";
             var generatedCode = GenerateCode(source);
             StringAssert.Contains(propertyComment, generatedCode);
             StringAssert.Contains(commandComment, generatedCode);
-            StringAssert.DoesNotContain(ignorableComment, generatedCode);
-            StringAssert.DoesNotContain(ordinaryComment, generatedCode);
+            StringAssert.DoesNotContain("Ignorable comment", generatedCode);
+            StringAssert.DoesNotContain("Ordinary comment", generatedCode);
         }
         [Test]
         public void ISPVMGenerateOnChanged() {
