@@ -8,8 +8,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
     static class CommandGenerator {
         public static void Generate(SourceBuilder source, ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol) {
             bool isCommand = methodSymbol.ReturnsVoid;
-            bool isAsyncCommand = SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType) //info.TaskSymbol.Equals(methodSymbol.ReturnType, SymbolEqualityComparer.Default.Equals)
-                || SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType?.BaseType); //info.TaskSymbol.Equals(methodSymbol.ReturnType?.BaseType, SymbolEqualityComparer.Default);
+            bool isAsyncCommand = SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType)
+                || SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType?.BaseType);
 
             if(methodSymbol.Parameters.Length > 1 || !(isCommand || isAsyncCommand)) {
                 info.Context.ReportIncorrectCommandSignature(methodSymbol);

@@ -18,7 +18,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             context.ReportDiagnostic(NoPartialModifier, SymbolNameLocation(classSymbol), classSymbol.Name);
         public static void ReportMVVMNotAvailable(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol, IEnumerable<string> mvvmComponents) =>
             context.ReportDiagnostic(MVVMNotAvailable, SymbolNameLocation(classSymbol), mvvmComponents.ConcatToString(", "), classSymbol.Name);
-        public static void ReportInvalidPropertyName(this GeneratorExecutionContext context, IFieldSymbol fieldSymbol, string? propertyName) =>
+        public static void ReportInvalidPropertyName(this GeneratorExecutionContext context, IFieldSymbol fieldSymbol, string propertyName) =>
             context.ReportDiagnostic(InvalidPropertyName, SymbolNameLocation(fieldSymbol), propertyName);
         public static void ReportOnChangedMethodNotFound(this GeneratorExecutionContext context, IFieldSymbol fieldSymbol, string? methodName, string parameterType, IEnumerable<IMethodSymbol> candidates) =>
             context.ReportDiagnostic(OnChangedMethodNotFound, SymbolNameLocation(fieldSymbol), methodName, parameterType, CandidatesMessage(candidates));

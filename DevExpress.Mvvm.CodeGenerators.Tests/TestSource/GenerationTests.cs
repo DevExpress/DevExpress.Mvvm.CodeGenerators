@@ -119,9 +119,15 @@ namespace Test {
     [GenerateViewModel]
     partial class Example {
         
+        // Ordinary comment
+        /// <summary>
+        /// Ignorable comment
+        /// </summary>
+        
         /// <summary>
         /// Test property comment
         /// </summary>
+        // Ordinary comment
         [GenerateProperty]
         int property;
         
@@ -141,9 +147,13 @@ namespace Test {
 @"        /// <summary>
         /// Test property comment
         /// </summary>";
+            var ordinaryComment = "Ordinary comment";
+            var ignorableComment = "Ignorable comment";
             var generatedCode = GenerateCode(source);
             StringAssert.Contains(propertyComment, generatedCode);
             StringAssert.Contains(commandComment, generatedCode);
+            StringAssert.DoesNotContain(ignorableComment, generatedCode);
+            StringAssert.DoesNotContain(ordinaryComment, generatedCode);
         }
         [Test]
         public void ISPVMGenerateOnChanged() {

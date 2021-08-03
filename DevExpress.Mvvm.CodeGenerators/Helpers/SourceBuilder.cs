@@ -71,7 +71,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
     }
 
     public static class SourceBuilderExtensions {
-        public static SourceBuilder AppendLine(this SourceBuilder builder, string? str) => builder.Append(str).AppendLine();
+        public static SourceBuilder AppendLine(this SourceBuilder builder, string str) => builder.Append(str).AppendLine();
 
         public static void AppendMultipleLines(this SourceBuilder builder, string lines) {
             foreach((int start, int length) in new LineEnumerator(lines)) {
