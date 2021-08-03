@@ -8,11 +8,11 @@ using System.Text;
 namespace DevExpress.Mvvm.CodeGenerators {
     public class XMLCommentHelper {
         public static void AppendComment(SourceBuilder source, CSharpSyntaxNode symbol) {
-            string comment = symbol.GetLeadingTrivia()
-                .LastOrDefault(x => x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
-                .ToString();
-            if(!string.IsNullOrEmpty(comment))
-                source.Append("///").AppendLine(comment).RemoveLast(Environment.NewLine.Length);
+            SyntaxTrivia commentTrivia = symbol.GetLeadingTrivia()
+                .LastOrDefault(x => x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia));
+            if(commentTrivia.IsKind(SyntaxKind.None))
+                return;
+            source.AppendMultipleLines(commentTrivia.ToFullString(), trimLeadingWhiteSpace: true);
         }
     }
 }

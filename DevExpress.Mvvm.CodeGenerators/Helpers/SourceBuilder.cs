@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -64,17 +65,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
             builder.Append(Environment.NewLine);
             return this;
         }
-        public SourceBuilder RemoveLast(int lenght) {
-            builder.Remove(builder.Length - lenght, lenght);
-            return this;
-        }
     }
 
     public static class SourceBuilderExtensions {
         public static SourceBuilder AppendLine(this SourceBuilder builder, string str) => builder.Append(str).AppendLine();
 
-        public static void AppendMultipleLines(this SourceBuilder builder, string lines) {
-            foreach((int start, int length) in new LineEnumerator(lines)) {
+        public static void AppendMultipleLines(this SourceBuilder builder, string lines, bool trimLeadingWhiteSpace = false) {
+            foreach((int start, int length) in new LineEnumerator(lines, trimLeadingWhiteSpace)) {
                 builder.Append(lines, start, length).AppendLine();
             }
         }
@@ -82,11 +79,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public struct LineEnumerator
         {
             readonly string lines;
+            readonly bool trimLeadingWhiteSpace;
             int startIndex;
             public (int start, int length) Current { get; private set; }
 
-            public LineEnumerator(string source) {
+            public LineEnumerator(string source, bool trimLeadingWhiteSpace) {
                 lines = source;
+                this.trimLeadingWhiteSpace = trimLeadingWhiteSpace;
                 Current = default;
                 startIndex = 0;
             }
@@ -97,13 +96,21 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 if(startIndex == lines.Length) return false;
                 int index = lines.IndexOf(Environment.NewLine, startIndex);
                 if(index != -1) {
-                    Current = (startIndex, index - startIndex);
+                    SetCurrent(startIndex, index);
                     startIndex = index + Environment.NewLine.Length;
                 } else {
-                    Current = (startIndex, lines.Length - startIndex);
+                    SetCurrent(startIndex, lines.Length);
                     startIndex = lines.Length;
                 }
                 return true;
+            }
+            void SetCurrent(int startIndex, int endIndex) {
+                if(trimLeadingWhiteSpace) {
+                    while(char.IsWhiteSpace(lines[startIndex])) {
+                        startIndex++;
+                    }
+                }
+                Current = (startIndex, endIndex - startIndex);
             }
         }
 
