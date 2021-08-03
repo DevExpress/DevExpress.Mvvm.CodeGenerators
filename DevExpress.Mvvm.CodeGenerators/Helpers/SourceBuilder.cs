@@ -8,12 +8,12 @@ namespace DevExpress.Mvvm.CodeGenerators {
             public int? LastTabLevel;
         }
 
-        public readonly SourceBuilder Return;
+        public readonly SourceBuilder? Return;
         readonly StringBuilder builder;
         readonly int tabs;
         readonly NewLineState newLineState;
         int? LastTabLevel { get => newLineState.LastTabLevel; set => newLineState.LastTabLevel = value; }
-        SourceBuilder tab;
+        SourceBuilder? tab;
 
         public SourceBuilder Tab {
             get {
@@ -26,14 +26,14 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public SourceBuilder(StringBuilder builder) 
             : this(builder, 0, null, new NewLineState()) {
         }
-        SourceBuilder(StringBuilder builder, int tabs, SourceBuilder @return, NewLineState newLineState) {
+        SourceBuilder(StringBuilder builder, int tabs, SourceBuilder? @return, NewLineState newLineState) {
             this.builder = builder;
             this.tabs = tabs;
             Return = @return;
             this.newLineState = newLineState;
         }
 
-        public SourceBuilder Append(string str) {
+        public SourceBuilder Append(string? str) {
             BeforeAppend();
             builder.Append(str);
             return this;
@@ -64,10 +64,14 @@ namespace DevExpress.Mvvm.CodeGenerators {
             builder.Append(Environment.NewLine);
             return this;
         }
+        public SourceBuilder RemoveLast(int lenght) {
+            builder.Remove(builder.Length - lenght, lenght);
+            return this;
+        }
     }
 
     public static class SourceBuilderExtensions {
-        public static SourceBuilder AppendLine(this SourceBuilder builder, string str) => builder.Append(str).AppendLine();
+        public static SourceBuilder AppendLine(this SourceBuilder builder, string? str) => builder.Append(str).AppendLine();
 
         public static void AppendMultipleLines(this SourceBuilder builder, string lines) {
             foreach((int start, int length) in new LineEnumerator(lines)) {
@@ -91,16 +95,15 @@ namespace DevExpress.Mvvm.CodeGenerators {
             }
             public bool MoveNext() {
                 if(startIndex == lines.Length) return false;
-                var index = lines.IndexOf("\r\n", startIndex);
+                int index = lines.IndexOf(Environment.NewLine, startIndex);
                 if(index != -1) {
                     Current = (startIndex, index - startIndex);
-                    startIndex = index + 2; ;
-                    return true;
+                    startIndex = index + Environment.NewLine.Length;
                 } else {
                     Current = (startIndex, lines.Length - startIndex);
                     startIndex = lines.Length;
-                    return true;
                 }
+                return true;
             }
         }
 
@@ -115,7 +118,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
         public static void AppendMultipleLinesWithSeparator(this SourceBuilder builder, IEnumerable<string> lines, string separator) {
             bool appendSeparator = false;
-            foreach(var line in lines) {
+            foreach(string line in lines) {
                 if(appendSeparator)
                     builder.Append(separator);
                 builder.Append(line);

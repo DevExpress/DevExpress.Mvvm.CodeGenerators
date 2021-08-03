@@ -112,6 +112,40 @@ namespace Test {
             StringAssert.Contains("int Property", generatedCode);
         }
         [Test]
+        public void GenerateComments() {
+            var source = @"using DevExpress.Mvvm.CodeGenerators;
+
+namespace Test {
+    [GenerateViewModel]
+    partial class Example {
+        
+        /// <summary>
+        /// Test property comment
+        /// </summary>
+        [GenerateProperty]
+        int property;
+        
+        /// <summary>
+        /// Test command comment
+        /// </summary>
+        [GenerateCommand]
+        public void Method(int arg) { }
+    }
+}
+";
+            var propertyComment =
+@"        /// <summary>
+        /// Test command comment
+        /// </summary>";
+            var commandComment =
+@"        /// <summary>
+        /// Test property comment
+        /// </summary>";
+            var generatedCode = GenerateCode(source);
+            StringAssert.Contains(propertyComment, generatedCode);
+            StringAssert.Contains(commandComment, generatedCode);
+        }
+        [Test]
         public void ISPVMGenerateOnChanged() {
             var sourceWithOnChanged = @"
 using DevExpress.Mvvm.CodeGenerators;

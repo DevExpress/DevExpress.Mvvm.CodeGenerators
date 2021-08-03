@@ -1,35 +1,41 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class CommandGenerator {
         public static void Generate(SourceBuilder source, ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol) {
-            var isCommand = methodSymbol.ReturnsVoid;
-            var isAsyncCommand = info.TaskSymbol.Equals(methodSymbol.ReturnType, SymbolEqualityComparer.Default)
-                || info.TaskSymbol.Equals(methodSymbol.ReturnType?.BaseType, SymbolEqualityComparer.Default);
+            bool isCommand = methodSymbol.ReturnsVoid;
+            bool isAsyncCommand = SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType) //info.TaskSymbol.Equals(methodSymbol.ReturnType, SymbolEqualityComparer.Default.Equals)
+                || SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType?.BaseType); //info.TaskSymbol.Equals(methodSymbol.ReturnType?.BaseType, SymbolEqualityComparer.Default);
 
             if(methodSymbol.Parameters.Length > 1 || !(isCommand || isAsyncCommand)) {
                 info.Context.ReportIncorrectCommandSignature(methodSymbol);
                 return;
             }
 
-            var parameterType = methodSymbol.Parameters.FirstOrDefault()?.Type;
-            var canExecuteMethodName = CommandHelper.GetCanExecuteMethodName(methodSymbol, info.CommandAttributeSymbol);
+            ITypeSymbol? parameterType = methodSymbol.Parameters.FirstOrDefault()?.Type;
+            string? canExecuteMethodName = CommandHelper.GetCanExecuteMethodName(methodSymbol, info.CommandAttributeSymbol);
             if(canExecuteMethodName == null) {
-                var candidate = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, "Can" + methodSymbol.Name, parameterType, info);
+                IEnumerable<IMethodSymbol> candidate = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, "Can" + methodSymbol.Name, parameterType, info);
                 canExecuteMethodName = candidate.FirstOrDefault()?.Name ?? "null";
             } else {
-                var candidates = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, canExecuteMethodName, parameterType, info);
+                IEnumerable<IMethodSymbol> candidates = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, canExecuteMethodName, parameterType, info);
                 if(!candidates.Any()) {
                     info.Context.ReportCanExecuteMethodNotFound(methodSymbol, canExecuteMethodName, parameterType?.ToDisplayStringNullable() ?? string.Empty, CommandHelper.GetMethods(classSymbol, canExecuteMethodName));
                     return;
                 }
             }
 
-            var name = CommandHelper.GetCommandName(methodSymbol, info.CommandAttributeSymbol, methodSymbol.Name);
-            var genericArgumentType = parameterType?.ToDisplayStringNullable() ?? string.Empty;
+            string name = CommandHelper.GetCommandName(methodSymbol, info.CommandAttributeSymbol, methodSymbol.Name)!;
+            string genericArgumentType = parameterType?.ToDisplayStringNullable() ?? string.Empty;
             source.AppendCommandGenericType(isCommand, genericArgumentType).Append("? ").AppendFirstToLowerCase(name).AppendLine(";");
+
+            CSharpSyntaxNode commandSyntaxNode = (CSharpSyntaxNode)methodSymbol.DeclaringSyntaxReferences[0].GetSyntax();
+            XMLCommentHelper.AppendComment(source, commandSyntaxNode);
+
             source.Append("public ").AppendCommandGenericType(isCommand, genericArgumentType).Append(' ').Append(name).AppendLine(" {");
             AppendGetter(source.Tab, info, methodSymbol, isCommand, canExecuteMethodName, genericArgumentType, name);
             source.AppendLine("}");
@@ -41,14 +47,14 @@ namespace DevExpress.Mvvm.CodeGenerators {
             source.AppendLine(");");
         }
 
-        static void AppendParametersList(this SourceBuilder source, IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {
+        static void AppendParametersList(this SourceBuilder source, IMethodSymbol methodSymbol, INamedTypeSymbol? commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {
             source.Append(executeMethod).Append(", ").Append(canExecuteMethodName);
             if(!isCommand) {
-                var allowMultipleExecution = CommandHelper.GetAllowMultipleExecutionValue(methodSymbol, commandAttributeSymbol).BoolToStringValue();
+                string allowMultipleExecution = CommandHelper.GetAllowMultipleExecutionValue(methodSymbol, commandAttributeSymbol).BoolToStringValue();
                 source.Append(", ").Append(allowMultipleExecution);
             }
             if(!isWinUI) {
-                var useCommandManager = CommandHelper.GetUseCommandManagerValue(methodSymbol, commandAttributeSymbol).BoolToStringValue();
+                string useCommandManager = CommandHelper.GetUseCommandManagerValue(methodSymbol, commandAttributeSymbol).BoolToStringValue();
                 source.Append(", ").Append(useCommandManager);
             }
         }

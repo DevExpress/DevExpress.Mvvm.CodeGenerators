@@ -1,32 +1,36 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using System.Linq;
 using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class PropertyGenerator {
-        public static string Generate(SourceBuilder source, ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, ChangeEventRaiseMode? changedEventRaiseMode, ChangeEventRaiseMode? changingEventRaiseMode) {
-            var propertyName = PropertyHelper.CreatePropertyName(fieldSymbol.Name);
+        public static string? Generate(SourceBuilder source, ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, ChangeEventRaiseMode? changedEventRaiseMode, ChangeEventRaiseMode? changingEventRaiseMode) {
+            string propertyName = PropertyHelper.CreatePropertyName(fieldSymbol.Name);
             if(propertyName == fieldSymbol.Name)
                 info.Context.ReportInvalidPropertyName(fieldSymbol, propertyName);
 
-            var changedMethod = PropertyHelper.GetChangedMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type);
-            var changingMethod = PropertyHelper.GetChangingMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type);
+            CSharpSyntaxNode? fieldSyntaxNode = (CSharpSyntaxNode?)fieldSymbol.DeclaringSyntaxReferences[0].GetSyntax().Parent?.Parent;
+            XMLCommentHelper.AppendComment(source, fieldSyntaxNode);
 
-            if(propertyName == fieldSymbol.Name || changedMethod == null || changingMethod == null)
+            string? changedMethod = PropertyHelper.GetChangedMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type);
+            string? changingMethod = PropertyHelper.GetChangingMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type);
+
+            if(propertyName == fieldSymbol.Name || changedMethod == null || changingMethod == null || string.IsNullOrEmpty(propertyName))
                 return null;
 
             PropertyHelper.AppendAttributesList(source, fieldSymbol);
 
-            var isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, info.PropertyAttributeSymbol);
-            var virtuality = isVirtual ? "virtual " : string.Empty;
-            var typeName = fieldSymbol.Type.WithNullableAnnotation(PropertyHelper.GetNullableAnnotation(fieldSymbol.Type)).ToDisplayStringNullable();
-            var fieldName = fieldSymbol.Name == "value" ? "this.value" : fieldSymbol.Name;
+            bool isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, info.PropertyAttributeSymbol);
+            string virtuality = isVirtual ? "virtual " : string.Empty;
+            string typeName = fieldSymbol.Type.WithNullableAnnotation(PropertyHelper.GetNullableAnnotation(fieldSymbol.Type)).ToDisplayStringNullable();
+            string fieldName = fieldSymbol.Name == "value" ? "this.value" : fieldSymbol.Name;
             source.Append("public ").Append(virtuality).Append(typeName).Append(' ').Append(propertyName).AppendLine(" {");
             source.Tab.Append("get => ").Append(fieldName).AppendLine(";");
 
             AppendSetterAttribute(source.Tab, info, fieldSymbol, fieldName);
 
-            var setterAccessModifier = PropertyHelper.GetSetterAccessModifierValue(fieldSymbol, info.PropertyAttributeSymbol);
+            string setterAccessModifier = PropertyHelper.GetSetterAccessModifierValue(fieldSymbol, info.PropertyAttributeSymbol);
             source.Tab.Append(setterAccessModifier).AppendLine("set {");
             source.Tab.Tab.Append("if(EqualityComparer<").Append(typeName).Append(">.Default.Equals(").Append(fieldName).AppendLine(", value)) return;");
 
@@ -64,7 +68,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
 
         static void AppendSetterAttribute(SourceBuilder source, ContextInfo info, IFieldSymbol fieldSymbol, string fieldName) {
-            var isNonNullableReferenceType = fieldSymbol.Type.IsReferenceType && fieldSymbol.Type.NullableAnnotation == NullableAnnotation.NotAnnotated;
+            bool isNonNullableReferenceType = fieldSymbol.Type.IsReferenceType && fieldSymbol.Type.NullableAnnotation == NullableAnnotation.NotAnnotated;
             if(isNonNullableReferenceType && PropertyHelper.HasMemberNotNullAttribute(info.Compilation))
                 source.Append("[System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(").Append(fieldName).AppendLine("))]");
         }

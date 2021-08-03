@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
@@ -13,25 +14,25 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static readonly string nameofSetterAccessModifier = AttributesGenerator.SetterAccessModifier;
 
         public static string CreatePropertyName(string fieldName) => fieldName.TrimStart('_').FirstToUpperCase();
-        public static bool GetIsVirtualValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
+        public static bool GetIsVirtualValue(IFieldSymbol fieldSymbol, INamedTypeSymbol? propertySymbol) =>
             AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofIsVirtual, false);
-        public static string GetChangedMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType) {
-            var methodName = GetChangedMethodName(fieldSymbol, info.PropertyAttributeSymbol);
+        public static string? GetChangedMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType) {
+            string? methodName = GetChangedMethodName(fieldSymbol, info.PropertyAttributeSymbol);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changed", "oldValue", fieldType);
         }
-        public static string GetChangingMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType) {
-            var methodName = GetChangingMethodName(fieldSymbol, info.PropertyAttributeSymbol);
+        public static string? GetChangingMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType) {
+            string? methodName = GetChangingMethodName(fieldSymbol, info.PropertyAttributeSymbol);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changing", "value", fieldType);
         }
-        public static string GetSetterAccessModifierValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) {
-            var enumIndex = AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofSetterAccessModifier, 0);
+        public static string GetSetterAccessModifierValue(IFieldSymbol fieldSymbol, INamedTypeSymbol? propertySymbol) {
+            int enumIndex = AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofSetterAccessModifier, 0);
             return AccessModifierGenerator.GetCodeRepresentation((AccessModifier)enumIndex);
         }
         public static void AppendAttributesList(SourceBuilder source, IFieldSymbol fieldSymbol) {
-            var attributeList = fieldSymbol.GetAttributes();
+            ImmutableArray<AttributeData> attributeList = fieldSymbol.GetAttributes();
             if(attributeList.Length == 1)
                 return;
-            foreach(var attribute in attributeList) {
+            foreach(AttributeData attribute in attributeList) {
                 string attributeName = attribute.ToString();
                 if(!attributeName.StartsWith(AttributesGenerator.PropertyAttributeFullName))
                     source.Append('[').Append(attributeName).AppendLine("]");
@@ -57,20 +58,20 @@ namespace DevExpress.Mvvm.CodeGenerators {
             return parameterType.NullableAnnotation != NullableAnnotation.NotAnnotated || type.NullableAnnotation == NullableAnnotation.NotAnnotated;
         }
          static string ToNotAnnotatedDisplayString(ITypeSymbol type) {
-            var typeAsString = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            string typeAsString = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
             return typeAsString.EndsWith("?") ? typeAsString.Remove(typeAsString.Length - 1, 1) : typeAsString;
         }
 
-        static string GetChangedMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
-            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofChangedMethod, (string)null);
-        static string GetChangingMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
-            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofChangingMethod, (string)null);
-        static string GetMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string methodName, string defaultMethodName, string parameterName, ITypeSymbol fieldType) {
-            var hasMethodName = methodName != null;
+        static string? GetChangedMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol? propertySymbol) =>
+            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofChangedMethod, (string?)null);
+        static string? GetChangingMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol? propertySymbol) =>
+            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofChangingMethod, (string?)null);
+        static string? GetMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string? methodName, string defaultMethodName, string parameterName, ITypeSymbol fieldType) {
+            bool hasMethodName = methodName != null;
             if(!hasMethodName)
                 methodName = defaultMethodName;
 
-            var methods = GetOnChangedMethods(classSymbol, methodName, fieldType);
+            IEnumerable<IMethodSymbol> methods = GetOnChangedMethods(classSymbol, methodName, fieldType);
             if(methods.Count() == 2) {
                 info.Context.ReportTwoSuitableMethods(classSymbol, fieldSymbol, methodName, fieldType.ToDisplayStringNullable());
                 return methodName + "(" + parameterName + ");";
@@ -86,7 +87,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             info.Context.ReportOnChangedMethodNotFound(fieldSymbol, methodName, fieldType.ToDisplayStringNullable(), CommandHelper.GetMethods(classSymbol, methodName));
             return null;
         }
-        static IEnumerable<IMethodSymbol> GetOnChangedMethods(INamedTypeSymbol classSymbol, string methodName, ITypeSymbol fieldType) =>
+        static IEnumerable<IMethodSymbol> GetOnChangedMethods(INamedTypeSymbol classSymbol, string? methodName, ITypeSymbol fieldType) =>
             CommandHelper.GetMethods(classSymbol,
                                      methodSymbol => methodSymbol.ReturnsVoid && methodSymbol.Name == methodName && methodSymbol.Parameters.Length < 2 &&
                                                     (methodSymbol.Parameters.Length == 0 || IsСompatibleType(methodSymbol.Parameters.First().Type, fieldType)));

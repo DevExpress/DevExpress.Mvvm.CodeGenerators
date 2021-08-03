@@ -11,7 +11,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
     };
     static class AccessModifierGenerator {
         public static string GetSourceCode() =>
-$@"    public enum AccessModifier {{
+$@"    internal enum AccessModifier {{
         Public,
         Private,
         Protected,

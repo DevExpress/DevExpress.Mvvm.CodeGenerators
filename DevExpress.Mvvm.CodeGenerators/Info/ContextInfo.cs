@@ -8,17 +8,17 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public GeneratorExecutionContext Context { get; }
         public Compilation Compilation { get; }
 
-        public INamedTypeSymbol ViewModelAttributeSymbol { get; }
-        public INamedTypeSymbol PropertyAttributeSymbol { get; }
-        public INamedTypeSymbol CommandAttributeSymbol { get; }
+        public INamedTypeSymbol? ViewModelAttributeSymbol { get; }
+        public INamedTypeSymbol? PropertyAttributeSymbol { get; }
+        public INamedTypeSymbol? CommandAttributeSymbol { get; }
 
-        public INamedTypeSymbol INPCedSymbol { get; }
-        public INamedTypeSymbol INPCingSymbol { get; }
-        public INamedTypeSymbol IDEISymbol { get; }
-        public INamedTypeSymbol ISPVMSymbol { get; }
-        public INamedTypeSymbol ISSSymbol { get; }
-        public INamedTypeSymbol TaskSymbol { get; }
-        public INamedTypeSymbol BoolSymbol { get; }
+        public INamedTypeSymbol? INPCedSymbol { get; }
+        public INamedTypeSymbol? INPCingSymbol { get; }
+        public INamedTypeSymbol? IDEISymbol { get; }
+        public INamedTypeSymbol? ISPVMSymbol { get; }
+        public INamedTypeSymbol? ISSSymbol { get; }
+        public INamedTypeSymbol? TaskSymbol { get; }
+        public INamedTypeSymbol? BoolSymbol { get; }
 
         public bool IsWinUI { get; }
         public bool IsMvvmAvailable { get; }
@@ -46,7 +46,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static bool GetIsWinUI(Compilation compilation) {
             return GetISSSymbol(compilation) != null && compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;
         }
-        public static INamedTypeSymbol GetISSSymbol(Compilation compilation) {
+        public static INamedTypeSymbol? GetISSSymbol(Compilation compilation) {
             return compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices");
         }
     }

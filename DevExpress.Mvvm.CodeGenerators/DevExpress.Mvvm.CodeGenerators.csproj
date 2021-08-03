@@ -11,6 +11,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <SignAssembly>true</SignAssembly>
     <RestorePackages>true</RestorePackages>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -44,6 +45,7 @@
     <Compile Include="Helpers\ClassHelper.cs" />
     <Compile Include="Helpers\CommandHelper.cs" />
     <Compile Include="Helpers\PropertyHelper.cs" />
+    <Compile Include="Helpers\XMLCommentHelper.cs" />
     <Compile Include="Info\ContextInfo.cs" />
     <Compile Include="Info\INPCInfo.cs" />
     <Compile Include="InitializationGenerator\AccessModifierGenerator.cs" />
