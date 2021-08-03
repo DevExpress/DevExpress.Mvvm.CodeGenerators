@@ -17,11 +17,6 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         protected void RaisePropertyChanged(PropertyChangedEventArgs e) { }
     }
     [GenerateViewModel]
-    public partial class TestPropertyName {
-        [GenerateProperty]
-        int _h;
-    }
-    [GenerateViewModel]
     partial class NotImplenmentedINPCing : ImplementedINPCingClass {
         [GenerateProperty]
         int a;
@@ -464,11 +459,6 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.AreEqual(1, generatedWithParent.a);
             Assert.AreEqual(1, generated.a);
             Assert.Throws<System.InvalidOperationException>(() => generated.ParentViewModel = generated);
-        }
-
-         [Test]
-         public void Asdads() {
-            new TestPropertyName();
         }
     }
     #region same class names
