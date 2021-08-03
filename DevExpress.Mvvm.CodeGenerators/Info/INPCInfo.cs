@@ -33,7 +33,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public bool ShouldImplementRaiseMethod() =>
             HasAttribute && !HasRaiseMethodWithEventArgsParameter && (!hasImplementation || hasImplementationInCurrentClass);
 
-        INPCInfo(INamedTypeSymbol classSymbol, INamedTypeSymbol? interfaceSymbol, Func<INamedTypeSymbol, bool> checkAttribute, string methodName, string eventArgsParameter, string raiseMethodImplementation) {
+        INPCInfo(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol, Func<INamedTypeSymbol, bool> checkAttribute, string methodName, string eventArgsParameter, string raiseMethodImplementation) {
             HasAttribute = checkAttribute(classSymbol);
             hasImplementation = ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, interfaceSymbol);
             if(HasAttribute && hasImplementation)

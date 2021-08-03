@@ -7,9 +7,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
             TypedConstant? argument = GetAttributeData(sourceSymbol, attributeSymbol)?.NamedArguments
                                                                           .SingleOrDefault(kvp => kvp.Key == propertyName)
                                                                           .Value;
-            if(argument == null || ((TypedConstant)argument).IsNull)
+            if(argument == null || argument.Value.IsNull)
                 return defaultValue;
-            return (T?)((TypedConstant)argument).Value;
+            return (T?)argument.Value.Value;
         }
         public static bool HasAttribute(ISymbol sourceSymbol, INamedTypeSymbol? attributeSymbol) =>
             GetAttributeData(sourceSymbol, attributeSymbol) != null;

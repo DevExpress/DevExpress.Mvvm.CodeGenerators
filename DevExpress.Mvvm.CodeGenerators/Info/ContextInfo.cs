@@ -8,17 +8,17 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public GeneratorExecutionContext Context { get; }
         public Compilation Compilation { get; }
 
-        public INamedTypeSymbol? ViewModelAttributeSymbol { get; }
-        public INamedTypeSymbol? PropertyAttributeSymbol { get; }
-        public INamedTypeSymbol? CommandAttributeSymbol { get; }
+        public INamedTypeSymbol ViewModelAttributeSymbol { get; }
+        public INamedTypeSymbol PropertyAttributeSymbol { get; }
+        public INamedTypeSymbol CommandAttributeSymbol { get; }
 
-        public INamedTypeSymbol? INPCedSymbol { get; }
-        public INamedTypeSymbol? INPCingSymbol { get; }
-        public INamedTypeSymbol? IDEISymbol { get; }
+        public INamedTypeSymbol INPCedSymbol { get; }
+        public INamedTypeSymbol INPCingSymbol { get; }
+        public INamedTypeSymbol IDEISymbol { get; }
         public INamedTypeSymbol? ISPVMSymbol { get; }
         public INamedTypeSymbol? ISSSymbol { get; }
-        public INamedTypeSymbol? TaskSymbol { get; }
-        public INamedTypeSymbol? BoolSymbol { get; }
+        public INamedTypeSymbol TaskSymbol { get; }
+        public INamedTypeSymbol BoolSymbol { get; }
 
         public bool IsWinUI { get; }
         public bool IsMvvmAvailable { get; }
@@ -29,17 +29,17 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
             IsMvvmAvailable = Compilation.ReferencedAssemblyNames.Any(ai => Regex.IsMatch(ai.Name, @"DevExpress\.Mvvm(\.v\d{2}\.\d)?$"));
 
-            ViewModelAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName);
-            PropertyAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.PropertyAttributeFullName);
-            CommandAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.CommandAttributeFullName);
+            ViewModelAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName)!;
+            PropertyAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.PropertyAttributeFullName)!;
+            CommandAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.CommandAttributeFullName)!;
 
-            INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName);
-            INPCingSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName);
-            IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName);
+            INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName)!;
+            INPCingSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName)!;
+            IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName)!;
             ISSSymbol = GetISSSymbol(compilation);
             ISPVMSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel");
-            TaskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
-            BoolSymbol = compilation.GetTypeByMetadataName("System.Boolean");
+            TaskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task")!;
+            BoolSymbol = compilation.GetTypeByMetadataName("System.Boolean")!;
 
             IsWinUI = GetIsWinUI(compilation);
         }

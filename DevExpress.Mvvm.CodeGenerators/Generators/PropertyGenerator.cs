@@ -16,7 +16,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             string? changedMethod = PropertyHelper.GetChangedMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type);
             string? changingMethod = PropertyHelper.GetChangingMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type);
 
-            if(propertyName == fieldSymbol.Name || changedMethod == null || changingMethod == null || string.IsNullOrEmpty(propertyName))
+            if(propertyName == fieldSymbol.Name || changedMethod == null || changingMethod == null)
                 return null;
 
             PropertyHelper.AppendAttributesList(source, fieldSymbol);

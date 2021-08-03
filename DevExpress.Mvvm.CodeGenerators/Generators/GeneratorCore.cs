@@ -24,7 +24,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             Compilation compilation = context.Compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(attributesSourceText));
             context.AddSource(ClassHelper.CreateFileName("Attributes"), attributesSourceText);
 
-            ContextInfo? contextInfo = new ContextInfo(context, compilation);
+            ContextInfo contextInfo = new ContextInfo(context, compilation);
             HashSet<string> generatedClasses = new HashSet<string>();
             List<INamedTypeSymbol> processedSymbols = new List<INamedTypeSymbol>();
 

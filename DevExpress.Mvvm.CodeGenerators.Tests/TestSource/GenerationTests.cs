@@ -221,6 +221,9 @@ namespace Test {
         void OnStrChanged_() {}
         void OnStrChanging_(string newValue) {}
 
+        /// <summary>
+        /// Test property comment
+        /// </summary>
         [GenerateProperty]
         [System.ComponentModel.DataAnnotations.Required]
         [System.ComponentModel.DataAnnotations.Key]
@@ -234,6 +237,9 @@ namespace Test {
         [GenerateProperty(IsVirtual = true, SetterAccessModifier = AccessModifier.Protected)]
         double _Double;
 
+        /// <summary>
+        /// Test command comment
+        /// </summary>
         [GenerateCommand]
         public void Command1(int arg) { }
         bool CanCommand1(int arg) => true;
@@ -302,6 +308,9 @@ namespace Test {
                 OnStrChanged_();
             }
         }
+        /// <summary>
+        /// Test property comment
+        /// </summary>
         [System.ComponentModel.DataAnnotations.RequiredAttribute]
         [System.ComponentModel.DataAnnotations.KeyAttribute]
         public long Long {
@@ -335,6 +344,9 @@ namespace Test {
             }
         }
         DelegateCommand<int>? command1Command;
+        /// <summary>
+        /// Test command comment
+        /// </summary>
         public DelegateCommand<int> Command1Command {
             get => command1Command ??= new DelegateCommand<int>(Command1, CanCommand1, true);
         }
