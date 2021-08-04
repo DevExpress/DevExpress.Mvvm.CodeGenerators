@@ -131,9 +131,9 @@ namespace Test {
         [GenerateProperty]
         int property;
         
-        /// <summary>
-        /// Test command comment
-        /// </summary>
+     /// <summary>
+/// Test command comment
+                    /// </summary>
         [GenerateCommand]
         public void Method(int arg) { }
     }
