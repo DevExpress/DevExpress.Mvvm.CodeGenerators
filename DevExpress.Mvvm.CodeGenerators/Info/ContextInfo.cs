@@ -15,8 +15,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public INamedTypeSymbol INPCedSymbol { get; }
         public INamedTypeSymbol INPCingSymbol { get; }
         public INamedTypeSymbol IDEISymbol { get; }
-        public INamedTypeSymbol ISPVMSymbol { get; }
-        public INamedTypeSymbol ISSSymbol { get; }
+        public INamedTypeSymbol? ISPVMSymbol { get; }
+        public INamedTypeSymbol? ISSSymbol { get; }
         public INamedTypeSymbol TaskSymbol { get; }
         public INamedTypeSymbol BoolSymbol { get; }
 
@@ -29,24 +29,24 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
             IsMvvmAvailable = Compilation.ReferencedAssemblyNames.Any(ai => Regex.IsMatch(ai.Name, @"DevExpress\.Mvvm(\.v\d{2}\.\d)?$"));
 
-            ViewModelAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName);
-            PropertyAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.PropertyAttributeFullName);
-            CommandAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.CommandAttributeFullName);
+            ViewModelAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName)!;
+            PropertyAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.PropertyAttributeFullName)!;
+            CommandAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.CommandAttributeFullName)!;
 
-            INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName);
-            INPCingSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName);
-            IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName);
+            INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName)!;
+            INPCingSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName)!;
+            IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName)!;
             ISSSymbol = GetISSSymbol(compilation);
             ISPVMSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel");
-            TaskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
-            BoolSymbol = compilation.GetTypeByMetadataName("System.Boolean");
+            TaskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task")!;
+            BoolSymbol = compilation.GetTypeByMetadataName("System.Boolean")!;
 
             IsWinUI = GetIsWinUI(compilation);
         }
         public static bool GetIsWinUI(Compilation compilation) {
             return GetISSSymbol(compilation) != null && compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;
         }
-        public static INamedTypeSymbol GetISSSymbol(Compilation compilation) {
+        public static INamedTypeSymbol? GetISSSymbol(Compilation compilation) {
             return compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices");
         }
     }

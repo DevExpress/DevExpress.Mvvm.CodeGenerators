@@ -112,6 +112,48 @@ namespace Test {
             StringAssert.Contains("int Property", generatedCode);
         }
         [Test]
+        public void GenerateComments() {
+            var source = @"using DevExpress.Mvvm.CodeGenerators;
+
+namespace Test {
+    [GenerateViewModel]
+    partial class Example {
+        
+        // Ordinary comment
+        /// <summary>
+        /// Ignorable comment
+        /// </summary>
+        
+        /// <summary>
+        /// Test property comment
+        /// </summary>
+        // Ordinary comment
+        [GenerateProperty]
+        int property;
+        
+     /// <summary>
+/// Test command comment
+                    /// </summary>
+        [GenerateCommand]
+        public void Method(int arg) { }
+    }
+}
+";
+            var propertyComment =
+@"        /// <summary>
+        /// Test command comment
+        /// </summary>";
+            var commandComment =
+@"        /// <summary>
+        /// Test property comment
+        /// </summary>";
+            var generatedCode = GenerateCode(source);
+            StringAssert.Contains(propertyComment, generatedCode);
+            StringAssert.Contains(commandComment, generatedCode);
+            StringAssert.DoesNotContain("Ignorable comment", generatedCode);
+            StringAssert.DoesNotContain("Ordinary comment", generatedCode);
+        }
+        [Test]
         public void ISPVMGenerateOnChanged() {
             var sourceWithOnChanged = @"
 using DevExpress.Mvvm.CodeGenerators;
@@ -177,6 +219,9 @@ namespace Test {
         void OnStrChanged_() {}
         void OnStrChanging_(string newValue) {}
 
+        /// <summary>
+        /// Test property comment
+        /// </summary>
         [GenerateProperty]
         [System.ComponentModel.DataAnnotations.Required]
         [System.ComponentModel.DataAnnotations.Key]
@@ -190,6 +235,9 @@ namespace Test {
         [GenerateProperty(IsVirtual = true, SetterAccessModifier = AccessModifier.Protected)]
         double _Double;
 
+        /// <summary>
+        /// Test command comment
+        /// </summary>
         [GenerateCommand]
         public void Command1(int arg) { }
         bool CanCommand1(int arg) => true;
@@ -258,6 +306,9 @@ namespace Test {
                 OnStrChanged_();
             }
         }
+        /// <summary>
+        /// Test property comment
+        /// </summary>
         [System.ComponentModel.DataAnnotations.RequiredAttribute]
         [System.ComponentModel.DataAnnotations.KeyAttribute]
         public long Long {
@@ -291,6 +342,9 @@ namespace Test {
             }
         }
         DelegateCommand<int>? command1Command;
+        /// <summary>
+        /// Test command comment
+        /// </summary>
         public DelegateCommand<int> Command1Command {
             get => command1Command ??= new DelegateCommand<int>(Command1, CanCommand1, true);
         }

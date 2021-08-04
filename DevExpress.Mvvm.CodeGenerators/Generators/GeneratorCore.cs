@@ -6,6 +6,7 @@ using System.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class ViewModelGeneratorCore {
@@ -19,23 +20,23 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(context.SyntaxContextReceiver is not SyntaxContextReceiver receiver)
                 return;
 
-            var attributesSourceText = SourceText.From(InitializationGenerator.GetSourceCode(ContextInfo.GetIsWinUI(context.Compilation)), Encoding.UTF8);
-            var compilation = context.Compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(attributesSourceText));
+            SourceText attributesSourceText = SourceText.From(InitializationGenerator.GetSourceCode(ContextInfo.GetIsWinUI(context.Compilation)), Encoding.UTF8);
+            Compilation compilation = context.Compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(attributesSourceText));
             context.AddSource(ClassHelper.CreateFileName("Attributes"), attributesSourceText);
 
-            var contextInfo = new ContextInfo(context, compilation);
-            var generatedClasses = new HashSet<string>();
-            var processedSymbols = new List<INamedTypeSymbol>();
+            ContextInfo contextInfo = new ContextInfo(context, compilation);
+            HashSet<string> generatedClasses = new HashSet<string>();
+            List<INamedTypeSymbol> processedSymbols = new List<INamedTypeSymbol>();
 
-            var source = new StringBuilder();
-            var sourceBuilder = new SourceBuilder(source);
+            StringBuilder source = new StringBuilder();
+            SourceBuilder sourceBuilder = new SourceBuilder(source);
             int generatedCount = 0;
-            foreach(var classSyntax in receiver.ClassSyntaxes) {
+            foreach(ClassDeclarationSyntax classSyntax in receiver.ClassSyntaxes) {
                 if(context.CancellationToken.IsCancellationRequested)
                     break;
-                if(classSyntax.AttributeLists.Count == 0) //optimization
+                if(classSyntax.AttributeLists.Count == 0)
                     continue;
-                var classSymbol = contextInfo.Compilation.GetSemanticModel(classSyntax.SyntaxTree).GetDeclaredSymbol(classSyntax);
+                INamedTypeSymbol classSymbol = contextInfo.Compilation.GetSemanticModel(classSyntax.SyntaxTree).GetDeclaredSymbol(classSyntax)!;
                 if(!AttributeHelper.HasAttribute(classSymbol, contextInfo.ViewModelAttributeSymbol))
                     continue;
 
@@ -49,7 +50,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 }
 
                 ClassGenerator.GenerateSourceCode(sourceBuilder, contextInfo, classSymbol);
-                var classSource = source.ToString();
+                string classSource = source.ToString();
                 source.Clear();
                 context.AddSource(ClassHelper.CreateFileName(classSymbol.Name, generatedClasses), SourceText.From(classSource, Encoding.UTF8));
                 generatedCount++;

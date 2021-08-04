@@ -107,6 +107,15 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests
 
             Assert.Throws<InvalidOperationException>(() => tabbed2.Append("456"));
         }
+        [Test]
+        public void SourceBuilderTest_TrimLeadingWhiteSpace() {
+            builder.Tab.Tab.AppendMultipleLines("    \t   \t abc\r\n123\r\n    xyz", trimLeadingWhiteSpace: true);
+            AssertBuilderResult("        abc\r\n        123\r\n        xyz\r\n");
+        }
+        [Test]
+        public void LineEnumeratorTest_TrimLeadingWhiteSpace() {
+            AssertRanges(new[] { (10, 3),(15, 3),(24, 3) }, "    \t   \t abc\r\n123\r\n    xyz", trimLeadingWhiteSpace: true);
+        }
 
         void AssertBuilderResult(string expectedResult) {
             Assert.AreEqual(expectedResult, sb.ToString());
@@ -121,11 +130,11 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests
             AssertRanges(new[] { (0, 3) }, "a\rc");
             AssertRanges(new[] { (0, 3) }, "a\nc");
         }
-        static void AssertRanges((int start, int count)[] expected, string str) {
-            CollectionAssert.AreEqual(expected, GetRanges(str).ToArray());
+        static void AssertRanges((int start, int count)[] expected, string str, bool trimLeadingWhiteSpace = false) {
+            CollectionAssert.AreEqual(expected, GetRanges(str, trimLeadingWhiteSpace).ToArray());
         }
-        static IEnumerable<(int start, int count)> GetRanges(string str) {
-            foreach(var range in new SourceBuilderExtensions.LineEnumerator(str)) {
+        static IEnumerable<(int start, int count)> GetRanges(string str, bool trimLeadingWhiteSpace) {
+            foreach(var range in new SourceBuilderExtensions.LineEnumerator(str, trimLeadingWhiteSpace: trimLeadingWhiteSpace)) {
                 yield return range;
             }
         }

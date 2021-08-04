@@ -16,32 +16,32 @@ namespace DevExpress.Mvvm.CodeGenerators {
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.ViewModelAttributeSymbol, nameofImplementISPVM, false);
         public static bool GetImplementISSValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.ViewModelAttributeSymbol, nameofImplementISS, false);
-        public static IEnumerable<IFieldSymbol> GetFieldCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol propertySymbol) =>
+        public static IEnumerable<IFieldSymbol> GetFieldCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol? propertySymbol) =>
             GetProcessingMembers<IFieldSymbol>(classSymbol, propertySymbol);
-        public static IEnumerable<IMethodSymbol> GetCommandCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol commandSymbol) =>
+        public static IEnumerable<IMethodSymbol> GetCommandCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol? commandSymbol) =>
             GetProcessingMembers<IMethodSymbol>(classSymbol, commandSymbol);
-        public static bool IsInterfaceImplementedInCurrentClass(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol) =>
-            classSymbol.Interfaces.Contains(interfaceSymbol);
+        public static bool IsInterfaceImplementedInCurrentClass(INamedTypeSymbol classSymbol, INamedTypeSymbol? interfaceSymbol) =>
+            interfaceSymbol != null ? classSymbol.Interfaces.Contains(interfaceSymbol) : false;
         public static bool IsInterfaceImplemented(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol, ContextInfo contextInfo) {
             if(IsInterfaceImplementedInCurrentClass(classSymbol, interfaceSymbol))
                 return true;
-            for(var parent = classSymbol.BaseType; parent != null; parent = parent.BaseType) {
-                var hasAttribute = AttributeHelper.HasAttribute(parent, contextInfo.ViewModelAttributeSymbol) && GetImplementISPVMValue(contextInfo, parent);
-                var hasImplementation = IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
+            for(INamedTypeSymbol? parent = classSymbol.BaseType; parent != null; parent = parent.BaseType) {
+                bool hasAttribute = AttributeHelper.HasAttribute(parent, contextInfo.ViewModelAttributeSymbol) && GetImplementISPVMValue(contextInfo, parent);
+                bool hasImplementation = IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
                 if(hasAttribute || hasImplementation)
                     return true;
             }
             return false;
         }
 
-        static IEnumerable<T> GetProcessingMembers<T>(INamedTypeSymbol classSymbol, INamedTypeSymbol attributeSymbol) where T : ISymbol =>
+        static IEnumerable<T> GetProcessingMembers<T>(INamedTypeSymbol classSymbol, INamedTypeSymbol? attributeSymbol) where T : ISymbol =>
             classSymbol.GetMembers()
                        .OfType<T>()
                        .Where(symbol => AttributeHelper.HasAttribute(symbol, attributeSymbol));
 
         public static bool ShouldGenerateISPVMChangedMethod(INamedTypeSymbol classSymbol) {
             bool containsISPVMChangedMethod = ShouldGenerateISPVMChangedMethodCore(classSymbol, true);
-            var parent = classSymbol.BaseType;
+            INamedTypeSymbol? parent = classSymbol.BaseType;
             while (parent != null && !containsISPVMChangedMethod) {
                 containsISPVMChangedMethod = ShouldGenerateISPVMChangedMethodCore(parent);
                 parent = parent.BaseType;
@@ -49,13 +49,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
             return containsISPVMChangedMethod;
         }
         static bool ShouldGenerateISPVMChangedMethodCore(INamedTypeSymbol classSymbol, bool ignorePrivateAccessibility = false) {
-            var onParentViewModelChangeds = CommandHelper.GetMethods(classSymbol, methodSymbol => (methodSymbol.DeclaredAccessibility != Accessibility.Private || ignorePrivateAccessibility) && methodSymbol.ReturnsVoid && methodSymbol.Name == "OnParentViewModelChanged" && methodSymbol.Parameters.Length == 1 &&
+            IEnumerable<IMethodSymbol> onParentViewModelChangeds = CommandHelper.GetMethods(classSymbol, methodSymbol => (methodSymbol.DeclaredAccessibility != Accessibility.Private || ignorePrivateAccessibility) && methodSymbol.ReturnsVoid && methodSymbol.Name == "OnParentViewModelChanged" && methodSymbol.Parameters.Length == 1 &&
                                                     methodSymbol.Parameters[0].ToDisplayString().StartsWith("object"));
             return onParentViewModelChangeds.Any();
         }
         public static Dictionary<string, TypeKind> GetOuterClasses(INamedTypeSymbol classSymbol) {
-            var outerClasses = new Dictionary<string, TypeKind>();
-            var outerClass = classSymbol.ContainingSymbol;
+            Dictionary<string, TypeKind> outerClasses = new Dictionary<string, TypeKind>();
+            ISymbol outerClass = classSymbol.ContainingSymbol;
             while(!outerClass.Equals(classSymbol.ContainingNamespace, SymbolEqualityComparer.Default)) {
                 outerClasses.Add(outerClass.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat), ((INamedTypeSymbol)outerClass).TypeKind);
 
@@ -65,7 +65,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
         public static string CreateFileName(string prefix) => $"{prefix}.g.cs";
         public static string CreateFileName(string prefix, HashSet<string> generatedClasses) {
-            var name = prefix;
+            string name = prefix;
             int i = 1;
             while(generatedClasses.Contains(name)) {
                 name = $"{prefix}_{i}";

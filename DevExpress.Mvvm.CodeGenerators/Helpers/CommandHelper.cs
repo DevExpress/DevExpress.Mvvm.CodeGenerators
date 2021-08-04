@@ -12,14 +12,14 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static readonly string commandName = AttributesGenerator.CommandName;
         static readonly string canExecuteMethod = AttributesGenerator.CanExecuteMethod;
 
-        public static bool GetAllowMultipleExecutionValue(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
+        public static bool GetAllowMultipleExecutionValue(IMethodSymbol methodSymbol, INamedTypeSymbol? commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, allowMultipleExecution, false);
-        public static bool GetUseCommandManagerValue(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
+        public static bool GetUseCommandManagerValue(IMethodSymbol methodSymbol, INamedTypeSymbol? commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, useCommandManager, true);
-        public static string GetCommandName(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol, string executeMethodName) =>
+        public static string? GetCommandName(IMethodSymbol methodSymbol, INamedTypeSymbol? commandSymbol, string executeMethodName) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, commandName, executeMethodName + "Command");
-        public static string GetCanExecuteMethodName(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
-            AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, canExecuteMethod, (string)null);
+        public static string? GetCanExecuteMethodName(IMethodSymbol methodSymbol, INamedTypeSymbol? commandSymbol) =>
+            AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, canExecuteMethod, (string?)null);
         public static SourceBuilder AppendCommandGenericType(this SourceBuilder source, bool isCommand, string genericArgumentType) {
             source.Append(isCommand ? "DelegateCommand" : "AsyncCommand");
             if(!string.IsNullOrEmpty(genericArgumentType))
@@ -29,12 +29,12 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol classSymbol, Func<IMethodSymbol, bool> condition) =>
             classSymbol.GetMembers().OfType<IMethodSymbol>().Where(condition);
-        public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol classSymbol, string methodName) =>
+        public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol classSymbol, string? methodName) =>
             classSymbol.GetMembers().OfType<IMethodSymbol>().Where(method => method.Name == methodName);
 #nullable enable
         public static IEnumerable<IMethodSymbol> GetCanExecuteMethodCandidates(INamedTypeSymbol classSymbol, string canExecuteMethodName, ITypeSymbol? parameterType, ContextInfo context) =>
             GetMethods(classSymbol,
-                       method => context.BoolSymbol.Equals(method.ReturnType, SymbolEqualityComparer.Default) &&
+                       method => SymbolEqualityComparer.Default.Equals(context.BoolSymbol, method.ReturnType) &&
                                  method.Name == canExecuteMethodName &&
                                  HaveSameParametersList(method.Parameters, parameterType));
 

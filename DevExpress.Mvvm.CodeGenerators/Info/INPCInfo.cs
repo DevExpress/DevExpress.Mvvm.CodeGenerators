@@ -42,10 +42,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
             HasRaiseMethodWithEventArgsParameter = HasMethod(classSymbol, methodName, eventArgsParameter, true);
             HasRaiseMethodWithStringParameter = HasMethod(classSymbol, methodName, "string", true);
 
-            var isRaiseMethodGenerated = false;
-            for(var parent = classSymbol.BaseType; parent != null; parent = parent.BaseType) {
-                var hasAttribute = checkAttribute(parent);
-                var hasImplementation = ClassHelper.IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
+            bool isRaiseMethodGenerated = false;
+            for(INamedTypeSymbol? parent = classSymbol.BaseType; parent != null; parent = parent.BaseType) {
+                bool hasAttribute = checkAttribute(parent);
+                bool hasImplementation = ClassHelper.IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
                 if(hasAttribute || hasImplementation)
                     this.hasImplementation = true;
                 if(hasImplementation)
