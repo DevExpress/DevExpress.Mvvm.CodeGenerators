@@ -175,6 +175,20 @@ namespace Test {
             StringAssert.Contains("OnParentViewModelChanged", generatedWithOnChanged);
             StringAssert.DoesNotContain("OnParentViewModelChanged", generatedWithOutOnChanged);
         }
+        [Test]
+        public void GeneratePropertyName_() {
+            var source = @"using DevExpress.Mvvm.CodeGenerators;
+
+namespace Test {
+    [GenerateViewModel]
+    partial class Example {
+        [GenerateProperty]
+        int _;
+    }
+}
+";
+            Assert.DoesNotThrow(() => GenerateCode(source));
+        }
 
         static string GenerateCode(string source, bool addMVVM = true) {
             var references = new[] {
@@ -234,6 +248,9 @@ namespace Test {
 
         [GenerateProperty(IsVirtual = true, SetterAccessModifier = AccessModifier.Protected)]
         double _Double;
+
+        [GenerateProperty]
+        int _;
 
         /// <summary>
         /// Test command comment

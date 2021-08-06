@@ -20,7 +20,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         #region String
         public static string ConcatToString(this IEnumerable<string> source, string separator) => string.Join(separator, source);
-        public static string FirstToUpperCase(this string str) => $"{str.Substring(0, 1).ToUpper()}{str.Substring(1)}";
+        public static string FirstToUpperCase(this string str) => string.IsNullOrEmpty(str) ? str : $"{str.Substring(0, 1).ToUpper()}{str.Substring(1)}";
         #endregion
         public static string TypeToString(this TypeKind type) => type == TypeKind.Structure ? "struct" : type.ToString().ToLower();
 

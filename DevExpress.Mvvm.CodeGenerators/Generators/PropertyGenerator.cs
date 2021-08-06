@@ -10,14 +10,14 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(propertyName == fieldSymbol.Name)
                 info.Context.ReportInvalidPropertyName(fieldSymbol, propertyName);
 
-            CSharpSyntaxNode fieldSyntaxNode = (CSharpSyntaxNode)fieldSymbol.DeclaringSyntaxReferences[0].GetSyntax().Parent?.Parent!;
-            XMLCommentHelper.AppendComment(source, fieldSyntaxNode);
-
             string? changedMethod = PropertyHelper.GetChangedMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type);
             string? changingMethod = PropertyHelper.GetChangingMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type);
 
-            if(propertyName == fieldSymbol.Name || changedMethod == null || changingMethod == null)
+            if(propertyName == fieldSymbol.Name || string.IsNullOrEmpty(propertyName) || changedMethod == null || changingMethod == null)
                 return null;
+
+            CSharpSyntaxNode fieldSyntaxNode = (CSharpSyntaxNode)fieldSymbol.DeclaringSyntaxReferences[0].GetSyntax().Parent?.Parent!;
+            XMLCommentHelper.AppendComment(source, fieldSyntaxNode);
 
             PropertyHelper.AppendAttributesList(source, fieldSymbol);
 
