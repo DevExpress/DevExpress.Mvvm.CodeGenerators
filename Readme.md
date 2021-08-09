@@ -116,6 +116,11 @@ Refer to the following GitHub example:
 
 ## Release Notes
 
+### 21.1.2 
+- You can now use the View Model Code Generator in WinUI projects.	
+- You can add XML comments to a field and a method. The generated property or command now copies these comments.	
+- We minimized memory allocations and improved the performance. 
+
 ### 21.1.1
 
 - You can now use Generic and Nested classes when you generate View Models.
