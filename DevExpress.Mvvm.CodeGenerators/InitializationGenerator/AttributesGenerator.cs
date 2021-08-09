@@ -1,123 +1,175 @@
 ﻿namespace DevExpress.Mvvm.CodeGenerators {
     public static class AttributesGenerator {
-        static readonly string viewModelAttribute = "GenerateViewModelAttribute";
-        static readonly string propertyAttribute = "GeneratePropertyAttribute";
-        static readonly string commandAttribute = "GenerateCommandAttribute";
+        public static readonly string ViewModelAttributeFullName = $"{InitializationGenerator.Namespace}.GenerateViewModelAttribute";
+        public static readonly string PropertyAttributeFullName = $"{InitializationGenerator.Namespace}.GeneratePropertyAttribute";
+        public static readonly string CommandAttributeFullName = $"{InitializationGenerator.Namespace}.GenerateCommandAttribute";
 
-        public static readonly string ViewModelAttributeFullName = $"{InitializationGenerator.Namespace}.{viewModelAttribute}";
-        public static readonly string PropertyAttributeFullName = $"{InitializationGenerator.Namespace}.{propertyAttribute}";
-        public static readonly string CommandAttributeFullName = $"{InitializationGenerator.Namespace}.{commandAttribute}";
+        public const string ImplementIDEI = "ImplementIDataErrorInfo";
+        public const string ImplementINPCing = "ImplementINotifyPropertyChanging";
+        public const string ImplementISPVM = "ImplementISupportParentViewModel";
+        public const string ImplementISS = "ImplementISupportServices";
 
-        public static string ImplementIDEI { get => "ImplementIDataErrorInfo"; }
-        public static string ImplementINPCing { get => "ImplementINotifyPropertyChanging"; }
-        public static string ImplementISPVM { get => "ImplementISupportParentViewModel"; }
-        public static string ImplementISS { get => "ImplementISupportServices"; }
+        public const string IsVirtual = "IsVirtual";
+        public const string OnChangedMethod = "OnChangedMethod";
+        public const string OnChangingMethod = "OnChangingMethod";
+        public const string SetterAccessModifier = "SetterAccessModifier";
 
-        public static string IsVirtual { get => "IsVirtual"; }
-        public static string OnChangedMethod { get => "OnChangedMethod"; }
-        public static string OnChangingMethod { get => "OnChangingMethod"; }
-        public static string SetterAccessModifier { get => "SetterAccessModifier"; }
+        public const string AllowMultipleExecution = "AllowMultipleExecution";
+        public const string UseCommandManager = "UseCommandManager";
+        public const string CanExecuteMethod = "CanExecuteMethod";
+        public const string CommandName = "Name";
 
-        public static string AllowMultipleExecution { get => "AllowMultipleExecution"; }
-        public static string UseCommandManager { get => "UseCommandManager"; }
-        public static string CanExecuteMethod { get => "CanExecuteMethod"; }
-        public static string CommandName { get => "Name"; }
+        public static string GetSourceCode(bool isWinUI) => isWinUI ? winUISourceCode : commonSourceCode;
 
-
-        static readonly string UseCommandManagerProperty = 
-        $@"/// <summary>
-        ///     Specifies the <b>useCommandManager</b> parameter in the <b>Command</b> constructor. The default value is <see langword=""true""/>.
-        /// </summary>
-        public bool {UseCommandManager} {{ get; set; }}";
-        static readonly string ImplementIDEIProperty = 
-        $@"/// <summary>
-        ///     Implements 
-        /// <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.idataerrorinfo?view=net-5.0"">
-        ///     IDataErrorInfo﻿
-        /// </see>
-        ///     that allows you to validate data.
-        /// </summary>
-        public bool {ImplementIDEI} {{ get; set; }}";
-
-        public static string GetSourceCode(bool isWinUI) =>
-$@"    /// <summary>
+        const string commonSourceCode = @"    /// <summary>
     ///     Applies to a class. Indicates that the source generator should process this class and produce View Model boilerplate code.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    class {viewModelAttribute} : Attribute {{
-        {(isWinUI ? null : ImplementIDEIProperty)}
+    class GenerateViewModelAttribute : Attribute {
         /// <summary>
-        ///     Implements 
-        /// <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">
-        ///     INotifyPropertyChanging﻿.
-        /// </see>
+        ///     Implements
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.idataerrorinfo?view=net-5.0"">IDataErrorInfo﻿</see>
+        ///     that allows you to validate data.
         /// </summary>
-        public bool {ImplementINPCing} {{ get; set; }}
+        public bool ImplementIDataErrorInfo { get; set; }
         /// <summary>
-        ///     Implements 
-        /// <see href=""https://docs.devexpress.com/CoreLibraries/DevExpress.Mvvm.ISupportParentViewModel"">
-        ///     ISupportParentViewModel
-        /// </see>
+        ///     Implements
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">INotifyPropertyChanging﻿.</see>
+        /// </summary>
+        public bool ImplementINotifyPropertyChanging { get; set; }
+        /// <summary>
+        ///     Implements
+        ///     <see href=""https://docs.devexpress.com/CoreLibraries/DevExpress.Mvvm.ISupportParentViewModel"">ISupportParentViewModel</see>
         ///     that allows you to establish a parent-child relationship between View Models.
         /// </summary>
-        public bool {ImplementISPVM} {{ get; set; }}
+        public bool ImplementISupportParentViewModel { get; set; }
         /// <summary>
-        ///     Implements 
-        /// <see href=""https://docs.devexpress.com/CoreLibraries/DevExpress.Mvvm.ISupportServices"" >
-        ///     ISupportServices
-        /// </see>
+        ///     Implements
+        ///     <see href=""https://docs.devexpress.com/CoreLibraries/DevExpress.Mvvm.ISupportServices"">ISupportServices</see>
         ///     that allows you to include the
-        /// <see href=""https://docs.devexpress.com/WPF/17444/mvvm-framework/services/getting-started"">
-        ///     Services
-        /// </see>
+        ///     <see href=""https://docs.devexpress.com/WPF/17444/mvvm-framework/services/getting-started"">Services</see>
         ///     mechanism to your View Model.
         /// </summary>
-        public bool {ImplementISS} {{ get; set; }}
-    }}
+        public bool ImplementISupportServices { get; set; }
+    }
+
     /// <summary>
     ///     Applies to a field. The source generator produces boilerplate code for the property getter and setter based on the field declaration.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    class {propertyAttribute} : Attribute {{
+    class GeneratePropertyAttribute : Attribute {
         /// <summary>
         ///     Assigns a virtual modifier to the property.
         /// </summary>
-        public bool {IsVirtual} {{ get; set; }}
+        public bool IsVirtual { get; set; }
         /// <summary>
         ///     Specifies the name of the method invoked after the property value is changed.<br/>
         ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changed</b> pattern.
         /// </summary>
-        public string? {OnChangedMethod} {{ get; set; }}
+        public string? OnChangedMethod { get; set; }
         /// <summary>
         ///     Specifies the name of the method invoked when the property value is changing.<br/>
         ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changing</b> pattern.
         /// </summary>
-        public string? {OnChangingMethod} {{ get; set; }}
+        public string? OnChangingMethod { get; set; }
         /// <summary>
         ///     Specifies an access modifier for a set accessor. The default value is the same as a property’s modifier.<br/>
         ///     Available values: <i>Public, Private, Protected, Internal, ProtectedInternal, PrivateProtected.</i>
         /// </summary>
-        public AccessModifier {SetterAccessModifier} {{ get; set; }}
-    }}
+        public AccessModifier SetterAccessModifier { get; set; }
+    }
 
     /// <summary>
     ///     Applies to a method. The source generator produces boilerplate code for a Command based on this method.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    class {commandAttribute} : Attribute {{
+    class GenerateCommandAttribute : Attribute {
         /// <summary>
         ///     Specifies the <b>allowMultipleExecution</b> parameter in the <b>AsyncCommand</b> constructor. The default value is <see langword=""false""/>.
         /// </summary>
-        public bool {AllowMultipleExecution} {{ get; set; }}
-        {(isWinUI ? null : UseCommandManagerProperty)}
+        public bool AllowMultipleExecution { get; set; }
+        /// <summary>
+        ///     Specifies the <b>useCommandManager</b> parameter in the <b>Command</b> constructor. The default value is <see langword=""true""/>.
+        /// </summary>
+        public bool UseCommandManager { get; set; }
         /// <summary>
         ///     Specifies a custom <b>CanExecute</b> method name. If the property is not specified, the method’s name should follow the <b>Can[ActionName]</b> pattern.
         /// </summary>
-        public string? {CanExecuteMethod} {{ get; set; }}
+        public string? CanExecuteMethod { get; set; }
         /// <summary>
         ///     Specifies a custom <b>Command</b> name. The default value is <b>[ActionName]Command</b>.
         /// </summary>
-        public string? {CommandName} {{ get; set; }}
-    }}";
+        public string? Name { get; set; }
+    }";
+        const string winUISourceCode = @"    /// <summary>
+    ///     Applies to a class. Indicates that the source generator should process this class and produce View Model boilerplate code.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    class GenerateViewModelAttribute : Attribute {
+        /// <summary>
+        ///     Implements
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">INotifyPropertyChanging﻿.</see>
+        /// </summary>
+        public bool ImplementINotifyPropertyChanging { get; set; }
+        /// <summary>
+        ///     Implements
+        ///     <see href=""https://docs.devexpress.com/CoreLibraries/DevExpress.Mvvm.ISupportParentViewModel"">ISupportParentViewModel</see>
+        ///     that allows you to establish a parent-child relationship between View Models.
+        /// </summary>
+        public bool ImplementISupportParentViewModel { get; set; }
+        /// <summary>
+        ///     Implements
+        ///     <see href=""https://docs.devexpress.com/CoreLibraries/DevExpress.Mvvm.ISupportServices"">ISupportServices</see>
+        ///     that allows you to include the
+        ///     <see href=""https://docs.devexpress.com/WPF/17444/mvvm-framework/services/getting-started"">Services</see>
+        ///     mechanism to your View Model.
+        /// </summary>
+        public bool ImplementISupportServices { get; set; }
+    }
+
+    /// <summary>
+    ///     Applies to a field. The source generator produces boilerplate code for the property getter and setter based on the field declaration.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field)]
+    class GeneratePropertyAttribute : Attribute {
+        /// <summary>
+        ///     Assigns a virtual modifier to the property.
+        /// </summary>
+        public bool IsVirtual { get; set; }
+        /// <summary>
+        ///     Specifies the name of the method invoked after the property value is changed.<br/>
+        ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changed</b> pattern.
+        /// </summary>
+        public string? OnChangedMethod { get; set; }
+        /// <summary>
+        ///     Specifies the name of the method invoked when the property value is changing.<br/>
+        ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changing</b> pattern.
+        /// </summary>
+        public string? OnChangingMethod { get; set; }
+        /// <summary>
+        ///     Specifies an access modifier for a set accessor. The default value is the same as a property’s modifier.<br/>
+        ///     Available values: <i>Public, Private, Protected, Internal, ProtectedInternal, PrivateProtected.</i>
+        /// </summary>
+        public AccessModifier SetterAccessModifier { get; set; }
+    }
+
+    /// <summary>
+    ///     Applies to a method. The source generator produces boilerplate code for a Command based on this method.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    class GenerateCommandAttribute : Attribute {
+        /// <summary>
+        ///     Specifies the <b>allowMultipleExecution</b> parameter in the <b>AsyncCommand</b> constructor. The default value is <see langword=""false""/>.
+        /// </summary>
+        public bool AllowMultipleExecution { get; set; }
+        /// <summary>
+        ///     Specifies a custom <b>CanExecute</b> method name. If the property is not specified, the method’s name should follow the <b>Can[ActionName]</b> pattern.
+        /// </summary>
+        public string? CanExecuteMethod { get; set; }
+        /// <summary>
+        ///     Specifies a custom <b>Command</b> name. The default value is <b>[ActionName]Command</b>.
+        /// </summary>
+        public string? Name { get; set; }
+    }";
     }
 }

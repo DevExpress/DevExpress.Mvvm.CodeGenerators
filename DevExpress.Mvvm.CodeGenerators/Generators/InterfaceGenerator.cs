@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Globalization;
-using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     interface IInterfaceGenerator {
@@ -10,12 +8,12 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
     class INPCedInterfaceGenerator : IInterfaceGenerator {
         public string GetName() => nameof(INotifyPropertyChanged);
-        public void AppendImplementation(SourceBuilder source) 
-            => source.AppendLine("public event PropertyChangedEventHandler? PropertyChanged;");
+        public void AppendImplementation(SourceBuilder source) =>
+            source.AppendLine("public event PropertyChangedEventHandler? PropertyChanged;");
     }
     class INPCingInterfaceGenerator : IInterfaceGenerator {
         public string GetName() => nameof(INotifyPropertyChanging);
-        public void AppendImplementation(SourceBuilder source) => 
+        public void AppendImplementation(SourceBuilder source) =>
             source.AppendLine("public event PropertyChangingEventHandler? PropertyChanging;");
     }
     class IDataErrorInfoGenerator : IInterfaceGenerator {
@@ -26,9 +24,7 @@ string IDataErrorInfo.this[string columnName] { get => IDataErrorInfoHelper.GetE
     }
     class ISupportParentViewModelGenerator : IInterfaceGenerator {
         readonly bool generateChangedMethod;
-        public ISupportParentViewModelGenerator(bool shouldGenerateChangedMethod) {
-            generateChangedMethod = shouldGenerateChangedMethod;
-        }
+        public ISupportParentViewModelGenerator(bool shouldGenerateChangedMethod) => generateChangedMethod = shouldGenerateChangedMethod;
         public string GetName() => "ISupportParentViewModel";
         public void AppendImplementation(SourceBuilder source) {
             source.AppendMultipleLines(@"object? parentViewModel;

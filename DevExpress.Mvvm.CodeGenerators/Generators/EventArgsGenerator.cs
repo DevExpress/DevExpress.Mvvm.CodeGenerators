@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class EventArgsGenerator {
