@@ -123,14 +123,22 @@ namespace Test {
         /// <summary>
         /// Ignorable comment
         /// </summary>
-        
+
         /// <summary>
         /// Test property comment
         /// </summary>
         // Ordinary comment
         [GenerateProperty]
         int property;
-        
+
+        /**
+        <summary>
+        MultiLine Comment
+        </summary>
+        */
+        [GenerateProperty]
+        int property2;
+
      /// <summary>
 /// Test command comment
                     /// </summary>
@@ -143,12 +151,19 @@ namespace Test {
 @"        /// <summary>
         /// Test command comment
         /// </summary>";
+            var property2Comment =
+@"        /**
+        <summary>
+        MultiLine Comment
+        </summary>
+        */";
             var commandComment =
 @"        /// <summary>
         /// Test property comment
         /// </summary>";
             var generatedCode = GenerateCode(source);
             StringAssert.Contains(propertyComment, generatedCode);
+            StringAssert.Contains(property2Comment, generatedCode);
             StringAssert.Contains(commandComment, generatedCode);
             StringAssert.DoesNotContain("Ignorable comment", generatedCode);
             StringAssert.DoesNotContain("Ordinary comment", generatedCode);

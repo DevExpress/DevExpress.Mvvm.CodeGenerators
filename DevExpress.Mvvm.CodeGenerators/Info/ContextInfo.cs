@@ -27,7 +27,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             Context = context;
             Compilation = compilation;
 
-            IsMvvmAvailable = Compilation.ReferencedAssemblyNames.Any(ai => Regex.IsMatch(ai.Name, @"DevExpress\.Mvvm(\.v\d{2}\.\d)?$"));
+            IsMvvmAvailable = GetIsMvvmAvailable(compilation);
 
             ViewModelAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.ViewModelAttributeFullName)!;
             PropertyAttributeSymbol = compilation.GetTypeByMetadataName(AttributesGenerator.PropertyAttributeFullName)!;
@@ -36,18 +36,14 @@ namespace DevExpress.Mvvm.CodeGenerators {
             INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName)!;
             INPCingSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName)!;
             IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName)!;
-            ISSSymbol = GetISSSymbol(compilation);
+            ISSSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices");
             ISPVMSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel");
             TaskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task")!;
             BoolSymbol = compilation.GetTypeByMetadataName("System.Boolean")!;
 
             IsWinUI = GetIsWinUI(compilation);
         }
-        public static bool GetIsWinUI(Compilation compilation) {
-            return GetISSSymbol(compilation) != null && compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;
-        }
-        public static INamedTypeSymbol? GetISSSymbol(Compilation compilation) {
-            return compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices");
-        }
+        public static bool GetIsWinUI(Compilation compilation) => GetIsMvvmAvailable(compilation) && compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;
+        static bool GetIsMvvmAvailable(Compilation compilation) => compilation.ReferencedAssemblyNames.Any(ai => Regex.IsMatch(ai.Name, @"DevExpress\.Mvvm(\.v\d{2}\.\d)?$"));
     }
 }

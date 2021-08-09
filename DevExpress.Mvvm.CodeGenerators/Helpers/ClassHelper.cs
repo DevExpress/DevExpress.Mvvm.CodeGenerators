@@ -1,8 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class ClassHelper {
@@ -16,16 +14,16 @@ namespace DevExpress.Mvvm.CodeGenerators {
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.ViewModelAttributeSymbol, nameofImplementISPVM, false);
         public static bool GetImplementISSValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.ViewModelAttributeSymbol, nameofImplementISS, false);
-        public static IEnumerable<IFieldSymbol> GetFieldCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol? propertySymbol) =>
+        public static IEnumerable<IFieldSymbol> GetFieldCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol propertySymbol) =>
             GetProcessingMembers<IFieldSymbol>(classSymbol, propertySymbol);
-        public static IEnumerable<IMethodSymbol> GetCommandCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol? commandSymbol) =>
+        public static IEnumerable<IMethodSymbol> GetCommandCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol commandSymbol) =>
             GetProcessingMembers<IMethodSymbol>(classSymbol, commandSymbol);
-        public static bool IsInterfaceImplementedInCurrentClass(INamedTypeSymbol classSymbol, INamedTypeSymbol? interfaceSymbol) =>
-            interfaceSymbol != null ? classSymbol.Interfaces.Contains(interfaceSymbol) : false;
+        public static bool IsInterfaceImplementedInCurrentClass(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol) =>
+            classSymbol.Interfaces.Contains(interfaceSymbol);
         public static bool IsInterfaceImplemented(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol, ContextInfo contextInfo) {
             if(IsInterfaceImplementedInCurrentClass(classSymbol, interfaceSymbol))
                 return true;
-            for(INamedTypeSymbol? parent = classSymbol.BaseType; parent != null; parent = parent.BaseType) {
+            for(INamedTypeSymbol parent = classSymbol.BaseType!; parent != null; parent = parent.BaseType!) {
                 bool hasAttribute = AttributeHelper.HasAttribute(parent, contextInfo.ViewModelAttributeSymbol) && GetImplementISPVMValue(contextInfo, parent);
                 bool hasImplementation = IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
                 if(hasAttribute || hasImplementation)
@@ -34,21 +32,21 @@ namespace DevExpress.Mvvm.CodeGenerators {
             return false;
         }
 
-        static IEnumerable<T> GetProcessingMembers<T>(INamedTypeSymbol classSymbol, INamedTypeSymbol? attributeSymbol) where T : ISymbol =>
+        static IEnumerable<T> GetProcessingMembers<T>(INamedTypeSymbol classSymbol, INamedTypeSymbol attributeSymbol) where T : ISymbol =>
             classSymbol.GetMembers()
                        .OfType<T>()
                        .Where(symbol => AttributeHelper.HasAttribute(symbol, attributeSymbol));
 
-        public static bool ShouldGenerateISPVMChangedMethod(INamedTypeSymbol classSymbol) {
-            bool containsISPVMChangedMethod = ShouldGenerateISPVMChangedMethodCore(classSymbol, true);
-            INamedTypeSymbol? parent = classSymbol.BaseType;
-            while (parent != null && !containsISPVMChangedMethod) {
-                containsISPVMChangedMethod = ShouldGenerateISPVMChangedMethodCore(parent);
-                parent = parent.BaseType;
+        public static bool ContainISPVMChangedMethod(INamedTypeSymbol classSymbol) {
+            bool containsISPVMChangedMethod = ContainISPVMChangedMethodCore(classSymbol, true);
+            INamedTypeSymbol parent = classSymbol.BaseType!;
+            while(parent != null && !containsISPVMChangedMethod) {
+                containsISPVMChangedMethod = ContainISPVMChangedMethodCore(parent);
+                parent = parent.BaseType!;
             }
             return containsISPVMChangedMethod;
         }
-        static bool ShouldGenerateISPVMChangedMethodCore(INamedTypeSymbol classSymbol, bool ignorePrivateAccessibility = false) {
+        static bool ContainISPVMChangedMethodCore(INamedTypeSymbol classSymbol, bool ignorePrivateAccessibility = false) {
             IEnumerable<IMethodSymbol> onParentViewModelChangeds = CommandHelper.GetMethods(classSymbol, methodSymbol => (methodSymbol.DeclaredAccessibility != Accessibility.Private || ignorePrivateAccessibility) && methodSymbol.ReturnsVoid && methodSymbol.Name == "OnParentViewModelChanged" && methodSymbol.Parameters.Length == 1 &&
                                                     methodSymbol.Parameters[0].ToDisplayString().StartsWith("object"));
             return onParentViewModelChangeds.Any();

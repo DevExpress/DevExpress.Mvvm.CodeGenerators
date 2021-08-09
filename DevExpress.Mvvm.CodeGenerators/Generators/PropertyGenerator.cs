@@ -1,7 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Linq;
-using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class PropertyGenerator {

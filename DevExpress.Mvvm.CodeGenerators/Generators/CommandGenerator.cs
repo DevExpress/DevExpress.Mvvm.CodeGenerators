@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class CommandGenerator {
@@ -29,7 +28,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 }
             }
 
-            string name = CommandHelper.GetCommandName(methodSymbol, info.CommandAttributeSymbol, methodSymbol.Name)!;
+            string name = CommandHelper.GetCommandName(methodSymbol, info.CommandAttributeSymbol, methodSymbol.Name);
             string genericArgumentType = parameterType?.ToDisplayStringNullable() ?? string.Empty;
             source.AppendCommandGenericType(isCommand, genericArgumentType).Append("? ").AppendFirstToLowerCase(name).AppendLine(";");
 
@@ -47,7 +46,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             source.AppendLine(");");
         }
 
-        static void AppendParametersList(this SourceBuilder source, IMethodSymbol methodSymbol, INamedTypeSymbol? commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {
+        static void AppendParametersList(this SourceBuilder source, IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {
             source.Append(executeMethod).Append(", ").Append(canExecuteMethodName);
             if(!isCommand) {
                 string allowMultipleExecution = CommandHelper.GetAllowMultipleExecutionValue(methodSymbol, commandAttributeSymbol).BoolToStringValue();

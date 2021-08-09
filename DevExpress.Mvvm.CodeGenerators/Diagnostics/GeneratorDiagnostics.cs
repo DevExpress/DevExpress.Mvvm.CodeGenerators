@@ -20,18 +20,18 @@ namespace DevExpress.Mvvm.CodeGenerators {
             context.ReportDiagnostic(MVVMNotAvailable, SymbolNameLocation(classSymbol), mvvmComponents.ConcatToString(", "), classSymbol.Name);
         public static void ReportInvalidPropertyName(this GeneratorExecutionContext context, IFieldSymbol fieldSymbol, string propertyName) =>
             context.ReportDiagnostic(InvalidPropertyName, SymbolNameLocation(fieldSymbol), propertyName);
-        public static void ReportOnChangedMethodNotFound(this GeneratorExecutionContext context, IFieldSymbol fieldSymbol, string? methodName, string parameterType, IEnumerable<IMethodSymbol> candidates) =>
+        public static void ReportOnChangedMethodNotFound(this GeneratorExecutionContext context, IFieldSymbol fieldSymbol, string methodName, string parameterType, IEnumerable<IMethodSymbol> candidates) =>
             context.ReportDiagnostic(OnChangedMethodNotFound, SymbolNameLocation(fieldSymbol), methodName, parameterType, CandidatesMessage(candidates));
         public static void ReportIncorrectCommandSignature(this GeneratorExecutionContext context, IMethodSymbol methodSymbol) =>
             context.ReportDiagnostic(IncorrectCommandSignature, SymbolNameLocation(methodSymbol), methodSymbol.ReturnType.ToDisplayStringNullable(), methodSymbol.Name, ParameterTypesToDisplayString(methodSymbol));
-        public static void ReportCanExecuteMethodNotFound(this GeneratorExecutionContext context, IMethodSymbol methodSymbol, string? canExecuteMethodName, string parameterType, IEnumerable<IMethodSymbol> candidates) =>
+        public static void ReportCanExecuteMethodNotFound(this GeneratorExecutionContext context, IMethodSymbol methodSymbol, string canExecuteMethodName, string parameterType, IEnumerable<IMethodSymbol> candidates) =>
             context.ReportDiagnostic(CanExecuteMethodNotFound, SymbolNameLocation(methodSymbol, AttributesGenerator.CanExecuteMethod), canExecuteMethodName, parameterType, CandidatesMessage(candidates));
         public static void ReportRaiseMethodNotFound(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol, string end) =>
             context.ReportDiagnostic(RaiseMethodNotFound, SymbolNameLocation(classSymbol), end);
-        public static void ReportTwoSuitableMethods(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string? methodName, string parameterType) =>
+        public static void ReportTwoSuitableMethods(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string methodName, string parameterType) =>
             context.ReportDiagnostic(TwoSuitableMethods, SymbolNameLocation(fieldSymbol), classSymbol.Name, methodName, parameterType);
 
-        static void ReportDiagnostic(this GeneratorExecutionContext context, DiagnosticDescriptor descriptor, Location location, params object?[] messageArgs) =>
+        static void ReportDiagnostic(this GeneratorExecutionContext context, DiagnosticDescriptor descriptor, Location location, params object[] messageArgs) =>
             context.ReportDiagnostic(Diagnostic.Create(descriptor, location, messageArgs));
         static DiagnosticDescriptor CreateDiagnosticDescriptor(string id, string title, string messageFormat, DiagnosticSeverity diagnosticSeverity = DiagnosticSeverity.Error) =>
             new DiagnosticDescriptor(id, title, messageFormat, category, diagnosticSeverity, isEnabledByDefault);

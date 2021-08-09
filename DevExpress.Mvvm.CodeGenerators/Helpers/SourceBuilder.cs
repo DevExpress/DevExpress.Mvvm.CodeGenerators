@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -24,9 +23,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             }
         }
 
-        public SourceBuilder(StringBuilder builder) 
-            : this(builder, 0, null, new NewLineState()) {
-        }
+        public SourceBuilder(StringBuilder builder) : this(builder, 0, null, new NewLineState()) { }
         SourceBuilder(StringBuilder builder, int tabs, SourceBuilder? @return, NewLineState newLineState) {
             this.builder = builder;
             this.tabs = tabs;
@@ -34,7 +31,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             this.newLineState = newLineState;
         }
 
-        public SourceBuilder Append(string? str) {
+        public SourceBuilder Append(string str) {
             BeforeAppend();
             builder.Append(str);
             return this;
@@ -49,6 +46,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
             builder.Append(str, statIndex, count);
             return this;
         }
+        public SourceBuilder AppendLine() {
+            LastTabLevel = null;
+            builder.Append(Environment.NewLine);
+            return this;
+        }
         void BeforeAppend() {
             if(LastTabLevel != null) {
                 if(LastTabLevel != tabs)
@@ -59,11 +61,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
             for(int i = 0; i < tabs; i++) {
                 builder.Append("    ");
             }
-        }
-        public SourceBuilder AppendLine() {
-            LastTabLevel = null;
-            builder.Append(Environment.NewLine);
-            return this;
         }
     }
 
@@ -76,8 +73,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             }
         }
 
-        public struct LineEnumerator
-        {
+        public struct LineEnumerator {
             readonly string lines;
             readonly bool trimLeadingWhiteSpace;
             int startIndex;
@@ -93,7 +89,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return this;
             }
             public bool MoveNext() {
-                if(startIndex == lines.Length) return false;
+                if(startIndex == lines.Length)
+                    return false;
                 int index = lines.IndexOf(Environment.NewLine, startIndex);
                 if(index != -1) {
                     SetCurrent(startIndex, index);
