@@ -22,7 +22,7 @@
         public static string GetSourceCode(bool isWinUI) => isWinUI ? winUISourceCode : commonSourceCode;
 
         const string commonSourceCode = @"    /// <summary>
-    ///     Applies to a class. Indicates that the source generator should process this class and produce View Model boilerplate code.
+    ///     Indicates that the View Model Code Generator should process this class and produce a View Model.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     class GenerateViewModelAttribute : Attribute {
@@ -54,7 +54,7 @@
     }
 
     /// <summary>
-    ///     Applies to a field. The source generator produces boilerplate code for the property getter and setter based on the field declaration.
+    ///     Indicates that the View Model Code Generator should process this field and produce a property.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
     class GeneratePropertyAttribute : Attribute {
@@ -80,7 +80,7 @@
     }
 
     /// <summary>
-    ///     Applies to a method. The source generator produces boilerplate code for a Command based on this method.
+    ///     Indicates that the View Model Code Generator should process this method and produce a Command.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     class GenerateCommandAttribute : Attribute {
