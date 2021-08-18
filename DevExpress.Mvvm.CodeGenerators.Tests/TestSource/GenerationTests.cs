@@ -406,5 +406,22 @@ namespace Test {
 
         }
 #endif
+
+        [Test, Category("TODO")]
+        public void CommonLanguageVersionTest() {
+            string source = string.Empty;
+            CSharpParseOptions options = new CSharpParseOptions((LanguageVersion)1000); // TODO Change to LanguageVersion.CSharp10
+            Compilation inputCompilation = CSharpCompilation.Create("MyCompilation",
+                                                                    new[] { CSharpSyntaxTree.ParseText(source, options) },
+                                                                    new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location)},
+                                                                    new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            ViewModelGenerator generator = new ViewModelGenerator();
+            GeneratorDriver driver = CSharpGeneratorDriver.Create(new[] { generator }, parseOptions: options);
+            driver = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
+            GeneratorDriverRunResult runResult = driver.GetRunResult();
+            GeneratorRunResult generatorResult = runResult.Results[0];
+
+            Assert.AreEqual(1, generatorResult.GeneratedSources.Length);
+        }
     }
 }

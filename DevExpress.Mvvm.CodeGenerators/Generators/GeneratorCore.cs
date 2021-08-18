@@ -20,7 +20,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return;
 
             SourceText attributesSourceText = SourceText.From(InitializationGenerator.GetSourceCode(ContextInfo.GetIsWinUI(context.Compilation)), Encoding.UTF8);
-            Compilation compilation = context.Compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(attributesSourceText));
+            SyntaxTree attributesSyntaxTree = CSharpSyntaxTree.ParseText(attributesSourceText, (CSharpParseOptions)context.ParseOptions);
+            Compilation compilation = context.Compilation.AddSyntaxTrees(attributesSyntaxTree);
             context.AddSource(ClassHelper.CreateFileName("Attributes"), attributesSourceText);
 
             ContextInfo contextInfo = new ContextInfo(context, compilation);
