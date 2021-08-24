@@ -413,8 +413,13 @@ namespace Test {
 @"using DevExpress.Mvvm.CodeGenerators; 
 
 namespace Test {
-    [GenerateViewModel(ImplementISupportServices =true, ImplementINotifyPropertyChanging =true)]
-    sealed partial class SealdClass { }
+    [GenerateViewModel(ImplementINotifyPropertyChanging = true, ImplementISupportParentViewModel = true, ImplementISupportServices = true, ImplementIDataErrorInfo = true)]
+    sealed partial class SealdClass {
+    [GenerateProperty]
+    string str;
+    [GenerateCommand]
+    public void Command1(int arg) { }
+    }
 }";
             var generated = GenerateCode(source);
             StringAssert.DoesNotContain("protected", generated);
