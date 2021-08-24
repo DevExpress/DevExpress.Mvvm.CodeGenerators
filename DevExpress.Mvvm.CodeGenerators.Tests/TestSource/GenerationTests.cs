@@ -408,7 +408,7 @@ namespace Test {
         }
 #endif
         [Test]
-        public void PrivatInSealedClass() {
+        public void PrivateInSealedClass() {
             const string source =
 @"using DevExpress.Mvvm.CodeGenerators; 
 

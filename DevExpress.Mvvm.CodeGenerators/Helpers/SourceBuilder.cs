@@ -46,13 +46,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
             builder.Append(str, statIndex, count);
             return this;
         }
-        public SourceBuilder Append(bool condition, string str) {
-            if(condition) {
-                BeforeAppend();
-                builder.Append(str);
-            }
-            return this;
-        }
         public SourceBuilder AppendLine() {
             LastTabLevel = null;
             builder.Append(Environment.NewLine);
@@ -72,6 +65,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
     }
 
     public static class SourceBuilderExtensions {
+        public static SourceBuilder AppendIf(this SourceBuilder builder, bool condition, string str) => condition ? builder.Append(str) : builder;
+
         public static SourceBuilder AppendLine(this SourceBuilder builder, string str) => builder.Append(str).AppendLine();
 
         public static void AppendMultipleLines(this SourceBuilder builder, string lines, bool trimLeadingWhiteSpace = false) {
