@@ -46,6 +46,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
             builder.Append(str, statIndex, count);
             return this;
         }
+        public SourceBuilder Append(bool condition, string str) {
+            if(condition) {
+                BeforeAppend();
+                builder.Append(str);
+            }
+            return this;
+        }
         public SourceBuilder AppendLine() {
             LastTabLevel = null;
             builder.Append(Environment.NewLine);
