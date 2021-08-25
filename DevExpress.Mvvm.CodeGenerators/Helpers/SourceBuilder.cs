@@ -69,11 +69,15 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         public static SourceBuilder AppendLine(this SourceBuilder builder, string str) => builder.Append(str).AppendLine();
 
+        public static SourceBuilder AppendLineIf(this SourceBuilder builder, bool condition, string adjunction, string str) => builder.AppendIf(condition, adjunction).AppendLine(str);
+
         public static void AppendMultipleLines(this SourceBuilder builder, string lines, bool trimLeadingWhiteSpace = false) {
             foreach((int start, int length) in new LineEnumerator(lines, trimLeadingWhiteSpace)) {
                 builder.Append(lines, start, length).AppendLine();
             }
         }
+
+        public static void AppendMultipleLinesIf(this SourceBuilder builder, bool condition, string adjunction, string str) => builder.AppendIf(condition, adjunction).AppendMultipleLines(str);
 
         public struct LineEnumerator {
             readonly string lines;
