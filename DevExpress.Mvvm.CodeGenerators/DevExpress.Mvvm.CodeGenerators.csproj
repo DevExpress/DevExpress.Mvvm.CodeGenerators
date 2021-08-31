@@ -70,7 +70,7 @@
   <PropertyGroup>
     <Title>DevExpress.Mvvm.CodeGenerators</Title>
     <Product>DevExpress.Mvvm.CodeGenerators</Product>
-    <Version>21.1.2</Version>
+    <Version>21.1.3</Version>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Company>Developer Express Inc.</Company>
   </PropertyGroup>

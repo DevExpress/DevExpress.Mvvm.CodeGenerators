@@ -107,12 +107,13 @@ using System.ComponentModel;";
             } else
                 source.AppendLine(" {");
             source = source.Tab;
+            const string protectedModifier = "protected ";
             bool isSealed = classSymbol.IsSealed;
             if(!string.IsNullOrEmpty(raiseChangedMethod))
-                source.AppendIf(!isSealed, "protected ")
+                source.AppendIf(!isSealed, protectedModifier)
                       .AppendMultipleLines(raiseChangedMethod!);
             if(!string.IsNullOrEmpty(raiseChangingMethod))
-                source.AppendIf(!isSealed, "protected ")
+                source.AppendIf(!isSealed, protectedModifier)
                       .AppendMultipleLines(raiseChangingMethod!);
             if(!string.IsNullOrEmpty(raiseChangedMethod) || !string.IsNullOrEmpty(raiseChangingMethod))
                 source.AppendLine();

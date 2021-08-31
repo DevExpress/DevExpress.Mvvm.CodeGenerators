@@ -44,17 +44,18 @@ public object? ParentViewModel {
         }
     }
     class ISupportServicesGenerator : IInterfaceGenerator {
+        const string protectedModifier = "protected ";
         readonly bool isSealed;
         public ISupportServicesGenerator(bool isSealed) => this.isSealed = isSealed;
         public string GetName() => "ISupportServices";
         public void AppendImplementation(SourceBuilder source) {
             source.AppendLine("IServiceContainer? serviceContainer;")
-                  .AppendIf(!isSealed, "protected ")
+                  .AppendIf(!isSealed, protectedModifier)
                   .AppendMultipleLines(@"IServiceContainer ServiceContainer { get => serviceContainer ??= new ServiceContainer(this); }
 IServiceContainer ISupportServices.ServiceContainer { get => ServiceContainer; }");
-            source.AppendIf(!isSealed, "protected ")
+            source.AppendIf(!isSealed, protectedModifier)
                   .AppendLine("T? GetService<T>() where T : class => ServiceContainer.GetService<T>();")
-                  .AppendIf(!isSealed, "protected ")
+                  .AppendIf(!isSealed, protectedModifier)
                   .AppendLine("T? GetRequiredService<T>() where T : class => ServiceContainer.GetRequiredService<T>();");
         }
     }
