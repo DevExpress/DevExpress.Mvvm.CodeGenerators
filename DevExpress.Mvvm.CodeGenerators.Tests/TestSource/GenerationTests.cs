@@ -313,7 +313,8 @@ namespace Test {
         IServiceContainer? serviceContainer;
         protected IServiceContainer ServiceContainer { get => serviceContainer ??= new ServiceContainer(this); }
         IServiceContainer ISupportServices.ServiceContainer { get => ServiceContainer; }
-        T? GetService<T>() where T : class => ServiceContainer.GetService<T>();
+        protected T? GetService<T>() where T : class => ServiceContainer.GetService<T>();
+        protected T? GetRequiredService<T>() where T : class => ServiceContainer.GetRequiredService<T>();
 
         protected void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
         protected void RaisePropertyChanging(PropertyChangingEventArgs e) => PropertyChanging?.Invoke(this, e);
@@ -406,6 +407,23 @@ namespace Test {
 
         }
 #endif
+        [Test]
+        public void PrivateInSealedClass() {
+            const string source =
+@"using DevExpress.Mvvm.CodeGenerators; 
+
+namespace Test {
+    [GenerateViewModel(ImplementINotifyPropertyChanging = true, ImplementISupportParentViewModel = true, ImplementISupportServices = true, ImplementIDataErrorInfo = true)]
+    sealed partial class SealdClass {
+    [GenerateProperty]
+    string str;
+    [GenerateCommand]
+    public void Command1(int arg) { }
+    }
+}";
+            var generated = GenerateCode(source);
+            StringAssert.DoesNotContain("protected", generated);
+        }
 
         [Test, Category("TODO")]
         public void CommonLanguageVersionTest() {

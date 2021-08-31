@@ -43,7 +43,7 @@ using System.ComponentModel;";
             if(implISS) {
                 mvvmComponentsList.Add("ISupportServices");
                 if(contextInfo.IsMvvmAvailable && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.ISSSymbol!))
-                    interfaces.Add(new ISupportServicesGenerator());
+                    interfaces.Add(new ISupportServicesGenerator(classSymbol.IsSealed));
             }
 
             List<ITypeSymbol> genericTypes = new();
@@ -107,10 +107,14 @@ using System.ComponentModel;";
             } else
                 source.AppendLine(" {");
             source = source.Tab;
+            const string protectedModifier = "protected ";
+            bool isSealed = classSymbol.IsSealed;
             if(!string.IsNullOrEmpty(raiseChangedMethod))
-                source.AppendMultipleLines(raiseChangedMethod!);
+                source.AppendIf(!isSealed, protectedModifier)
+                      .AppendMultipleLines(raiseChangedMethod!);
             if(!string.IsNullOrEmpty(raiseChangingMethod))
-                source.AppendMultipleLines(raiseChangingMethod!);
+                source.AppendIf(!isSealed, protectedModifier)
+                      .AppendMultipleLines(raiseChangingMethod!);
             if(!string.IsNullOrEmpty(raiseChangedMethod) || !string.IsNullOrEmpty(raiseChangingMethod))
                 source.AppendLine();
             return source;
