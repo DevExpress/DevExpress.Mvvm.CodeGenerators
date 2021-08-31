@@ -49,10 +49,13 @@ public object? ParentViewModel {
         public string GetName() => "ISupportServices";
         public void AppendImplementation(SourceBuilder source) {
             source.AppendLine("IServiceContainer? serviceContainer;")
-                  .AppendMultipleLinesIf(!isSealed, "protected ", @"IServiceContainer ServiceContainer { get => serviceContainer ??= new ServiceContainer(this); }
+                  .AppendIf(!isSealed, "protected ")
+                  .AppendMultipleLines(@"IServiceContainer ServiceContainer { get => serviceContainer ??= new ServiceContainer(this); }
 IServiceContainer ISupportServices.ServiceContainer { get => ServiceContainer; }");
-            source.AppendLineIf(!isSealed, "protected ", "T? GetService<T>() where T : class => ServiceContainer.GetService<T>();")
-                  .AppendLineIf(!isSealed, "protected ", "T? GetRequiredService<T>() where T : class => ServiceContainer.GetRequiredService<T>();");
+            source.AppendIf(!isSealed, "protected ")
+                  .AppendLine("T? GetService<T>() where T : class => ServiceContainer.GetService<T>();")
+                  .AppendIf(!isSealed, "protected ")
+                  .AppendLine("T? GetRequiredService<T>() where T : class => ServiceContainer.GetRequiredService<T>();");
         }
     }
 }

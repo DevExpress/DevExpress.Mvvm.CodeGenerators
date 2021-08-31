@@ -109,9 +109,11 @@ using System.ComponentModel;";
             source = source.Tab;
             bool isSealed = classSymbol.IsSealed;
             if(!string.IsNullOrEmpty(raiseChangedMethod))
-                source.AppendMultipleLinesIf(!isSealed, "protected ", raiseChangedMethod!);
+                source.AppendIf(!isSealed, "protected ")
+                      .AppendMultipleLines(raiseChangedMethod!);
             if(!string.IsNullOrEmpty(raiseChangingMethod))
-                source.AppendMultipleLinesIf(!isSealed, "protected ", raiseChangingMethod!);
+                source.AppendIf(!isSealed, "protected ")
+                      .AppendMultipleLines(raiseChangingMethod!);
             if(!string.IsNullOrEmpty(raiseChangedMethod) || !string.IsNullOrEmpty(raiseChangingMethod))
                 source.AppendLine();
             return source;
