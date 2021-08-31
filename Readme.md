@@ -116,6 +116,14 @@ Refer to the following GitHub example:
 
 ## Release Notes
 
+### 21.1.3
+We fixed the [Sealed class generates protected method](https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/issues/8) GitHub issue. If you use now a sealed class, the following members of the generated View Model class have a **private** access modifier:  
+- RaisePropertyChanged methods
+- RaisePropertyChanging methods
+- ServiceContainers
+- GetService methods
+- GetRequiredService methods
+
 ### 21.1.2 
 - You can now use the View Model Code Generator in WinUI projects.	
 - You can add XML comments to a field and a method. The generated property or command now copies these comments.	
