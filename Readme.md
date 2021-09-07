@@ -1,6 +1,6 @@
 # View Model Code Generator
 
-The DevExpress MVVM Framework includes a [source generator](https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.md) that produces boilerplate code for your View Models at compile time. You need to define a stub View Model class that defines the required logic. Our MVVM Framework analyzes your implementation and applied attributes to generate the final View Model class with all required boilerplate code.
+The DevExpress MVVM Framework includes a [source generator](https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.md) that produces boilerplate code for your View Models at compile time. You need to define a stub View Model class that specifies the required logic. Our MVVM Framework analyzes your implementation and applied attributes to generate the final View Model class with all required boilerplate code.
 
 
 
@@ -106,18 +106,19 @@ Prepare your project as outlined below to enable support for View Models generat
  
 ## Documentation
  
-Refer to the following topic for more information: 
 * [View Models Generated at Compile Time](https://docs.devexpress.com/WPF/402989/mvvm-framework/viewmodels/compile-time-generated-viewmodels)
  
 ## Example
-
-Refer to the following GitHub example: 
+ 
 * [How to: Use View Models Generated at Compile Time](https://github.com/DevExpress-Examples/ViewModelGenerator-Sample)
 
 ## Release Notes
 
 ### 21.1.3
-We fixed the [Sealed class generates protected method](https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/issues/8) GitHub issue. If you use now a sealed class, the following members of the generated View Model class have a **private** access modifier:  
+
+We fixed the following issue: [A sealed class generates protected methods](https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/issues/8). 
+
+If you use a sealed class, the following members of the generated View Model class will have the **private** access modifier:  
 - RaisePropertyChanged methods
 - RaisePropertyChanging methods
 - ServiceContainers
@@ -125,6 +126,7 @@ We fixed the [Sealed class generates protected method](https://github.com/DevExp
 - GetRequiredService methods
 
 ### 21.1.2 
+
 - You can now use the View Model Code Generator in WinUI projects.	
 - You can add XML comments to a field and a method. The generated property or command now copies these comments.	
 - We minimized memory allocations and improved the performance. 
