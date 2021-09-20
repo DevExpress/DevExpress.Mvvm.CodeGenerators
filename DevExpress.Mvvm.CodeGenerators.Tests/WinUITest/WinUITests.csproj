@@ -28,15 +28,5 @@
 	<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\TestSource\AsyncCommandGenerationTests.cs" />
-    <Compile Include="..\TestSource\AttributeTransferTests.cs" />
-    <Compile Include="..\TestSource\CommandGenerationTests.cs" />
-    <Compile Include="..\TestSource\Helper.cs" />
-    <Compile Include="..\TestSource\InterfacesTests.cs" />
-    <Compile Include="..\TestSource\NullableAnnotationTests.cs" />
-    <Compile Include="..\TestSource\PropertyGenerationTests.cs" />
-    <Compile Include="..\TestSource\SupportServicesTests.cs" />
-    <Compile Include="..\TestSource\UsingRaiseMethodTests.cs" />
-  </ItemGroup>
+  <Import Project="..\SharedTests\SharedTests.projitems" Label="Shared" />
 </Project>
