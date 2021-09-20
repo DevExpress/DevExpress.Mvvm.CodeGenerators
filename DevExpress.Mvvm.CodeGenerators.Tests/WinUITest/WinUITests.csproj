@@ -14,9 +14,6 @@
     <Analyzer Include="..\..\DevExpress.Mvvm.CodeGenerators\bin\DevExpress.Mvvm.CodeGenerators.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="DevExpress.Mvvm.CodeGenerators">
-      <HintPath>..\..\DevExpress.Mvvm.CodeGenerators\bin\DevExpress.Mvvm.CodeGenerators.dll</HintPath>
-    </Reference>
     <Reference Include="DevExpress.Mvvm.v21.1">
       <HintPath>..\..\..\2021.1\Bin\WinUI\Sdk\Mvvm\DevExpress.Mvvm.v21.1.dll</HintPath>
     </Reference>
@@ -32,12 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\TestSource\SourceBuilderTests.cs" />
     <Compile Include="..\TestSource\AsyncCommandGenerationTests.cs" />
     <Compile Include="..\TestSource\AttributeTransferTests.cs" />
     <Compile Include="..\TestSource\CommandGenerationTests.cs" />
-    <Compile Include="..\TestSource\DiagnosticTests.cs" />
-    <Compile Include="..\TestSource\GenerationTests.cs" />
     <Compile Include="..\TestSource\Helper.cs" />
     <Compile Include="..\TestSource\InterfacesTests.cs" />
     <Compile Include="..\TestSource\NullableAnnotationTests.cs" />

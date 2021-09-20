@@ -112,10 +112,10 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             generated.CommandWithoutCommandManager.CanExecuteChanged += (s, e) => throw new Exception();
             Assert.Throws<Exception>(generated.UpdateCommandWithoutManagerCommand);
         }
-#else        
+#else
         [Test]
         public void NoUseCommandManagerPropertyInWinUI() {
-            Assert.IsNull(typeof(GenerateCommandAttribute).GetProperty(AttributesGenerator.UseCommandManager));
+            Assert.IsNull(typeof(GenerateCommandAttribute).GetProperty("UseCommandManager"));
         }
 #endif
 

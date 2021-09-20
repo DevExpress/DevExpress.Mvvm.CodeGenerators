@@ -60,17 +60,4 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             );
         }
     }
-
-    static class Helper {
-        public static Compilation CreateCompilation(string source) =>
-            CSharpCompilation.Create("MyCompilation",
-                                     new[] { CSharpSyntaxTree.ParseText(source) },
-                                     new[] {
-                                         MetadataReference.CreateFromFile(typeof(System.Windows.Input.ICommand).Assembly.Location),
-                                         MetadataReference.CreateFromFile(typeof(DelegateCommand).Assembly.Location),
-                                         MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                                         MetadataReference.CreateFromFile(typeof(INotifyPropertyChanged).Assembly.Location),
-                                     },
-                                     new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-    }
 }

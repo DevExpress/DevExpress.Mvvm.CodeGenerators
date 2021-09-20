@@ -13,11 +13,6 @@
   <ItemGroup>
     <Analyzer Include="..\..\DevExpress.Mvvm.CodeGenerators\bin\DevExpress.Mvvm.CodeGenerators.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="DevExpress.Mvvm.CodeGenerators">
-      <HintPath>..\..\DevExpress.Mvvm.CodeGenerators\bin\DevExpress.Mvvm.CodeGenerators.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DevExpressMvvm" Version="20.2.3" />
@@ -29,13 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\TestSource\SourceBuilderTests.cs" />
     <Compile Include="..\TestSource\AsyncCommandGenerationTests.cs" />
     <Compile Include="..\TestSource\AttributeTransferTests.cs" />
     <Compile Include="..\TestSource\CommandGenerationTests.cs" />
     <Compile Include="..\TestSource\DataErrorInfoTests.cs" />
-    <Compile Include="..\TestSource\DiagnosticTests.cs" />
-    <Compile Include="..\TestSource\GenerationTests.cs" />
     <Compile Include="..\TestSource\Helper.cs" />
     <Compile Include="..\TestSource\InterfacesTests.cs" />
     <Compile Include="..\TestSource\NullableAnnotationTests.cs" />

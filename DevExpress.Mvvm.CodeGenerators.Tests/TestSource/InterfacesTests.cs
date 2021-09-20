@@ -73,7 +73,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
 #if WINUI
         [Test]
         public void NoUseCommandManagerPropertyInWinUI() {
-            Assert.IsNull(typeof(GenerateViewModelAttribute).GetProperty(AttributesGenerator.ImplementIDEI));
+            Assert.IsNull(typeof(GenerateViewModelAttribute).GetProperty("ImplementIDataErrorInfo"));
         }
 #else
         [Test]
