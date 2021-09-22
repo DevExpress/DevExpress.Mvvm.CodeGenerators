@@ -231,7 +231,6 @@ namespace Test {
             var generatedCode = generatorResult.GeneratedSources[1].SourceText.ToString();
             return generatedCode;
         }
-#if !WINUI
         [Test]
         public void FormattingTest() {
             const string source =
@@ -406,7 +405,6 @@ namespace Test {
             Assert.AreEqual(expected, generatedCode);
 
         }
-#endif
         [Test]
         public void PrivateInSealedClass() {
             const string source =

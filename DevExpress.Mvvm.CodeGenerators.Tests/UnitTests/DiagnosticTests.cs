@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
+using System.ComponentModel;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
@@ -19,7 +20,7 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = Helper.CreateCompilation(sourceCode);
+            Compilation inputCompilation = CreateCompilation(sourceCode);
             ViewModelGenerator generator = new ViewModelGenerator();
             GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
             _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
@@ -87,7 +88,7 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = Helper.CreateCompilation(sourceCode);
+            Compilation inputCompilation = CreateCompilation(sourceCode);
             ViewModelGenerator generator = new ViewModelGenerator();
 
             GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
@@ -118,7 +119,7 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = Helper.CreateCompilation(sourceCode);
+            Compilation inputCompilation = CreateCompilation(sourceCode);
             ViewModelGenerator generator = new ViewModelGenerator();
 
             GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
@@ -149,7 +150,7 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = Helper.CreateCompilation(sourceCode);
+            Compilation inputCompilation = CreateCompilation(sourceCode);
             ViewModelGenerator generator = new ViewModelGenerator();
 
             GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
@@ -196,7 +197,7 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = Helper.CreateCompilation(sourceCode);
+            Compilation inputCompilation = CreateCompilation(sourceCode);
             ViewModelGenerator generator = new ViewModelGenerator();
 
             GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
@@ -229,7 +230,7 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = Helper.CreateCompilation(sourceCode);
+            Compilation inputCompilation = CreateCompilation(sourceCode);
             ViewModelGenerator generator = new ViewModelGenerator();
 
             GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
@@ -264,7 +265,7 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = Helper.CreateCompilation(sourceCode);
+            Compilation inputCompilation = CreateCompilation(sourceCode);
             ViewModelGenerator generator = new ViewModelGenerator();
 
             GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
@@ -275,5 +276,15 @@ namespace Test {
             foreach(var diagnostic in diagnostics)
                 Assert.AreEqual(GeneratorDiagnostics.TwoSuitableMethods.Id, diagnostic.Id);
         }
+        public static Compilation CreateCompilation(string source) =>
+            CSharpCompilation.Create("MyCompilation",
+                                     new[] { CSharpSyntaxTree.ParseText(source) },
+                                     new[] {
+                                         MetadataReference.CreateFromFile(typeof(System.Windows.Input.ICommand).Assembly.Location),
+                                         MetadataReference.CreateFromFile(typeof(DelegateCommand).Assembly.Location),
+                                         MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                                         MetadataReference.CreateFromFile(typeof(INotifyPropertyChanged).Assembly.Location),
+                                     },
+                                     new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
     }
 }
