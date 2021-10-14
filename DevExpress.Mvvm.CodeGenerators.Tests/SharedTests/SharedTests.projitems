@@ -9,14 +9,22 @@
     <Import_RootNamespace>SharedTests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)AsyncCommandGenerationTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AttributeTransferTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CommandGenerationTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)InterfacesTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)NullableAnnotationTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PropertyGenerationTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SupportServicesTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UsingRaiseMethodTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DxTest\AsyncCommandGenerationTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DxTest\AttributeTransferTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DxTest\CommandGenerationTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DxTest\Helper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DxTest\InterfacesTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DxTest\NullableAnnotationTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DxTest\PropertyGenerationTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DxTest\SupportServicesTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DxTest\UsingRaiseMethodTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrismTest\AsyncCommandGenerationTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrismTest\AttributeTransferTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrismTest\CommandGenerationTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrismTest\Helper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrismTest\InterfacesTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrismTest\NullableAnnotationTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrismTest\PropertyGenerationTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrismTest\UsingRaiseMethodTests.cs" />
   </ItemGroup>
 </Project>

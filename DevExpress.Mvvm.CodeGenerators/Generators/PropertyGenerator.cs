@@ -19,7 +19,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
             PropertyHelper.AppendAttributesList(source, fieldSymbol);
 
-            bool isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, info.PropertyAttributeSymbol);
+            bool isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, info.PropertyAttributeSymbol!);
             string virtuality = isVirtual ? "virtual " : string.Empty;
             string typeName = fieldSymbol.Type.WithNullableAnnotation(PropertyHelper.GetNullableAnnotation(fieldSymbol.Type)).ToDisplayStringNullable();
             string fieldName = fieldSymbol.Name == "value" ? "this.value" : fieldSymbol.Name;
@@ -28,7 +28,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
             AppendSetterAttribute(source.Tab, info, fieldSymbol, fieldName);
 
-            string setterAccessModifier = PropertyHelper.GetSetterAccessModifierValue(fieldSymbol, info.PropertyAttributeSymbol);
+            string setterAccessModifier = PropertyHelper.GetSetterAccessModifierValue(fieldSymbol, info.PropertyAttributeSymbol!);
             source.Tab.Append(setterAccessModifier).AppendLine("set {");
             source.Tab.Tab.Append("if(EqualityComparer<").Append(typeName).Append(">.Default.Equals(").Append(fieldName).AppendLine(", value)) return;");
 

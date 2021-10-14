@@ -11,6 +11,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static readonly string commandName = AttributesGenerator.CommandName;
         static readonly string canExecuteMethod = AttributesGenerator.CanExecuteMethod;
 
+        static readonly string observesCanExecuteProperty = AttributesGenerator.ObservesCanExecuteProperty;
+        static readonly string observesProperties = AttributesGenerator.ObservesProperties;
+
         public static bool GetAllowMultipleExecutionValue(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, allowMultipleExecution, false);
         public static bool GetUseCommandManagerValue(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
@@ -25,6 +28,20 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 source.Append('<').Append(genericArgumentType).Append('>');
             return source;
         }
+        public static SourceBuilder AppendMethodNamePrism(this SourceBuilder source, bool isCommand, string methodSymbolName, string genericArgumentType) {
+            bool isGeneric = !string.IsNullOrEmpty(genericArgumentType);
+            source.Append('(');
+            if(isCommand) {
+                source.Append(methodSymbolName);
+            } else {
+                source.Append($"async ").Append(isGeneric ? "(arg)" : "()").Append(" => await ").Append(methodSymbolName).Append(isGeneric ? "(arg)" : "()");
+            }
+            return source;
+        }
+        public static string GetObservesCanExecuteProperty(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
+            AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, observesCanExecuteProperty, string.Empty)!;
+        public static string[] GetObservesProperties(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
+            AttributeHelper.GetPropertyActualArrayValue(methodSymbol, commandSymbol, observesProperties, new string[0])!;
 
         public static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol classSymbol, Func<IMethodSymbol, bool> condition) =>
             classSymbol.GetMembers().OfType<IMethodSymbol>().Where(condition);

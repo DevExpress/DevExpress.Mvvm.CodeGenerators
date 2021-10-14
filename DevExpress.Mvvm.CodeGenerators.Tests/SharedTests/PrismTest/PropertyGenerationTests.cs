@@ -1,14 +1,15 @@
 ﻿using NUnit.Framework;
 using System.ComponentModel;
+using DevExpress.Mvvm.CodeGenerators.Prism;
 
-[DevExpress.Mvvm.CodeGenerators.GenerateViewModel(ImplementINotifyPropertyChanging = true)]
-partial class GlobalClass {
-    [DevExpress.Mvvm.CodeGenerators.GenerateProperty]
+[DevExpress.Mvvm.CodeGenerators.Prism.GenerateViewModel(ImplementINotifyPropertyChanging = true)]
+partial class PrismGlobalClass {
+    [GenerateProperty]
     public int testIntProperty;
-    [DevExpress.Mvvm.CodeGenerators.GenerateProperty]
+    [GenerateProperty]
     public string testStringProperty;
 }
-namespace DevExpress.Mvvm.CodeGenerators.Tests {
+namespace Prism.Mvvm.Tests {
     class ImplementedINPCingClass : INotifyPropertyChanged {
         public event PropertyChangedEventHandler PropertyChanged;
         public int B { get; set; }
@@ -40,14 +41,6 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
     class ViewModelParent {
         public int a = 0;
         public void OnParentViewModelChanged(object o) { a = 1; }
-    }
-    [GenerateViewModel(ImplementISupportParentViewModel = true)]
-    partial class WithInheritedParentViewModelMethod : ViewModelParent {
-    }
-    [GenerateViewModel(ImplementISupportParentViewModel = true)]
-    partial class WithParentViewModelMethod {
-        public int a = 0;
-        void OnParentViewModelChanged(object o) { a = 1; }
     }
     class MyClass {
         public string i;
@@ -113,7 +106,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             NonNullableStructOldValue = oldValue;
         void OnNonNullableStructChanging(MyStruct? newValue) =>
             NonNullableStructNewValue = newValue;
-        
+
         [GenerateProperty]
         MyClass? nullableClass;
         public MyClass? NullableClassOldValue = new MyClass("Init value");
@@ -139,7 +132,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
 
 #nullable enable
         [GenerateProperty]
-         int nonNullableInt;
+        int nonNullableInt;
 
         public int? NonNullableIntOldValue;
         public int? NonNullableIntNewValue;
@@ -172,6 +165,13 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public string NullableStringNewValue;
         void OnNullableStringChanging(string newValue) =>
             NullableStringNewValue = newValue;
+    }
+    [GenerateViewModel]
+    partial class WithTwoMvvmAttribute {
+        [DevExpress.Mvvm.CodeGenerators.GenerateProperty]
+        int dxProperty;
+        [DevExpress.Mvvm.CodeGenerators.GenerateCommand]
+        void DxMethod() { }
     }
 
     [TestFixture]
@@ -234,7 +234,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         }
         [Test]
         public void NullableStruct() {
-            var generated = new GenerateProperties() {NonNullableStruct = new MyStruct(1) };
+            var generated = new GenerateProperties() { NonNullableStruct = new MyStruct(1) };
 
             Assert.AreEqual(0, generated.NonNullableStructOldValue.Value.i);
             Assert.AreEqual(1, generated.NonNullableStructNewValue.Value.i);
@@ -373,14 +373,14 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         }
         [Test]
         public void GenericClassGenerate() {
-            var genClass = new GenericClassTest<int, string>(0, "Init Value") { TProperty = 1, TClassProperty = "1", TNonNull = 3};
+            var genClass = new GenericClassTest<int, string>(0, "Init Value") { TProperty = 1, TClassProperty = "1", TNonNull = 3 };
 
             Assert.AreEqual(0, genClass.TPropertyOldValue);
             Assert.AreEqual(1, genClass.TPropertyNewValue);
             Assert.AreEqual("Init Value", genClass.TClassPropertyOldValue);
             Assert.AreEqual("1", genClass.TClassPropertyNewValue);
             Assert.AreEqual(genClass.TNonNullOldValue, genClass.TNonNullNewValue);
-            
+
             DoWith.PropertyChangedEvent(
                 genClass,
                 () => {
@@ -407,7 +407,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
                 () => {
                     DoWith.PropertyChangingEvent(
                         genClass,
-                        () => { 
+                        () => {
                             genClass.TClassProperty = "2";
                         },
                         e => {
@@ -439,7 +439,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         }
         [Test]
         public void GenerateInnerClass() {
-            
+
             var inner2 = new OuterClass.InnerClass.InnerClass2();
             var inner = new OuterClass.InnerClass();
             Assert.IsNotNull(inner2.GetType().GetProperty("A"));
@@ -449,16 +449,10 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.AreEqual(typeof(OuterClass), inner2.GetType().GetProperty("A").DeclaringType.DeclaringType.DeclaringType);
         }
         [Test]
-        public void ISupportParentViewModelTest() {
-            var generatedWithParent = new WithInheritedParentViewModelMethod();
-            var generated = new WithParentViewModelMethod();
-            Assert.AreEqual(0, generatedWithParent.a);
-            Assert.AreEqual(0, generated.a);
-            generatedWithParent.ParentViewModel = new ViewModelParent();
-            generated.ParentViewModel = new ViewModelParent();
-            Assert.AreEqual(1, generatedWithParent.a);
-            Assert.AreEqual(1, generated.a);
-            Assert.Throws<System.InvalidOperationException>(() => generated.ParentViewModel = generated);
+        public void DoNotGenerateDxMembers() {
+            var generated = new WithTwoMvvmAttribute();
+            Assert.IsNull(generated.GetType().GetProperty("DxProperty"));
+            Assert.IsNull(generated.GetType().GetProperty("DxMethodCommand"));
         }
     }
     #region same class names
@@ -493,7 +487,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         }
         [Test]
         public void GlobalNamespace() {
-            var globalClass = new GlobalClass();
+            var globalClass = new PrismGlobalClass();
             Assert.AreEqual(null, globalClass.GetType().Namespace);
             Assert.IsNotNull(globalClass.GetType().GetProperty("TestIntProperty"));
             Assert.IsNotNull(globalClass.GetType().GetProperty("TestStringProperty"));

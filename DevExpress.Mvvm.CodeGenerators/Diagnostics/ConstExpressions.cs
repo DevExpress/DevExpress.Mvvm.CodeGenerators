@@ -43,5 +43,13 @@
         const string twoSuitableMethodsId = idPrefix + "1001";
         const string twoSuitableMethodsTitle = "The class contains two suitable methods";
         const string twoSuitableMethodsMessageFormat = "The '{0}' contains two suitable methods: 'void {1}()' and 'void {1}({2})'. 'void {1}({2})' is used.";
+
+        const string twoGenerateViewModelAttributesId = idPrefix + "0010";
+        const string twoGenerateViewModelAttributesTitle = "two Generate View Mode lAttributes";
+        const string twoGenerateViewModelAttributesMessageFormat = "The '{0}' contains two Generate ViewModel Attribute";
+
+        const string nonNullableDelegateCommandArgumentId = idPrefix + "0011";
+        const string nonNullableDelegateCommandTitle = "non Nullable DelegateCommand Argument";
+        const string nonNullableDelegateCommandMessageFormst = "The argument of '{0}' must be object or Nullable<T>";
     }
 }

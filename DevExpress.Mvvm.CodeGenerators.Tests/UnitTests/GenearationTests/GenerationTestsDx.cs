@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
     [TestFixture]
-    public class GenerationTests {
+    public class GenerationTestsDx {
         [Test]
         public void GenerationFormat() {
             var source = @"using DevExpress.Mvvm.CodeGenerators;
@@ -377,17 +377,11 @@ namespace Test {
         /// <summary>
         /// Test command comment
         /// </summary>
-        public DelegateCommand<int> Command1Command {
-            get => command1Command ??= new DelegateCommand<int>(Command1, CanCommand1, true);
-        }
+        public DelegateCommand<int> Command1Command => command1Command ??= new DelegateCommand<int>(Command1, CanCommand1, true);
         AsyncCommand? someCommand;
-        public AsyncCommand SomeCommand {
-            get => someCommand ??= new AsyncCommand(Command2, null, false, true);
-        }
+        public AsyncCommand SomeCommand => someCommand ??= new AsyncCommand(Command2, null, false, true);
         DelegateCommand<int>? command3Command;
-        public DelegateCommand<int> Command3Command {
-            get => command3Command ??= new DelegateCommand<int>(Command3, CanCommand3_, true);
-        }
+        public DelegateCommand<int> Command3Command => command3Command ??= new DelegateCommand<int>(Command3, CanCommand3_, true);
         static PropertyChangedEventArgs IntChangedEventArgs = new PropertyChangedEventArgs(nameof(Int));
         static PropertyChangedEventArgs StrChangedEventArgs = new PropertyChangedEventArgs(nameof(Str));
         static PropertyChangedEventArgs LongChangedEventArgs = new PropertyChangedEventArgs(nameof(Long));

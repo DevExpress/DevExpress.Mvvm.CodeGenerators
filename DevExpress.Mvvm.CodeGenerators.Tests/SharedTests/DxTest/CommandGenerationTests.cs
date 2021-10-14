@@ -12,6 +12,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         [GenerateCommand]
         public void WithNullableArg(int? arg) { }
         public void SomeMethod() { }
+        public void With2Args(int a, string str) { }
 
         [GenerateCommand(Name = "Command", CanExecuteMethod = "CanDoIt")]
         public void Method(int arg) { }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
@@ -11,6 +12,15 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(argument.IsNull)
                 return defaultValue;
             return (T?)argument.Value;
+        }
+        public static T?[] GetPropertyActualArrayValue<T>(ISymbol sourceSymbol, INamedTypeSymbol attributeSymbol, string propertyName, T?[] defaultValue) {
+            TypedConstant argument = GetAttributeData(sourceSymbol, attributeSymbol)!
+                                        .NamedArguments
+                                        .SingleOrDefault(kvp => kvp.Key == propertyName)
+                                        .Value;
+            if(argument.IsNull)
+                return defaultValue;
+            return argument.Values.Select(tp => (T?)tp.Value).ToArray();
         }
         public static bool HasAttribute(ISymbol sourceSymbol, INamedTypeSymbol attributeSymbol) =>
             GetAttributeData(sourceSymbol, attributeSymbol) != null;

@@ -15,13 +15,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         int? LastTabLevel { get => newLineState.LastTabLevel; set => newLineState.LastTabLevel = value; }
         SourceBuilder? tab;
 
-        public SourceBuilder Tab {
-            get {
-                if(tab != null)
-                    return tab;
-                return tab = new SourceBuilder(builder, tabs + 1, this, newLineState);
-            }
-        }
+        public SourceBuilder Tab => tab ??= new SourceBuilder(builder, tabs + 1, this, newLineState);
 
         public SourceBuilder(StringBuilder builder) : this(builder, 0, null, new NewLineState()) { }
         SourceBuilder(StringBuilder builder, int tabs, SourceBuilder? @return, NewLineState newLineState) {

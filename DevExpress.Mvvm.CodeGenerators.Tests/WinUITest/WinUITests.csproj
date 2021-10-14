@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Prism.Wpf" Version="8.1.97" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" />
     <PackageReference Include="NUnit" Version="3.13.2" />

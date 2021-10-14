@@ -14,11 +14,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static bool GetIsVirtualValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
             AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofIsVirtual, false);
         public static string? GetChangedMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType) {
-            string? methodName = GetChangedMethodName(fieldSymbol, info.PropertyAttributeSymbol);
+            string? methodName = GetChangedMethodName(fieldSymbol, info.PropertyAttributeSymbol!);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changed", "oldValue", fieldType);
         }
         public static string? GetChangingMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType) {
-            string? methodName = GetChangingMethodName(fieldSymbol, info.PropertyAttributeSymbol);
+            string? methodName = GetChangingMethodName(fieldSymbol, info.PropertyAttributeSymbol!);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changing", "value", fieldType);
         }
         public static string GetSetterAccessModifierValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) {
@@ -31,7 +31,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return;
             foreach(AttributeData attribute in attributeList) {
                 string attributeName = attribute.ToString();
-                if(!attributeName.StartsWith(AttributesGenerator.PropertyAttributeFullName))
+                if(!(attributeName.StartsWith(AttributesGenerator.PropertyAttributeFullName!) || attributeName.StartsWith(AttributesGenerator.PrismPropertyAttributeFullName!)))
                     source.Append('[').Append(attributeName).AppendLine("]");
             }
         }

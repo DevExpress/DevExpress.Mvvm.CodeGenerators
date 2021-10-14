@@ -19,10 +19,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(context.SyntaxContextReceiver is not SyntaxContextReceiver receiver)
                 return;
 
-            SourceText attributesSourceText = SourceText.From(InitializationGenerator.GetSourceCode(ContextInfo.GetIsWinUI(context.Compilation)), Encoding.UTF8);
-            SyntaxTree attributesSyntaxTree = CSharpSyntaxTree.ParseText(attributesSourceText, (CSharpParseOptions)context.ParseOptions);
-            Compilation compilation = context.Compilation.AddSyntaxTrees(attributesSyntaxTree);
-            context.AddSource(ClassHelper.CreateFileName("Attributes"), attributesSourceText);
+            Compilation compilation = context.Compilation;
+            foreach(SupportedMvvm mvvm in ContextInfo.GetAvailableMvvm(context.Compilation))
+                AddAttributeFile(context, mvvm, ref compilation);
 
             ContextInfo contextInfo = new ContextInfo(context, compilation);
             HashSet<string> generatedClasses = new HashSet<string>();
@@ -37,8 +36,17 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 if(classSyntax.AttributeLists.Count == 0)
                     continue;
                 INamedTypeSymbol classSymbol = contextInfo.Compilation.GetSemanticModel(classSyntax.SyntaxTree).GetDeclaredSymbol(classSyntax)!;
-                if(!AttributeHelper.HasAttribute(classSymbol, contextInfo.ViewModelAttributeSymbol))
-                    continue;
+
+                if(AttributeHelper.HasAttribute(classSymbol, contextInfo.DxViewModelAttributeSymbol)) {
+                    contextInfo.SetMvvm(SupportedMvvm.Dx);
+                    if(AttributeHelper.HasAttribute(classSymbol, contextInfo.PrismViewModelAttributeSymbol)) {
+                        context.ReportTwoGenerateViewModelAttributes(classSymbol);
+                        continue;
+                    }
+                }
+                else if(AttributeHelper.HasAttribute(classSymbol, contextInfo.PrismViewModelAttributeSymbol))
+                    contextInfo.SetMvvm(SupportedMvvm.Prism);
+                else continue;
 
                 if(processedSymbols.Contains(classSymbol))
                     continue;
@@ -57,6 +65,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
             }
             //EndExecute(traceInfo, generatedCount);
         }
+        static void AddAttributeFile(GeneratorExecutionContext context, SupportedMvvm mvvm, ref Compilation compilation) {
+            SourceText attributesSourceText = SourceText.From(InitializationGenerator.GetSourceCode(mvvm, ContextInfo.GetIsWinUI(context.Compilation)), Encoding.UTF8);
+            SyntaxTree attributesSyntaxTree = CSharpSyntaxTree.ParseText(attributesSourceText, (CSharpParseOptions)context.ParseOptions);
+            compilation = compilation.AddSyntaxTrees(attributesSyntaxTree);
+            context.AddSource(ClassHelper.CreateFileName(mvvm.ToString() + "Attributes"), attributesSourceText);
+        }
+
 
         [Conditional("DEBUG")]
         static void StartExecute(ref TraceInfo info) {
