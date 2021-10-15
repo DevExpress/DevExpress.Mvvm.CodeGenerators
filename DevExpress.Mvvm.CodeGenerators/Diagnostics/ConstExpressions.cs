@@ -49,7 +49,7 @@
         const string twoGenerateViewModelAttributesMessageFormat = "The '{0}' contains two Generate ViewModel Attribute";
 
         const string nonNullableDelegateCommandArgumentId = idPrefix + "0011";
-        const string nonNullableDelegateCommandTitle = "non Nullable DelegateCommand Argument";
-        const string nonNullableDelegateCommandMessageFormst = "The argument of '{0}' must be object or Nullable<T>";
+        const string nonNullableDelegateCommandArgumentTitle = "non Nullable DelegateCommand Argument";
+        const string nonNullableDelegateCommandArgumentMessageFormat = "The argument of '{0}' must be object or Nullable<T>";
     }
 }

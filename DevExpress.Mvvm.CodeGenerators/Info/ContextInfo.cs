@@ -70,7 +70,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         public static bool GetIsWinUI(Compilation compilation) => GetIsDxMvvmAvailable(compilation) && compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;
         static bool GetIsDxMvvmAvailable(Compilation compilation) => compilation.ReferencedAssemblyNames.Any(ai => Regex.IsMatch(ai.Name, @"DevExpress\.Mvvm(\.v\d{2}\.\d)?$"));
-        static bool GetIsPrismAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("Prism.Commands.DelegateCommand") != null;  //ReferencedAssemblyNames.Any(ai => Regex.IsMatch(ai.Name, @"Prism\..*(Wpf|Core)"));
+        static bool GetIsPrismAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("Prism.Commands.DelegateCommand") != null;
         public static List<SupportedMvvm> GetAvailableMvvm(Compilation compilation) {
             List<SupportedMvvm> available = new();
             if(GetIsDxMvvmAvailable(compilation))
@@ -81,9 +81,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 available.Add(SupportedMvvm.None);
             return available;
         }
-        //public void SetActualMvvm(INamedTypeSymbol classSymbol) {
-        //    //var viewModelAttribute = Compilation.GetType
-        //}
     }
     internal enum SupportedMvvm {
         None = 0,

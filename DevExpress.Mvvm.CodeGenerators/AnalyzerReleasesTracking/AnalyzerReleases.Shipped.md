@@ -30,8 +30,8 @@ DXCG0009 | DevExpress.Mvvm.CodeGenerators | error | Cannot generate the generic 
 ### New Rules
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
-DXCG0010 | DevExpress.Mvvm.CodeGenerators | error | Class contains two generateViewModelAttribute
-DXCG0011 | DevExpress.Mvvm.CodeGenerators | error | Method has Nullable Argument
+DXCG0010 | DevExpress.Mvvm.CodeGenerators | error | Class contains two GenerateViewModelAttribute
+DXCG0011 | DevExpress.Mvvm.CodeGenerators | error | Method has Non-Nullable Argument
 
 ### Removed Rules
 Rule ID | Category | Severity | Notes

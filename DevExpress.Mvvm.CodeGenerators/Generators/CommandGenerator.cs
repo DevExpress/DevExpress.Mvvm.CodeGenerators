@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class CommandGenerator {
-
         public static void GenerateDX(SourceBuilder source, ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol) {
             bool isCommand;
             SetIsCommand(info, methodSymbol, out isCommand);
@@ -29,8 +28,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
             SetIsCommand(info, methodSymbol, out isCommand);
 
             ITypeSymbol? parameterType = methodSymbol.Parameters.FirstOrDefault()?.Type;
-            if((parameterType?.IsValueType ?? false) && (parameterType.NullableAnnotation != NullableAnnotation.Annotated))
+            if((parameterType?.IsValueType ==  true) && (parameterType.NullableAnnotation != NullableAnnotation.Annotated)) {
                 info.Context.ReportNonNullableDelegateCommandArgument(methodSymbol);
+                return;
+            }
             string? canExecuteMethodName = GetCanExecuteMethodName(info, classSymbol, methodSymbol, parameterType);
 
             string name = CommandHelper.GetCommandName(methodSymbol, info.CommandAttributeSymbol!, methodSymbol.Name);

@@ -65,7 +65,7 @@ namespace Prism.Mvvm.Tests {
         }";
             string generatedCode = GenerateCode(source);
             StringAssert.Contains("using Prism.Commands;", generatedCode);
-            StringAssert.Contains("MethodCommand", generatedCode);
+            StringAssert.DoesNotContain("MethodCommand", generatedCode);
         }
         [Test]
         public void GenerateComments() {
@@ -100,7 +100,7 @@ using Prism.Commands;
         /// Test command comment
                             /// </summary>
                 [GenerateCommand]
-                public void Method(int arg) { }
+                public void Method(int? arg) { }
             }
         }
         ";

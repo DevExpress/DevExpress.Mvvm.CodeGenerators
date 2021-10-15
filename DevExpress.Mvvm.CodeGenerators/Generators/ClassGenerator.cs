@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
@@ -57,12 +58,10 @@ using System.ComponentModel;";
                             source.AppendLine("using DevExpress.Mvvm;");
                         break;
                     case SupportedMvvm.Prism:
-                        if(interfaces.Any(i => i is IActiveAwareGenerator))
-                            source.AppendLine("using System;").AppendLine("using Prism;");
-                        source.AppendLine("using Prism.Commands;");
+                        source.AppendLine("using System;").AppendLine("using Prism;").AppendLine("using Prism.Commands;");
                         break;
                     default:
-                        break;
+                        throw new InvalidEnumArgumentException();
                 }
                 source.AppendLine();
                 source.AppendLine("#nullable enable");
@@ -151,40 +150,38 @@ using System.ComponentModel;";
                         foreach(IMethodSymbol methodSymbol in commandCandidates)
                             CommandGenerator.GenerateDX(source, contextInfo, classSymbol, methodSymbol);
                         break;
-                    case SupportedMvvm.None:
-                        foreach(IMethodSymbol methodSymbol in commandCandidates)
-                            CommandGenerator.GenerateDX(source, contextInfo, classSymbol, methodSymbol);
-                        break;
                     case SupportedMvvm.Prism:
                         foreach(IMethodSymbol methodSymbol in commandCandidates)
                             CommandGenerator.GeneratePrism(source, contextInfo, classSymbol, methodSymbol);
                         break;
-                    default:
+                    case SupportedMvvm.None:
+                        foreach(IMethodSymbol methodSymbol in commandCandidates)
+                            CommandGenerator.GenerateDX(source, contextInfo, classSymbol, methodSymbol);
                         break;
+                    default:
+                        throw new InvalidEnumArgumentException();
                 }
             }
 
             static void AddAvailableInterfaces(List<IInterfaceGenerator> interfaces, ContextInfo contextInfo, INamedTypeSymbol classSymbol) {
                 switch(contextInfo.ActualMvvm) {
                     case SupportedMvvm.Dx:
-                        if(contextInfo.ActualMvvm == SupportedMvvm.Dx) {
-                            bool implIDEI = ClassHelper.GetImplementIDEIValue(contextInfo, classSymbol);
-                            bool implISS = ClassHelper.GetImplementISSValue(contextInfo, classSymbol);
-                            bool implISPVM = ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol);
-                            if(implIDEI) {
-                                if(!ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.IDEISymbol))
-                                    interfaces.Add(new IDataErrorInfoGenerator());
+                        bool implIDEI = ClassHelper.GetImplementIDEIValue(contextInfo, classSymbol);
+                        bool implISS = ClassHelper.GetImplementISSValue(contextInfo, classSymbol);
+                        bool implISPVM = ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol);
+                        if(implIDEI) {
+                            if(!ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.IDEISymbol))
+                                interfaces.Add(new IDataErrorInfoGenerator());
+                        }
+                        if(implISPVM) {
+                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol!, contextInfo)) {
+                                bool shouldGenerateChangedMethod = ClassHelper.ContainISPVMChangedMethod(classSymbol);
+                                interfaces.Add(new ISupportParentViewModelGenerator(shouldGenerateChangedMethod));
                             }
-                            if(implISPVM) {
-                                if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol!, contextInfo)) {
-                                    bool shouldGenerateChangedMethod = ClassHelper.ContainISPVMChangedMethod(classSymbol);
-                                    interfaces.Add(new ISupportParentViewModelGenerator(shouldGenerateChangedMethod));
-                                }
-                            }
-                            if(implISS) {
-                                if(!ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.ISSSymbol!))
-                                    interfaces.Add(new ISupportServicesGenerator(classSymbol.IsSealed));
-                            }
+                        }
+                        if(implISS) {
+                            if(!ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.ISSSymbol!))
+                                interfaces.Add(new ISupportServicesGenerator(classSymbol.IsSealed));
                         }
                         break;
                     case SupportedMvvm.Prism:
@@ -196,8 +193,10 @@ using System.ComponentModel;";
                             }
                         }
                         break;
-                    default:
+                    case SupportedMvvm.None:
                         break;
+                    default:
+                        throw new InvalidEnumArgumentException();
                 }
             }
         }
