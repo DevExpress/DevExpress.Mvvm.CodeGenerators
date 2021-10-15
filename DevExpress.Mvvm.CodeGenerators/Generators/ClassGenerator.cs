@@ -36,7 +36,7 @@ using System.ComponentModel;";
             source = GenerateHeader(source, classSymbol, interfaces,
                 impelementRaiseChangedMethod ? inpcedInfo.RaiseMethodImplementation : null,
                 impelementRaiseChangingMethod ? inpcingInfo.RaiseMethodImplementation : null,
-                genericTypes, outerClasses, contextInfo);
+                genericTypes, outerClasses, contextInfo.ActualMvvm);
 
 
             bool needStaticChangedEventArgs = inpcedInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangedMethod;
@@ -50,15 +50,16 @@ using System.ComponentModel;";
             while(source.Return != null)
                 source = source.Return.AppendLine("}");
 
-            static SourceBuilder GenerateHeader(SourceBuilder source, INamedTypeSymbol classSymbol, List<IInterfaceGenerator> interfaces, string? raiseChangedMethod, string? raiseChangingMethod, List<ITypeSymbol> genericTypes, Dictionary<string, TypeKind> outerClasses, ContextInfo contextInfo) {
+            static SourceBuilder GenerateHeader(SourceBuilder source, INamedTypeSymbol classSymbol, List<IInterfaceGenerator> interfaces, string? raiseChangedMethod, string? raiseChangingMethod, List<ITypeSymbol> genericTypes, Dictionary<string, TypeKind> outerClasses, SupportedMvvm actualMvvm) {
                 source.AppendLine(defaultUsings);
-                switch(contextInfo.ActualMvvm) {
+                switch(actualMvvm) {
                     case SupportedMvvm.Dx:
-                        if(contextInfo.AvailableMvvm.Contains(SupportedMvvm.Dx))
-                            source.AppendLine("using DevExpress.Mvvm;");
+                        source.AppendLine("using DevExpress.Mvvm;");
                         break;
                     case SupportedMvvm.Prism:
                         source.AppendLine("using System;").AppendLine("using Prism;").AppendLine("using Prism.Commands;");
+                        break;
+                    case SupportedMvvm.None:
                         break;
                     default:
                         throw new InvalidEnumArgumentException();
@@ -175,7 +176,7 @@ using System.ComponentModel;";
                         }
                         if(implISPVM) {
                             if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol!, contextInfo)) {
-                                bool shouldGenerateChangedMethod = ClassHelper.ContainISPVMChangedMethod(classSymbol);
+                                bool shouldGenerateChangedMethod = ClassHelper.ContainsOnChangedMethod(classSymbol, "OnParentViewModelChanged", 1, "object");
                                 interfaces.Add(new ISupportParentViewModelGenerator(shouldGenerateChangedMethod));
                             }
                         }
@@ -188,7 +189,7 @@ using System.ComponentModel;";
                         bool implIAA = ClassHelper.GetImplementIAAValue(contextInfo, classSymbol);
                         if(implIAA) {
                             if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.IAASymbol!, contextInfo)) {
-                                bool shouldGenerateChangedMethod = ClassHelper.ContainIAAChangedMethod(classSymbol);
+                                bool shouldGenerateChangedMethod = ClassHelper.ContainsOnChangedMethod(classSymbol, "OnIsActiveChanged", 0, null);
                                 interfaces.Add(new IActiveAwareGenerator(shouldGenerateChangedMethod));
                             }
                         }

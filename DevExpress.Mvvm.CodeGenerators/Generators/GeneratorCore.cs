@@ -20,7 +20,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return;
 
             Compilation compilation = context.Compilation;
-            foreach(SupportedMvvm mvvm in ContextInfo.GetAvailableMvvm(context.Compilation))
+            foreach(SupportedMvvm mvvm in ContextInfo.GetAvailableMvvm(compilation))
                 AddAttributeFile(context, mvvm, ref compilation);
 
             ContextInfo contextInfo = new ContextInfo(context, compilation);
@@ -38,7 +38,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 INamedTypeSymbol classSymbol = contextInfo.Compilation.GetSemanticModel(classSyntax.SyntaxTree).GetDeclaredSymbol(classSyntax)!;
 
                 if(AttributeHelper.HasAttribute(classSymbol, contextInfo.DxViewModelAttributeSymbol)) {
-                    contextInfo.SetMvvm(SupportedMvvm.Dx);
+                    if(contextInfo.AvailableMvvm.Contains(SupportedMvvm.Dx))
+                        contextInfo.SetMvvm(SupportedMvvm.Dx);
+                    else
+                        contextInfo.SetMvvm(SupportedMvvm.None);
                     if(AttributeHelper.HasAttribute(classSymbol, contextInfo.PrismViewModelAttributeSymbol)) {
                         context.ReportTwoGenerateViewModelAttributes(classSymbol);
                         continue;

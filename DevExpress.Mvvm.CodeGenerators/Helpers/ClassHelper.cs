@@ -40,23 +40,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
                        .OfType<T>()
                        .Where(symbol => AttributeHelper.HasAttribute(symbol, attributeSymbol));
 
-        public static bool ContainIAAChangedMethod(INamedTypeSymbol classSymbol) {
-            IEnumerable<IMethodSymbol> onIActiveAwareChangeds = CommandHelper.GetMethods(classSymbol, methodSymbol => methodSymbol.ReturnsVoid && methodSymbol.Name == "OnIsActiveChanged" && methodSymbol.Parameters.Length == 0);
-            return onIActiveAwareChangeds.Any();
-        }
-        public static bool ContainISPVMChangedMethod(INamedTypeSymbol classSymbol) {
-            bool containsISPVMChangedMethod = ContainISPVMChangedMethodCore(classSymbol, true);
-            INamedTypeSymbol parent = classSymbol.BaseType!;
-            while(parent != null && !containsISPVMChangedMethod) {
-                containsISPVMChangedMethod = ContainISPVMChangedMethodCore(parent);
-                parent = parent.BaseType!;
-            }
-            return containsISPVMChangedMethod;
-        }
-        static bool ContainISPVMChangedMethodCore(INamedTypeSymbol classSymbol, bool ignorePrivateAccessibility = false) {
-            IEnumerable<IMethodSymbol> onParentViewModelChangeds = CommandHelper.GetMethods(classSymbol, methodSymbol => (methodSymbol.DeclaredAccessibility != Accessibility.Private || ignorePrivateAccessibility) && methodSymbol.ReturnsVoid && methodSymbol.Name == "OnParentViewModelChanged" && methodSymbol.Parameters.Length == 1 &&
-                                                    methodSymbol.Parameters[0].ToDisplayString().StartsWith("object"));
-            return onParentViewModelChangeds.Any();
+        public static bool ContainsOnChangedMethod(INamedTypeSymbol classSymbol, string methodName, int parametersCount, string? parameterType) {
+            IEnumerable<IMethodSymbol> onChangedMethod = CommandHelper.GetMethods(classSymbol, methodSymbol => methodSymbol.ReturnsVoid && methodSymbol.Name == methodName && methodSymbol.Parameters.Length == parametersCount &&
+                                                   (string.IsNullOrEmpty(parameterType) || methodSymbol.Parameters[0].ToDisplayString().StartsWith(parameterType)));
+            return onChangedMethod.Any();
         }
         public static Dictionary<string, TypeKind> GetOuterClasses(INamedTypeSymbol classSymbol) {
             Dictionary<string, TypeKind> outerClasses = new Dictionary<string, TypeKind>();

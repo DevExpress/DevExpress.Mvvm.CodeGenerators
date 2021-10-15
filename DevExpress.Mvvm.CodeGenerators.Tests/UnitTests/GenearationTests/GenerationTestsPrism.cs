@@ -1,9 +1,7 @@
-﻿using DevExpress.Mvvm.Native;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using System;
-using System.Linq;
 using Prism.Commands;
 using DevExpress.Mvvm.CodeGenerators;
 
@@ -140,17 +138,13 @@ using Prism.Commands;
             Assert.DoesNotThrow(() => GenerateCode(source));
         }
 
-        static string GenerateCode(string source, bool addMVVM = true) {
+        static string GenerateCode(string source) {
             var references = new[] {
                 MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.RangeAttribute).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(System.Windows.Input.ICommand).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(DelegateCommand).Assembly.Location),
             };
-            if(addMVVM)
-                references = MetadataReference.CreateFromFile(typeof(DelegateCommand).Assembly.Location)
-                    .Yield()
-                    .Concat(references)
-                    .ToArray();
             Compilation inputCompilation = CSharpCompilation.Create("MyCompilation",
                                                                     new[] { CSharpSyntaxTree.ParseText(source) },
                                                                     references,
@@ -370,7 +364,7 @@ namespace Test {
 @"using DevExpress.Mvvm.CodeGenerators.Prism; 
 
 namespace Test {
-    [GenerateViewModel(ImplementINotifyPropertyChanging = true, ImplementIDataErrorInfo = true, ImplementIActiveAware = true)]
+    [GenerateViewModel(ImplementINotifyPropertyChanging = true, ImplementIActiveAware = true)]
     sealed partial class SealdClass {
     [GenerateProperty]
     string str;
@@ -380,6 +374,25 @@ namespace Test {
 }";
             var generated = GenerateCode(source);
             StringAssert.DoesNotContain("protected", generated);
+        }
+        [Test]
+        public void DoesNotGenerateIAA() {
+            const string source =
+@"using DevExpress.Mvvm.CodeGenerators.Prism; 
+using Prism;
+
+namespace Test {
+    class ParentClass : IActiveAware {
+        public event EventHandler IsActiveChanged;
+        public bool IsActive { }
+}
+    [GenerateViewModel(ImplementIActiveAware = true)]
+    partial class ChildClass : ParentClass {
+    }
+}";
+            var generated = GenerateCode(source);
+            StringAssert.DoesNotContain("IActiweAware", generated);
+
         }
     }
 }

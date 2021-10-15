@@ -9,8 +9,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public GeneratorExecutionContext Context { get; }
         public Compilation Compilation { get; }
 
-        public INamedTypeSymbol DxViewModelAttributeSymbol { get; }
-        public INamedTypeSymbol PrismViewModelAttributeSymbol { get; }
+        public INamedTypeSymbol? BaseViewModelAttributeSymbol { get; }
+        public INamedTypeSymbol? DxViewModelAttributeSymbol { get; }
+        public INamedTypeSymbol? PrismViewModelAttributeSymbol { get; }
 
         public INamedTypeSymbol? ViewModelAttributeSymbol { get; private set; }
         public INamedTypeSymbol? PropertyAttributeSymbol { get; private set; }
@@ -32,10 +33,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public ContextInfo(GeneratorExecutionContext context, Compilation compilation) {
             Context = context;
             Compilation = compilation;
-            
-            DxViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{InitializationGenerator.DxNamespace}.GenerateViewModelAttribute")!;
-            PrismViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{InitializationGenerator.PrismNamespace}.GenerateViewModelAttribute")!;
-            
+
+            BaseViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{InitializationGenerator.DxNamespace}.GenerateViewModelAttribute");
+            DxViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{InitializationGenerator.DxNamespace}.GenerateViewModelAttribute");
+            PrismViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{InitializationGenerator.PrismNamespace}.GenerateViewModelAttribute");
+
             AvailableMvvm = GetAvailableMvvm(compilation);
 
             INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName)!;

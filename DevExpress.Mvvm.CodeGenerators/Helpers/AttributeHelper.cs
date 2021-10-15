@@ -22,10 +22,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return defaultValue;
             return argument.Values.Select(tp => (T?)tp.Value).ToArray();
         }
-        public static bool HasAttribute(ISymbol sourceSymbol, INamedTypeSymbol attributeSymbol) =>
+        public static bool HasAttribute(ISymbol sourceSymbol, INamedTypeSymbol? attributeSymbol) =>
             GetAttributeData(sourceSymbol, attributeSymbol) != null;
 
-        static AttributeData? GetAttributeData(ISymbol sourceSymbol, INamedTypeSymbol attributeSymbol) =>
+        static AttributeData? GetAttributeData(ISymbol sourceSymbol, INamedTypeSymbol? attributeSymbol) =>
             sourceSymbol.GetAttributes().FirstOrDefault(ad => SymbolEqualityComparer.Default.Equals(ad.AttributeClass, attributeSymbol));
     }
 }

@@ -66,21 +66,6 @@ namespace Test {
             StringAssert.Contains("MethodCommand", generatedCode);
         }
         [Test]
-        public void NoDevExpressUsing_Command() {
-            var source = @"
-using DevExpress.Mvvm.CodeGenerators; 
-namespace Test {
-    [GenerateViewModel]
-    partial class Example {
-        [GenerateCommand]
-        public void Method(int arg) { }
-    }
-}";
-            string generatedCode = GenerateCode(source, addMVVM: false);
-            StringAssert.DoesNotContain("using DevExpress.Mvvm;", generatedCode);
-            StringAssert.DoesNotContain("MethodCommand", generatedCode);
-        }
-        [Test]
         public void DevExpressUsing_SupportServices() {
             var source = @"
 using DevExpress.Mvvm.CodeGenerators; 
@@ -185,10 +170,28 @@ namespace Test {
     partial class Example {
     }
 }";
+            
             var generatedWithOnChanged = GenerateCode(sourceWithOnChanged);
             var generatedWithOutOnChanged = GenerateCode(sourceWithOutOnChanged);
             StringAssert.Contains("OnParentViewModelChanged", generatedWithOnChanged);
             StringAssert.DoesNotContain("OnParentViewModelChanged", generatedWithOutOnChanged);
+        }
+        [Test]
+        public void DoesNotGenerateISPVM() {
+            var source = @"
+using DevExpress.Mvvm.CodeGenerators;
+using DevExpress.Mvvm;
+
+namespace Test {
+    class Example0 : ISupportParentViewModel {
+        public object ParentViewModel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+}
+    [GenerateViewModel(ImplementISupportParentViewModel = true)]
+    partial class Example1 : Example0 {
+    }
+}";
+            var generated = GenerateCode(source);
+            StringAssert.DoesNotContain("ISupportParentViewModel", generated);
         }
         [Test]
         public void GeneratePropertyName_() {

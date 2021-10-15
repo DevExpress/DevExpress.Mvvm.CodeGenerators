@@ -14,7 +14,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(propertyName == fieldSymbol.Name || string.IsNullOrEmpty(propertyName) || changedMethod == null || changingMethod == null)
                 return null;
 
-            CSharpSyntaxNode fieldSyntaxNode = (CSharpSyntaxNode)fieldSymbol.DeclaringSyntaxReferences[0].GetSyntax().Parent?.Parent!;
+            CSharpSyntaxNode fieldSyntaxNode = (CSharpSyntaxNode)fieldSymbol.DeclaringSyntaxReferences[0].GetSyntax().Parent!.Parent!;
             XMLCommentHelper.AppendComment(source, fieldSyntaxNode);
 
             PropertyHelper.AppendAttributesList(source, fieldSymbol);
