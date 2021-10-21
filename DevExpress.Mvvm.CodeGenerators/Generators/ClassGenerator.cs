@@ -158,24 +158,24 @@ using System.ComponentModel;";
                         bool implISS = ClassHelper.GetImplementISSValue(contextInfo, classSymbol);
                         bool implISPVM = ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol, mvvm);
                         if(implIDEI) {
-                            if(!ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.IDEISymbol))
+                            if(!ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.IDEISymbol))
                                 interfaces.Add(new IDataErrorInfoGenerator());
                         }
                         if(implISPVM) {
-                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol!, contextInfo, mvvm)) {
+                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Dx!.ISPVMSymbol, contextInfo, mvvm)) {
                                 bool shouldGenerateChangedMethod = ClassHelper.ContainsOnChangedMethod(classSymbol, "OnParentViewModelChanged", 1, "object");
                                 interfaces.Add(new ISupportParentViewModelGenerator(shouldGenerateChangedMethod));
                             }
                         }
                         if(implISS) {
-                            if(!ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.ISSSymbol!))
+                            if(!ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.ISSSymbol))
                                 interfaces.Add(new ISupportServicesGenerator(classSymbol.IsSealed));
                         }
                         break;
                     case SupportedMvvm.Prism:
                         bool implIAA = ClassHelper.GetImplementIAAValue(contextInfo, classSymbol);
                         if(implIAA) {
-                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.IAASymbol!, contextInfo, mvvm)) {
+                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Prism!.IAASymbol, contextInfo, mvvm)) {
                                 bool shouldGenerateChangedMethod = ClassHelper.ContainsOnChangedMethod(classSymbol, "OnIsActiveChanged", 0, null);
                                 interfaces.Add(new IActiveAwareGenerator(shouldGenerateChangedMethod));
                             }

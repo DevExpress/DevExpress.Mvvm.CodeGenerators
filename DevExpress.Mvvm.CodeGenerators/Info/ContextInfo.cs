@@ -21,21 +21,35 @@ namespace DevExpress.Mvvm.CodeGenerators {
             CommandAttributeSymbol = compilation.GetTypeByMetadataName($"{attributeNamespace}.GenerateCommandAttribute")!;
         }
     }
+    class DXFrameworkAttributes : FrameworkAttributes {
+        public INamedTypeSymbol IDEISymbol { get; }
+        public INamedTypeSymbol ISPVMSymbol { get; }
+        public INamedTypeSymbol ISSSymbol { get; }
+        public DXFrameworkAttributes(Compilation compilation) 
+            : base(compilation, SupportedMvvm.Dx) {
+            IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName)!;
+            ISSSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices")!;
+            ISPVMSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel")!;
+        }
+    }
+    class PrismFrameworkAttributes : FrameworkAttributes {
+        public INamedTypeSymbol IAASymbol { get; }
+        public PrismFrameworkAttributes(Compilation compilation) 
+            : base(compilation, SupportedMvvm.Prism) {
+            IAASymbol = compilation.GetTypeByMetadataName("Prism.IActiveAware")!;
+        }
+    }
     class ContextInfo {
         public GeneratorExecutionContext Context { get; }
         public Compilation Compilation { get; }
 
-        public FrameworkAttributes? Dx { get; }
-        public FrameworkAttributes? Prism { get; }
+        public DXFrameworkAttributes? Dx { get; }
+        public PrismFrameworkAttributes? Prism { get; }
 
         public INamedTypeSymbol INPCedSymbol { get; }
         public INamedTypeSymbol INPCingSymbol { get; }
-        public INamedTypeSymbol IDEISymbol { get; }
-        public INamedTypeSymbol? ISPVMSymbol { get; }
-        public INamedTypeSymbol? ISSSymbol { get; }
         public INamedTypeSymbol TaskSymbol { get; }
         public INamedTypeSymbol BoolSymbol { get; }
-        public INamedTypeSymbol? IAASymbol { get; }
 
         public bool IsWinUI { get; }
         public List<SupportedMvvm> AvailableMvvm { get; }
@@ -46,18 +60,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
             AvailableMvvm = GetAvailableMvvm(compilation);
 
-            //if(AvailableMvvm.Contains(SupportedMvvm.Dx))
-                Dx = new FrameworkAttributes(Compilation, SupportedMvvm.Dx);
-            //if(AvailableMvvm.Contains(SupportedMvvm.Prism))
-                Prism = new FrameworkAttributes(Compilation, SupportedMvvm.Prism);
+            if(AvailableMvvm.Contains(SupportedMvvm.Dx) || AvailableMvvm.Contains(SupportedMvvm.None))
+                Dx = new DXFrameworkAttributes(Compilation);
+            if(AvailableMvvm.Contains(SupportedMvvm.Prism))
+                Prism = new PrismFrameworkAttributes(Compilation);
 
             INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName)!;
             INPCingSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName)!;
-            IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName)!;
-            ISSSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices");
-            ISPVMSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel");
-
-            IAASymbol = compilation.GetTypeByMetadataName("Prism.IActiveAware");
 
             TaskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task")!;
             BoolSymbol = compilation.GetTypeByMetadataName("System.Boolean")!;
