@@ -11,20 +11,20 @@ namespace DevExpress.Mvvm.CodeGenerators {
 @"using System.Collections.Generic;
 using System.ComponentModel;";
 
-        public static void GenerateSourceCode(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol) {
+        public static void GenerateSourceCode(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
             List<IInterfaceGenerator> interfaces = new();
 
-            INPCInfo inpcedInfo = INPCInfo.GetINPCedInfo(contextInfo, classSymbol);
+            INPCInfo inpcedInfo = INPCInfo.GetINPCedInfo(contextInfo, classSymbol, mvvm);
             if(inpcedInfo.HasNoImplementation())
                 interfaces.Add(new INPCedInterfaceGenerator());
             bool impelementRaiseChangedMethod = inpcedInfo.ShouldImplementRaiseMethod();
 
-            INPCInfo inpcingInfo = INPCInfo.GetINPCingInfo(contextInfo, classSymbol);
+            INPCInfo inpcingInfo = INPCInfo.GetINPCingInfo(contextInfo, classSymbol, mvvm);
             if(inpcingInfo.HasNoImplementation())
                 interfaces.Add(new INPCingInterfaceGenerator());
             bool impelementRaiseChangingMethod = inpcingInfo.ShouldImplementRaiseMethod();
 
-            AddAvailableInterfaces(interfaces, contextInfo, classSymbol);
+            AddAvailableInterfaces(interfaces, contextInfo, classSymbol, mvvm);
 
             List<ITypeSymbol> genericTypes = new();
             if(classSymbol.IsGenericType) {
@@ -36,14 +36,14 @@ using System.ComponentModel;";
             source = GenerateHeader(source, classSymbol, interfaces,
                 impelementRaiseChangedMethod ? inpcedInfo.RaiseMethodImplementation : null,
                 impelementRaiseChangingMethod ? inpcingInfo.RaiseMethodImplementation : null,
-                genericTypes, outerClasses, contextInfo.ActualMvvm);
+                genericTypes, outerClasses, mvvm);
 
 
             bool needStaticChangedEventArgs = inpcedInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangedMethod;
             bool needStaticChangingEventArgs = inpcingInfo.HasAttribute && (inpcingInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangingMethod);
-            IReadOnlyList<string> propertyNames = GenerateProperties(source, contextInfo, classSymbol, inpcedInfo, inpcingInfo, needStaticChangedEventArgs, needStaticChangingEventArgs);
+            IReadOnlyList<string> propertyNames = GenerateProperties(source, contextInfo, classSymbol, inpcedInfo, inpcingInfo, needStaticChangedEventArgs, needStaticChangingEventArgs, mvvm);
 
-            GenerateCommands(source, contextInfo, classSymbol, contextInfo.ActualMvvm);
+            GenerateCommands(source, contextInfo, classSymbol, mvvm);
 
             EventArgsGenerator.Generate(source, needStaticChangedEventArgs, needStaticChangingEventArgs, propertyNames);
 
@@ -110,7 +110,7 @@ using System.ComponentModel;";
                     source.Append('>');
                 }
             }
-            static IReadOnlyList<string> GenerateProperties(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, INPCInfo inpcedInfo, INPCInfo inpcingInfo, bool needStaticChangedEventArgs, bool needStaticChangingEventArgs) {
+            static IReadOnlyList<string> GenerateProperties(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, INPCInfo inpcedInfo, INPCInfo inpcingInfo, bool needStaticChangedEventArgs, bool needStaticChangingEventArgs, SupportedMvvm mvvm) {
                 ChangeEventRaiseMode? changedRaiseMode = needStaticChangedEventArgs
                     ? ChangeEventRaiseMode.EventArgs
                     : inpcedInfo.HasRaiseMethodWithStringParameter
@@ -123,7 +123,7 @@ using System.ComponentModel;";
                         : default(ChangeEventRaiseMode?);
                 bool generateProperties = true;
                 List<string> propertyNames = new();
-                IEnumerable<IFieldSymbol> fieldCandidates = ClassHelper.GetFieldCandidates(classSymbol, contextInfo.PropertyAttributeSymbol!);
+                IEnumerable<IFieldSymbol> fieldCandidates = ClassHelper.GetFieldCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol!);
                 if(fieldCandidates.Any()) {
                     if(changedRaiseMode == null) {
                         contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ed");
@@ -135,7 +135,7 @@ using System.ComponentModel;";
                     }
                     if(generateProperties)
                         foreach(IFieldSymbol fieldSymbol in fieldCandidates) {
-                            string? propertyName = PropertyGenerator.Generate(source, contextInfo, classSymbol, fieldSymbol, changedRaiseMode, changingRaiseMode);
+                            string? propertyName = PropertyGenerator.Generate(source, contextInfo, classSymbol, fieldSymbol, changedRaiseMode, changingRaiseMode, mvvm);
                             if(propertyName != null) {
                                 propertyNames.Add(propertyName);
                             }
@@ -145,29 +145,24 @@ using System.ComponentModel;";
             }
 
             static void GenerateCommands(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
-                IEnumerable<IMethodSymbol> commandCandidates = ClassHelper.GetCommandCandidates(classSymbol, contextInfo.CommandAttributeSymbol!);
-                var commandType = mvvm switch {
-                    SupportedMvvm.Dx or SupportedMvvm.None => CommandGenerator.CommandType.Dx,
-                    SupportedMvvm.Prism => CommandGenerator.CommandType.Prism,
-                    _ => throw new InvalidOperationException()
-                };
+                IEnumerable<IMethodSymbol> commandCandidates = ClassHelper.GetCommandCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).CommandAttributeSymbol!);
                 foreach(IMethodSymbol methodSymbol in commandCandidates) {
-                    CommandGenerator.Generate(source, contextInfo, classSymbol, methodSymbol, commandType);
+                    CommandGenerator.Generate(source, contextInfo, classSymbol, methodSymbol, mvvm);
                 }
             }
 
-            static void AddAvailableInterfaces(List<IInterfaceGenerator> interfaces, ContextInfo contextInfo, INamedTypeSymbol classSymbol) {
-                switch(contextInfo.ActualMvvm) {
+            static void AddAvailableInterfaces(List<IInterfaceGenerator> interfaces, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
+                switch(mvvm) {
                     case SupportedMvvm.Dx:
                         bool implIDEI = ClassHelper.GetImplementIDEIValue(contextInfo, classSymbol);
                         bool implISS = ClassHelper.GetImplementISSValue(contextInfo, classSymbol);
-                        bool implISPVM = ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol);
+                        bool implISPVM = ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol, mvvm);
                         if(implIDEI) {
                             if(!ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.IDEISymbol))
                                 interfaces.Add(new IDataErrorInfoGenerator());
                         }
                         if(implISPVM) {
-                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol!, contextInfo)) {
+                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.ISPVMSymbol!, contextInfo, mvvm)) {
                                 bool shouldGenerateChangedMethod = ClassHelper.ContainsOnChangedMethod(classSymbol, "OnParentViewModelChanged", 1, "object");
                                 interfaces.Add(new ISupportParentViewModelGenerator(shouldGenerateChangedMethod));
                             }
@@ -180,7 +175,7 @@ using System.ComponentModel;";
                     case SupportedMvvm.Prism:
                         bool implIAA = ClassHelper.GetImplementIAAValue(contextInfo, classSymbol);
                         if(implIAA) {
-                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.IAASymbol!, contextInfo)) {
+                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.IAASymbol!, contextInfo, mvvm)) {
                                 bool shouldGenerateChangedMethod = ClassHelper.ContainsOnChangedMethod(classSymbol, "OnIsActiveChanged", 0, null);
                                 interfaces.Add(new IActiveAwareGenerator(shouldGenerateChangedMethod));
                             }

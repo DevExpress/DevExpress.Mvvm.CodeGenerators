@@ -25,7 +25,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static bool HasAttribute(ISymbol sourceSymbol, INamedTypeSymbol? attributeSymbol) =>
             GetAttributeData(sourceSymbol, attributeSymbol) != null;
 
-        static AttributeData? GetAttributeData(ISymbol sourceSymbol, INamedTypeSymbol? attributeSymbol) =>
-            sourceSymbol.GetAttributes().FirstOrDefault(ad => SymbolEqualityComparer.Default.Equals(ad.AttributeClass, attributeSymbol));
+        static AttributeData? GetAttributeData(ISymbol sourceSymbol, INamedTypeSymbol? attributeSymbol) {
+            if(attributeSymbol == null) //avoid excessive operations
+                return null;
+            return sourceSymbol.GetAttributes().FirstOrDefault(ad => SymbolEqualityComparer.Default.Equals(ad.AttributeClass, attributeSymbol));
+        }
     }
 }

@@ -13,12 +13,12 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static string CreatePropertyName(string fieldName) => fieldName.TrimStart('_').FirstToUpperCase();
         public static bool GetIsVirtualValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
             AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofIsVirtual, false);
-        public static string? GetChangedMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType) {
-            string? methodName = GetChangedMethodName(fieldSymbol, info.PropertyAttributeSymbol!);
+        public static string? GetChangedMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType, SupportedMvvm mvvm) {
+            string? methodName = GetChangedMethodName(fieldSymbol, info.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol!);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changed", "oldValue", fieldType);
         }
-        public static string? GetChangingMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType) {
-            string? methodName = GetChangingMethodName(fieldSymbol, info.PropertyAttributeSymbol!);
+        public static string? GetChangingMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType, SupportedMvvm mvvm) {
+            string? methodName = GetChangingMethodName(fieldSymbol, info.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol!);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changing", "value", fieldType);
         }
         public static string GetSetterAccessModifierValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) {

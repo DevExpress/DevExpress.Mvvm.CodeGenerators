@@ -6,16 +6,27 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DevExpress.Mvvm.CodeGenerators {
+    class FrameworkAttributes {
+        public INamedTypeSymbol? ViewModelAttributeSymbol { get; }
+        public INamedTypeSymbol? PropertyAttributeSymbol { get; }
+        public INamedTypeSymbol? CommandAttributeSymbol { get; }
+        public FrameworkAttributes(Compilation compilation, SupportedMvvm mvvm) {
+            string attributeNamespace = mvvm switch {
+                SupportedMvvm.None or SupportedMvvm.Dx => InitializationGenerator.DxNamespace,
+                SupportedMvvm.Prism => InitializationGenerator.PrismNamespace,
+                _ => throw new InvalidOperationException()
+            };
+            ViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{attributeNamespace}.GenerateViewModelAttribute")!;
+            PropertyAttributeSymbol = compilation.GetTypeByMetadataName($"{attributeNamespace}.GeneratePropertyAttribute")!;
+            CommandAttributeSymbol = compilation.GetTypeByMetadataName($"{attributeNamespace}.GenerateCommandAttribute")!;
+        }
+    }
     class ContextInfo {
         public GeneratorExecutionContext Context { get; }
         public Compilation Compilation { get; }
 
-        public INamedTypeSymbol? DxViewModelAttributeSymbol { get; }
-        public INamedTypeSymbol? PrismViewModelAttributeSymbol { get; }
-
-        public INamedTypeSymbol? ViewModelAttributeSymbol { get; private set; }
-        public INamedTypeSymbol? PropertyAttributeSymbol { get; private set; }
-        public INamedTypeSymbol? CommandAttributeSymbol { get; private set; }
+        public FrameworkAttributes? Dx { get; }
+        public FrameworkAttributes? Prism { get; }
 
         public INamedTypeSymbol INPCedSymbol { get; }
         public INamedTypeSymbol INPCingSymbol { get; }
@@ -28,16 +39,17 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         public bool IsWinUI { get; }
         public List<SupportedMvvm> AvailableMvvm { get; }
-        public SupportedMvvm ActualMvvm { get; set; }
 
         public ContextInfo(GeneratorExecutionContext context, Compilation compilation) {
             Context = context;
             Compilation = compilation;
 
-            DxViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{InitializationGenerator.DxNamespace}.GenerateViewModelAttribute");
-            PrismViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{InitializationGenerator.PrismNamespace}.GenerateViewModelAttribute");
-
             AvailableMvvm = GetAvailableMvvm(compilation);
+
+            //if(AvailableMvvm.Contains(SupportedMvvm.Dx))
+                Dx = new FrameworkAttributes(Compilation, SupportedMvvm.Dx);
+            //if(AvailableMvvm.Contains(SupportedMvvm.Prism))
+                Prism = new FrameworkAttributes(Compilation, SupportedMvvm.Prism);
 
             INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName)!;
             INPCingSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName)!;
@@ -53,19 +65,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
             IsWinUI = GetIsWinUI(compilation);
         }
 
-        public void SetMvvm(SupportedMvvm mvvm) {
-            ActualMvvm = mvvm;
-            string attributeNamespace = mvvm switch {
-                SupportedMvvm.None => InitializationGenerator.DxNamespace,
-                SupportedMvvm.Dx => InitializationGenerator.DxNamespace,
-                SupportedMvvm.Prism => InitializationGenerator.PrismNamespace,
-                _ => throw new InvalidOperationException()
-            };
-            ViewModelAttributeSymbol = Compilation.GetTypeByMetadataName($"{attributeNamespace}.GenerateViewModelAttribute")!;
-            PropertyAttributeSymbol = Compilation.GetTypeByMetadataName($"{attributeNamespace}.GeneratePropertyAttribute")!;
-            CommandAttributeSymbol = Compilation.GetTypeByMetadataName($"{attributeNamespace}.GenerateCommandAttribute")!;
-        }
-
+        public FrameworkAttributes GetFrameworkAttributes(SupportedMvvm mvvm) => mvvm switch {
+            SupportedMvvm.None or SupportedMvvm.Dx => Dx!,
+            SupportedMvvm.Prism => Prism!,
+            _ => throw new InvalidOperationException()
+        };
 
         public static bool GetIsWinUI(Compilation compilation) => GetIsDxMvvmAvailable(compilation) && compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;
         static bool GetIsDxMvvmAvailable(Compilation compilation) => compilation.ReferencedAssemblyNames.Any(ai => Regex.IsMatch(ai.Name, @"DevExpress\.Mvvm(\.v\d{2}\.\d)?$"));

@@ -14,6 +14,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             public Stopwatch StopWatch;
         }
         public static void Execute(GeneratorExecutionContext context) {
+            //Debugger.Launch();
             //var traceInfo = new TraceInfo();
             //StartExecute(ref traceInfo);
             if(context.SyntaxContextReceiver is not SyntaxContextReceiver receiver)
@@ -37,18 +38,19 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     continue;
                 INamedTypeSymbol classSymbol = contextInfo.Compilation.GetSemanticModel(classSyntax.SyntaxTree).GetDeclaredSymbol(classSyntax)!;
 
-                if(AttributeHelper.HasAttribute(classSymbol, contextInfo.DxViewModelAttributeSymbol)) {
+                SupportedMvvm mvvm;
+                if(AttributeHelper.HasAttribute(classSymbol, contextInfo.Dx?.ViewModelAttributeSymbol)) {
                     if(contextInfo.AvailableMvvm.Contains(SupportedMvvm.Dx))
-                        contextInfo.SetMvvm(SupportedMvvm.Dx);
+                        mvvm = SupportedMvvm.Dx;
                     else
-                        contextInfo.SetMvvm(SupportedMvvm.None);
-                    if(AttributeHelper.HasAttribute(classSymbol, contextInfo.PrismViewModelAttributeSymbol)) {
+                        mvvm = SupportedMvvm.None;
+                    if(AttributeHelper.HasAttribute(classSymbol, contextInfo.Prism?.ViewModelAttributeSymbol)) {
                         context.ReportTwoGenerateViewModelAttributes(classSymbol);
                         continue;
                     }
                 }
-                else if(AttributeHelper.HasAttribute(classSymbol, contextInfo.PrismViewModelAttributeSymbol))
-                    contextInfo.SetMvvm(SupportedMvvm.Prism);
+                else if(AttributeHelper.HasAttribute(classSymbol, contextInfo.Prism?.ViewModelAttributeSymbol))
+                    mvvm = SupportedMvvm.Prism;
                 else continue;
 
                 if(processedSymbols.Contains(classSymbol))
@@ -60,7 +62,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     continue;
                 }
 
-                ClassGenerator.GenerateSourceCode(sourceBuilder, contextInfo, classSymbol);
+                ClassGenerator.GenerateSourceCode(sourceBuilder, contextInfo, classSymbol, mvvm);
                 string classSource = source.ToString();
                 source.Clear();
                 context.AddSource(ClassHelper.CreateFileName(classSymbol.Name, generatedClasses), SourceText.From(classSource, Encoding.UTF8));
