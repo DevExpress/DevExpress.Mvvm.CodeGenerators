@@ -7,9 +7,11 @@
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
   </PropertyGroup>
 
+	<ItemGroup>
+		<Analyzer Include="..\..\DevExpress.Mvvm.CodeGenerators\bin\DevExpress.Mvvm.CodeGenerators.dll" />
+	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DevExpress.Mvvm.CodeGenerators" Version="21.2.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
     <PackageReference Include="NUnit" Version="3.13.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
