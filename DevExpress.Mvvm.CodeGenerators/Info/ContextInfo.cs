@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -9,7 +10,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public GeneratorExecutionContext Context { get; }
         public Compilation Compilation { get; }
 
-        public INamedTypeSymbol? BaseViewModelAttributeSymbol { get; }
         public INamedTypeSymbol? DxViewModelAttributeSymbol { get; }
         public INamedTypeSymbol? PrismViewModelAttributeSymbol { get; }
 
@@ -34,7 +34,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
             Context = context;
             Compilation = compilation;
 
-            BaseViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{InitializationGenerator.DxNamespace}.GenerateViewModelAttribute");
             DxViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{InitializationGenerator.DxNamespace}.GenerateViewModelAttribute");
             PrismViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{InitializationGenerator.PrismNamespace}.GenerateViewModelAttribute");
 
@@ -56,18 +55,16 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         public void SetMvvm(SupportedMvvm mvvm) {
             ActualMvvm = mvvm;
-            string attributeNamespace = GetNamespase(mvvm);
+            string attributeNamespace = mvvm switch {
+                SupportedMvvm.None => InitializationGenerator.DxNamespace,
+                SupportedMvvm.Dx => InitializationGenerator.DxNamespace,
+                SupportedMvvm.Prism => InitializationGenerator.PrismNamespace,
+                _ => throw new InvalidOperationException()
+            };
             ViewModelAttributeSymbol = Compilation.GetTypeByMetadataName($"{attributeNamespace}.GenerateViewModelAttribute")!;
             PropertyAttributeSymbol = Compilation.GetTypeByMetadataName($"{attributeNamespace}.GeneratePropertyAttribute")!;
             CommandAttributeSymbol = Compilation.GetTypeByMetadataName($"{attributeNamespace}.GenerateCommandAttribute")!;
         }
-
-        string GetNamespase(SupportedMvvm mvvm) => mvvm switch {
-            SupportedMvvm.None => InitializationGenerator.DxNamespace,
-            SupportedMvvm.Dx => InitializationGenerator.DxNamespace,
-            SupportedMvvm.Prism => InitializationGenerator.PrismNamespace,
-            _ => string.Empty
-        };
 
 
         public static bool GetIsWinUI(Compilation compilation) => GetIsDxMvvmAvailable(compilation) && compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;

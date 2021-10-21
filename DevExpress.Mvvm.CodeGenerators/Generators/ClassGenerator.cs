@@ -146,21 +146,13 @@ using System.ComponentModel;";
 
             static void GenerateCommands(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
                 IEnumerable<IMethodSymbol> commandCandidates = ClassHelper.GetCommandCandidates(classSymbol, contextInfo.CommandAttributeSymbol!);
-                switch(mvvm) {
-                    case SupportedMvvm.Dx:
-                        foreach(IMethodSymbol methodSymbol in commandCandidates)
-                            CommandGenerator.GenerateDX(source, contextInfo, classSymbol, methodSymbol);
-                        break;
-                    case SupportedMvvm.Prism:
-                        foreach(IMethodSymbol methodSymbol in commandCandidates)
-                            CommandGenerator.GeneratePrism(source, contextInfo, classSymbol, methodSymbol);
-                        break;
-                    case SupportedMvvm.None:
-                        foreach(IMethodSymbol methodSymbol in commandCandidates)
-                            CommandGenerator.GenerateDX(source, contextInfo, classSymbol, methodSymbol);
-                        break;
-                    default:
-                        throw new InvalidEnumArgumentException();
+                var commandType = mvvm switch {
+                    SupportedMvvm.Dx or SupportedMvvm.None => CommandGenerator.CommandType.Dx,
+                    SupportedMvvm.Prism => CommandGenerator.CommandType.Prism,
+                    _ => throw new InvalidOperationException()
+                };
+                foreach(IMethodSymbol methodSymbol in commandCandidates) {
+                    CommandGenerator.Generate(source, contextInfo, classSymbol, methodSymbol, commandType);
                 }
             }
 
