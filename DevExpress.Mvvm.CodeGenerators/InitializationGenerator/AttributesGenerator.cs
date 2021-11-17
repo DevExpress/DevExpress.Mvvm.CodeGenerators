@@ -226,6 +226,9 @@
         ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">INotifyPropertyChanging﻿.</see>
         /// </summary>
         public bool ImplementINotifyPropertyChanging { get; set; }
+        /// <summary>
+        ///     Implements <b>IActiveAware</b> that allows you to track the active state of a View.
+        /// </summary>
         public bool ImplementIActiveAware { get; set; }
     }
 
@@ -260,7 +263,17 @@
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     class GenerateCommandAttribute : Attribute {
+        /// <summary>
+        ///     Specifies the
+        ///     <see href=""https://prismlibrary.com/docs/commanding.html#observescanexecute"">ObservesCanExecute</see>
+        ///     ﻿ method for the supplied property. This method listens to property changes and use the property as the <b>CanExecute</b> delegate.
+        /// </summary>
         public string? ObservesCanExecuteProperty { get; set; }
+        /// <summary>
+        ///     Specifies the 
+        ///     <see href=""https://prismlibrary.com/docs/commanding.html#observesproperty"">ObservesProperty</see>
+        ///     ﻿ methods for all supplied properties. Each method calls the CanExecute method when the corresponding property value changes.
+        /// </summary>
         public string[]? ObservesProperties { get; set; }
         /// <summary>
         ///     Specifies a custom <b>CanExecute</b> method name. If the property is not specified, the method’s name should follow the <b>Can[ActionName]</b> pattern.

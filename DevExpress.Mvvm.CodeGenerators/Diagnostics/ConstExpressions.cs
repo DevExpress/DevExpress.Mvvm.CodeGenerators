@@ -46,10 +46,10 @@
 
         const string twoGenerateViewModelAttributesId = idPrefix + "0010";
         const string twoGenerateViewModelAttributesTitle = "two Generate View Mode lAttributes";
-        const string twoGenerateViewModelAttributesMessageFormat = "The '{0}' contains two Generate ViewModel Attribute";
+        const string twoGenerateViewModelAttributesMessageFormat = "You can apply only one GenerateViewModel attribute to {0}. Refer to the following topic for more information:  https://docs.devexpress.com/WPF/402989/mvvm-framework/viewmodels/compile-time-generated-viewmodels#third-party-libraries-support.";
 
         const string nonNullableDelegateCommandArgumentId = idPrefix + "0011";
         const string nonNullableDelegateCommandArgumentTitle = "non Nullable DelegateCommand Argument";
-        const string nonNullableDelegateCommandArgumentMessageFormat = "The argument of '{0}' must be object or Nullable<T>";
+        const string nonNullableDelegateCommandArgumentMessageFormat = "The {0} method parameter cannot be of value types (int, double, bool, etc). Use the Nullable<T> parameter instead.";
     }
 }
