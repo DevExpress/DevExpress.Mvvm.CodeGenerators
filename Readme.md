@@ -114,6 +114,10 @@ Prepare your project as outlined below to enable support for View Models generat
 
 ## Release Notes
 
+### 21.2.1
+
+Our View Model Code Generator now supports the [Prism Library](https://prismlibrary.com).  
+
 ### 21.1.3
 
 We fixed the following issue: [A sealed class generates protected methods](https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/issues/8). 
