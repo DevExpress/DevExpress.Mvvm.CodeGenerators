@@ -3,23 +3,39 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
-    [GenerateViewModel]
-    partial class WithMemberNotNullAttribute {
 #nullable enable
+    [Prism.GenerateViewModel]
+    partial class WithMemberNotNullAttributeDx {
+        [Prism.GenerateProperty]
+        string withAttribute;
+
+        public WithMemberNotNullAttributeDx() {
+            WithAttribute = string.Empty;
+        }
+    }
+    [GenerateViewModel]
+    partial class WithMemberNotNullAttributePrism {
         [GenerateProperty]
         string withAttribute;
 
-        public WithMemberNotNullAttribute() {
+        public WithMemberNotNullAttributePrism() {
             WithAttribute = string.Empty;
         }
-#nullable restore
     }
+#nullable restore
 
     [TestFixture]
     public class MemberNotNullTest {
         [Test]
-        public void CheckAttribute() {
-            var withAttributePropertySetter = typeof(WithMemberNotNullAttribute).GetProperty("WithAttribute").SetMethod;
+        public void CheckAttributeDx() {
+            var withAttributePropertySetter = typeof(WithMemberNotNullAttributeDx).GetProperty("WithAttribute").SetMethod;
+            var attributes = Attribute.GetCustomAttributes(withAttributePropertySetter);
+            var expectedAttributes = new Attribute[] { new MemberNotNullAttribute("withAttribute") };
+            Assert.AreEqual(expectedAttributes, attributes);
+        }
+        [Test]
+        public void CheckAttributePrism() {
+            var withAttributePropertySetter = typeof(WithMemberNotNullAttributePrism).GetProperty("WithAttribute").SetMethod;
             var attributes = Attribute.GetCustomAttributes(withAttributePropertySetter);
             var expectedAttributes = new Attribute[] { new MemberNotNullAttribute("withAttribute") };
             Assert.AreEqual(expectedAttributes, attributes);

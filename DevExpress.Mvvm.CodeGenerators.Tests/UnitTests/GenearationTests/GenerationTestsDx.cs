@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
     [TestFixture]
-    public class GenerationTests {
+    public class GenerationTestsDx {
         [Test]
         public void GenerationFormat() {
             var source = @"using DevExpress.Mvvm.CodeGenerators;
@@ -64,21 +64,6 @@ namespace Test {
             string generatedCode = GenerateCode(source);
             StringAssert.Contains("using DevExpress.Mvvm;", generatedCode);
             StringAssert.Contains("MethodCommand", generatedCode);
-        }
-        [Test]
-        public void NoDevExpressUsing_Command() {
-            var source = @"
-using DevExpress.Mvvm.CodeGenerators; 
-namespace Test {
-    [GenerateViewModel]
-    partial class Example {
-        [GenerateCommand]
-        public void Method(int arg) { }
-    }
-}";
-            string generatedCode = GenerateCode(source, addMVVM: false);
-            StringAssert.DoesNotContain("using DevExpress.Mvvm;", generatedCode);
-            StringAssert.DoesNotContain("MethodCommand", generatedCode);
         }
         [Test]
         public void DevExpressUsing_SupportServices() {
@@ -185,10 +170,28 @@ namespace Test {
     partial class Example {
     }
 }";
+            
             var generatedWithOnChanged = GenerateCode(sourceWithOnChanged);
             var generatedWithOutOnChanged = GenerateCode(sourceWithOutOnChanged);
             StringAssert.Contains("OnParentViewModelChanged", generatedWithOnChanged);
             StringAssert.DoesNotContain("OnParentViewModelChanged", generatedWithOutOnChanged);
+        }
+        [Test]
+        public void DoesNotGenerateISPVM() {
+            var source = @"
+using DevExpress.Mvvm.CodeGenerators;
+using DevExpress.Mvvm;
+
+namespace Test {
+    class Example0 : ISupportParentViewModel {
+        public object ParentViewModel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+}
+    [GenerateViewModel(ImplementISupportParentViewModel = true)]
+    partial class Example1 : Example0 {
+    }
+}";
+            var generated = GenerateCode(source);
+            StringAssert.DoesNotContain("ISupportParentViewModel", generated);
         }
         [Test]
         public void GeneratePropertyName_() {
@@ -377,17 +380,11 @@ namespace Test {
         /// <summary>
         /// Test command comment
         /// </summary>
-        public DelegateCommand<int> Command1Command {
-            get => command1Command ??= new DelegateCommand<int>(Command1, CanCommand1, true);
-        }
+        public DelegateCommand<int> Command1Command => command1Command ??= new DelegateCommand<int>(Command1, CanCommand1, true);
         AsyncCommand? someCommand;
-        public AsyncCommand SomeCommand {
-            get => someCommand ??= new AsyncCommand(Command2, null, false, true);
-        }
+        public AsyncCommand SomeCommand => someCommand ??= new AsyncCommand(Command2, null, false, true);
         DelegateCommand<int>? command3Command;
-        public DelegateCommand<int> Command3Command {
-            get => command3Command ??= new DelegateCommand<int>(Command3, CanCommand3_, true);
-        }
+        public DelegateCommand<int> Command3Command => command3Command ??= new DelegateCommand<int>(Command3, CanCommand3_, true);
         static PropertyChangedEventArgs IntChangedEventArgs = new PropertyChangedEventArgs(nameof(Int));
         static PropertyChangedEventArgs StrChangedEventArgs = new PropertyChangedEventArgs(nameof(Str));
         static PropertyChangedEventArgs LongChangedEventArgs = new PropertyChangedEventArgs(nameof(Long));

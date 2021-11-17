@@ -24,3 +24,16 @@ Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
 DXCG0002 | DevExpress.Mvvm.CodeGenerators | error | The base View Model class cannot be declared within a class
 DXCG0009 | DevExpress.Mvvm.CodeGenerators | error | Cannot generate the generic View Model
+
+## Release 21.2.1
+
+### New Rules
+Rule ID | Category | Severity | Notes
+--------|----------|----------|--------------------
+DXCG0010 | DevExpress.Mvvm.CodeGenerators | error | Class contains two GenerateViewModelAttribute
+DXCG0011 | DevExpress.Mvvm.CodeGenerators | error | Method has Non-Nullable Argument
+
+### Removed Rules
+Rule ID | Category | Severity | Notes
+--------|----------|----------|--------------------
+DXCG0003 | DevExpress.Mvvm.CodeGenerators | error | Cannot find the DevExpress.Mvvm assembly

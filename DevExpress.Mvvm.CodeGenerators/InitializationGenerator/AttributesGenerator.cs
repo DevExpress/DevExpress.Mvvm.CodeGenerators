@@ -1,13 +1,17 @@
 ﻿namespace DevExpress.Mvvm.CodeGenerators {
     public static class AttributesGenerator {
-        public static readonly string ViewModelAttributeFullName = $"{InitializationGenerator.Namespace}.GenerateViewModelAttribute";
-        public static readonly string PropertyAttributeFullName = $"{InitializationGenerator.Namespace}.GeneratePropertyAttribute";
-        public static readonly string CommandAttributeFullName = $"{InitializationGenerator.Namespace}.GenerateCommandAttribute";
+        public static readonly string ViewModelAttributeFullName = $"{InitializationGenerator.DxNamespace}.GenerateViewModelAttribute";
+        public static readonly string PropertyAttributeFullName = $"{InitializationGenerator.DxNamespace}.GeneratePropertyAttribute";
+        public static readonly string CommandAttributeFullName = $"{InitializationGenerator.DxNamespace}.GenerateCommandAttribute";
+
+        public static readonly string PrismPropertyAttributeFullName = $"{InitializationGenerator.PrismNamespace}.GeneratePropertyAttribute";
+
 
         public const string ImplementIDEI = "ImplementIDataErrorInfo";
         public const string ImplementINPCing = "ImplementINotifyPropertyChanging";
         public const string ImplementISPVM = "ImplementISupportParentViewModel";
         public const string ImplementISS = "ImplementISupportServices";
+        public const string ImplementIAA = "ImplementIActiveAware";
 
         public const string IsVirtual = "IsVirtual";
         public const string OnChangedMethod = "OnChangedMethod";
@@ -19,9 +23,13 @@
         public const string CanExecuteMethod = "CanExecuteMethod";
         public const string CommandName = "Name";
 
-        public static string GetSourceCode(bool isWinUI) => isWinUI ? winUISourceCode : commonSourceCode;
+        public const string ObservesCanExecuteProperty = "ObservesCanExecuteProperty";
+        public const string ObservesProperties = "ObservesProperties";
 
-        const string commonSourceCode = @"    /// <summary>
+        internal static string GetSourceCode(SupportedMvvm mvvm, bool isWinUI) => 
+            mvvm == SupportedMvvm.Dx ? isWinUI ? dxwinUISourceCode : dxMvvmSourceCode : mvvm == SupportedMvvm.Prism ? prismMvvmSourceCode : commonSourceCode;
+
+        const string dxMvvmSourceCode = @"    /// <summary>
     ///     Indicates that the View Model Code Generator should process this class and produce a View Model.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
@@ -101,7 +109,44 @@
         /// </summary>
         public string? Name { get; set; }
     }";
-        const string winUISourceCode = @"    /// <summary>
+        const string commonSourceCode = @"    /// <summary>
+    ///     Applies to a class. Indicates that the source generator should process this class and produce View Model boilerplate code.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    class GenerateViewModelAttribute : Attribute {
+        /// <summary>
+        ///     Implements
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">INotifyPropertyChanging﻿.</see>
+        /// </summary>
+        public bool ImplementINotifyPropertyChanging { get; set; }
+    }
+
+    /// <summary>
+    ///     Applies to a field. The source generator produces boilerplate code for the property getter and setter based on the field declaration.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field)]
+    class GeneratePropertyAttribute : Attribute {
+        /// <summary>
+        ///     Assigns a virtual modifier to the property.
+        /// </summary>
+        public bool IsVirtual { get; set; }
+        /// <summary>
+        ///     Specifies the name of the method invoked after the property value is changed.<br/>
+        ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changed</b> pattern.
+        /// </summary>
+        public string? OnChangedMethod { get; set; }
+        /// <summary>
+        ///     Specifies the name of the method invoked when the property value is changing.<br/>
+        ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changing</b> pattern.
+        /// </summary>
+        public string? OnChangingMethod { get; set; }
+        /// <summary>
+        ///     Specifies an access modifier for a set accessor. The default value is the same as a property’s modifier.<br/>
+        ///     Available values: <i>Public, Private, Protected, Internal, ProtectedInternal, PrivateProtected.</i>
+        /// </summary>
+        public AccessModifier SetterAccessModifier { get; set; }
+    }";
+        const string dxwinUISourceCode = @"    /// <summary>
     ///     Applies to a class. Indicates that the source generator should process this class and produce View Model boilerplate code.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
@@ -162,6 +207,74 @@
         ///     Specifies the <b>allowMultipleExecution</b> parameter in the <b>AsyncCommand</b> constructor. The default value is <see langword=""false""/>.
         /// </summary>
         public bool AllowMultipleExecution { get; set; }
+        /// <summary>
+        ///     Specifies a custom <b>CanExecute</b> method name. If the property is not specified, the method’s name should follow the <b>Can[ActionName]</b> pattern.
+        /// </summary>
+        public string? CanExecuteMethod { get; set; }
+        /// <summary>
+        ///     Specifies a custom <b>Command</b> name. The default value is <b>[ActionName]Command</b>.
+        /// </summary>
+        public string? Name { get; set; }
+    }";
+        const string prismMvvmSourceCode = @"    /// <summary>
+    ///     Indicates that the View Model Code Generator should process this class and produce a View Model.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    class GenerateViewModelAttribute : Attribute {
+        /// <summary>
+        ///     Implements
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">INotifyPropertyChanging﻿.</see>
+        /// </summary>
+        public bool ImplementINotifyPropertyChanging { get; set; }
+        /// <summary>
+        ///     Implements <b>IActiveAware</b> that allows you to track the active state of a View.
+        /// </summary>
+        public bool ImplementIActiveAware { get; set; }
+    }
+
+    /// <summary>
+    ///     Indicates that the View Model Code Generator should process this field and produce a property.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field)]
+    class GeneratePropertyAttribute : Attribute {
+        /// <summary>
+        ///     Assigns a virtual modifier to the property.
+        /// </summary>
+        public bool IsVirtual { get; set; }
+        /// <summary>
+        ///     Specifies the name of the method invoked after the property value is changed.<br/>
+        ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changed</b> pattern.
+        /// </summary>
+        public string? OnChangedMethod { get; set; }
+        /// <summary>
+        ///     Specifies the name of the method invoked when the property value is changing.<br/>
+        ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changing</b> pattern.
+        /// </summary>
+        public string? OnChangingMethod { get; set; }
+        /// <summary>
+        ///     Specifies an access modifier for a set accessor. The default value is the same as a property’s modifier.<br/>
+        ///     Available values: <i>Public, Private, Protected, Internal, ProtectedInternal, PrivateProtected.</i>
+        /// </summary>
+        public AccessModifier SetterAccessModifier { get; set; }
+    }
+
+    /// <summary>
+    ///     Indicates that the View Model Code Generator should process this method and produce a Command.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    class GenerateCommandAttribute : Attribute {
+        /// <summary>
+        ///     Specifies the
+        ///     <see href=""https://prismlibrary.com/docs/commanding.html#observescanexecute"">ObservesCanExecute</see>
+        ///     ﻿ method for the supplied property. This method listens to property changes and use the property as the <b>CanExecute</b> delegate.
+        /// </summary>
+        public string? ObservesCanExecuteProperty { get; set; }
+        /// <summary>
+        ///     Specifies the 
+        ///     <see href=""https://prismlibrary.com/docs/commanding.html#observesproperty"">ObservesProperty</see>
+        ///     ﻿ methods for all supplied properties. Each method calls the CanExecute method when the corresponding property value changes.
+        /// </summary>
+        public string[]? ObservesProperties { get; set; }
         /// <summary>
         ///     Specifies a custom <b>CanExecute</b> method name. If the property is not specified, the method’s name should follow the <b>Can[ActionName]</b> pattern.
         /// </summary>

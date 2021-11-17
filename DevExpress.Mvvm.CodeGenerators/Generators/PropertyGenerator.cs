@@ -3,23 +3,24 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class PropertyGenerator {
-        public static string? Generate(SourceBuilder source, ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, ChangeEventRaiseMode? changedEventRaiseMode, ChangeEventRaiseMode? changingEventRaiseMode) {
+        public static string? Generate(SourceBuilder source, ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, ChangeEventRaiseMode? changedEventRaiseMode, ChangeEventRaiseMode? changingEventRaiseMode, SupportedMvvm mvvm) {
+            var propertyAttributeSymbol = info.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol!;
             string propertyName = PropertyHelper.CreatePropertyName(fieldSymbol.Name);
             if(propertyName == fieldSymbol.Name)
                 info.Context.ReportInvalidPropertyName(fieldSymbol, propertyName);
 
-            string? changedMethod = PropertyHelper.GetChangedMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type);
-            string? changingMethod = PropertyHelper.GetChangingMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type);
+            string? changedMethod = PropertyHelper.GetChangedMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type, mvvm);
+            string? changingMethod = PropertyHelper.GetChangingMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type, mvvm);
 
             if(propertyName == fieldSymbol.Name || string.IsNullOrEmpty(propertyName) || changedMethod == null || changingMethod == null)
                 return null;
 
-            CSharpSyntaxNode fieldSyntaxNode = (CSharpSyntaxNode)fieldSymbol.DeclaringSyntaxReferences[0].GetSyntax().Parent?.Parent!;
+            CSharpSyntaxNode fieldSyntaxNode = (CSharpSyntaxNode)fieldSymbol.DeclaringSyntaxReferences[0].GetSyntax().Parent!.Parent!;
             XMLCommentHelper.AppendComment(source, fieldSyntaxNode);
 
             PropertyHelper.AppendAttributesList(source, fieldSymbol);
 
-            bool isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, info.PropertyAttributeSymbol);
+            bool isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, propertyAttributeSymbol);
             string virtuality = isVirtual ? "virtual " : string.Empty;
             string typeName = fieldSymbol.Type.WithNullableAnnotation(PropertyHelper.GetNullableAnnotation(fieldSymbol.Type)).ToDisplayStringNullable();
             string fieldName = fieldSymbol.Name == "value" ? "this.value" : fieldSymbol.Name;
@@ -28,7 +29,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
             AppendSetterAttribute(source.Tab, info, fieldSymbol, fieldName);
 
-            string setterAccessModifier = PropertyHelper.GetSetterAccessModifierValue(fieldSymbol, info.PropertyAttributeSymbol);
+            string setterAccessModifier = PropertyHelper.GetSetterAccessModifierValue(fieldSymbol, propertyAttributeSymbol);
             source.Tab.Append(setterAccessModifier).AppendLine("set {");
             source.Tab.Tab.Append("if(EqualityComparer<").Append(typeName).Append(">.Default.Equals(").Append(fieldName).AppendLine(", value)) return;");
 

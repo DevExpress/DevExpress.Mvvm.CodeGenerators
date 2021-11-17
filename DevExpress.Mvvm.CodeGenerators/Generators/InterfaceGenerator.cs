@@ -59,4 +59,23 @@ IServiceContainer ISupportServices.ServiceContainer { get => ServiceContainer; }
                   .AppendLine("T? GetRequiredService<T>() where T : class => ServiceContainer.GetRequiredService<T>();");
         }
     }
+    class IActiveAwareGenerator : IInterfaceGenerator {
+        readonly bool generateChangedMethod;
+        public IActiveAwareGenerator(bool shouldGenerateChangedMethod) => generateChangedMethod = shouldGenerateChangedMethod;
+        public string GetName() => "IActiveAware";
+        public void AppendImplementation(SourceBuilder source) {
+            source.AppendMultipleLines(@"bool isActive;
+public bool IsActive {
+    get => isActive;
+    set {
+        isActive = value;");
+            if(generateChangedMethod)
+                source.AppendLine("        OnIsActiveChanged();");
+            source.AppendMultipleLines(
+@"        IsActiveChanged?.Invoke(this, EventArgs.Empty);
+    }
+}
+public event EventHandler? IsActiveChanged;");
+        }
+    }
 }

@@ -24,6 +24,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "DevExpress.Mvv
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedTests", "DevExpress.Mvvm.CodeGenerators.Tests\SharedTests\SharedTests.shproj", "{8F9347BC-3B47-4A95-AECE-7EF819C787C9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WithoutMvvm", "DevExpress.Mvvm.CodeGenerators.Tests\WithoutMvvm\WithoutMvvm.csproj", "{3E8A2CFC-F7A9-4FBD-8ABB-C7E035DA60CD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F644D6FB-4CC7-4366-997D-EC08CAE7523E} = {F644D6FB-4CC7-4366-997D-EC08CAE7523E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		DevExpress.Mvvm.CodeGenerators.Tests\SharedTests\SharedTests.projitems*{6455aec3-606f-49a6-9512-9f72e0789a89}*SharedItemsImports = 5
@@ -56,6 +61,10 @@ Global
 		{6DFFADA3-0873-4F11-A4E2-742131B9F43C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DFFADA3-0873-4F11-A4E2-742131B9F43C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DFFADA3-0873-4F11-A4E2-742131B9F43C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E8A2CFC-F7A9-4FBD-8ABB-C7E035DA60CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E8A2CFC-F7A9-4FBD-8ABB-C7E035DA60CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E8A2CFC-F7A9-4FBD-8ABB-C7E035DA60CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E8A2CFC-F7A9-4FBD-8ABB-C7E035DA60CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
