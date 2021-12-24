@@ -59,6 +59,9 @@ using System.ComponentModel;";
                     case SupportedMvvm.Prism:
                         source.AppendLine("using System;").AppendLine("using Prism;").AppendLine("using Prism.Commands;");
                         break;
+                    case SupportedMvvm.MvvmLight:
+                        source.AppendLine("using GalaSoft.MvvmLight;").AppendLine("using GalaSoft.MvvmLight.CommandWpf;").AppendLine("using GalaSoft.MvvmLight.Messaging;");
+                        break;
                     case SupportedMvvm.None:
                         break;
                     default:
@@ -178,6 +181,15 @@ using System.ComponentModel;";
                             if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Prism!.IAASymbol, contextInfo, mvvm)) {
                                 bool shouldGenerateChangedMethod = ClassHelper.ContainsOnChangedMethod(classSymbol, "OnIsActiveChanged", 0, null);
                                 interfaces.Add(new IActiveAwareGenerator(shouldGenerateChangedMethod));
+                            }
+                        }
+                        break;
+                    case SupportedMvvm.MvvmLight:
+                        bool implICU = ClassHelper.GetImplementICUValue(contextInfo, classSymbol);
+                        if(implICU) {
+                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.MvvmLight!.ICUSymbol, contextInfo, mvvm)) {
+                                bool shouldGenerateOnCleanupMethod = ClassHelper.ContainsOnChangedMethod(classSymbol, "OnCleanup", 0, null);
+                                interfaces.Add(new ICleanupGenerator(shouldGenerateOnCleanupMethod));
                             }
                         }
                         break;

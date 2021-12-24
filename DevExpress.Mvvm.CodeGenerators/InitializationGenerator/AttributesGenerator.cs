@@ -6,12 +6,14 @@
 
         public static readonly string PrismPropertyAttributeFullName = $"{InitializationGenerator.PrismNamespace}.GeneratePropertyAttribute";
 
+        public static readonly string MvvmLightPropertyAttributeFullName = $"{InitializationGenerator.MvvmLightNamespace}.GeneratePropertyAttribute";
 
         public const string ImplementIDEI = "ImplementIDataErrorInfo";
         public const string ImplementINPCing = "ImplementINotifyPropertyChanging";
         public const string ImplementISPVM = "ImplementISupportParentViewModel";
         public const string ImplementISS = "ImplementISupportServices";
         public const string ImplementIAA = "ImplementIActiveAware";
+        public const string ImplementICU = "ImplementICleanup";
 
         public const string IsVirtual = "IsVirtual";
         public const string OnChangedMethod = "OnChangedMethod";
@@ -26,8 +28,12 @@
         public const string ObservesCanExecuteProperty = "ObservesCanExecuteProperty";
         public const string ObservesProperties = "ObservesProperties";
 
+        public const string KeepTargetAlive = "KeepTargetAlive";
+
         internal static string GetSourceCode(SupportedMvvm mvvm, bool isWinUI) => 
-            mvvm == SupportedMvvm.Dx ? isWinUI ? dxwinUISourceCode : dxMvvmSourceCode : mvvm == SupportedMvvm.Prism ? prismMvvmSourceCode : commonSourceCode;
+            mvvm == SupportedMvvm.Dx ? isWinUI ? dxwinUISourceCode : dxMvvmSourceCode :
+            mvvm == SupportedMvvm.Prism ? prismMvvmSourceCode :
+            mvvm == SupportedMvvm.MvvmLight ? mvvmLightSourceCode : commonSourceCode;
 
         const string dxMvvmSourceCode = @"    /// <summary>
     ///     Indicates that the View Model Code Generator should process this class and produce a View Model.
@@ -275,6 +281,60 @@
         ///     ﻿ methods for all supplied properties. Each method calls the CanExecute method when the corresponding property value changes.
         /// </summary>
         public string[]? ObservesProperties { get; set; }
+        /// <summary>
+        ///     Specifies a custom <b>CanExecute</b> method name. If the property is not specified, the method’s name should follow the <b>Can[ActionName]</b> pattern.
+        /// </summary>
+        public string? CanExecuteMethod { get; set; }
+        /// <summary>
+        ///     Specifies a custom <b>Command</b> name. The default value is <b>[ActionName]Command</b>.
+        /// </summary>
+        public string? Name { get; set; }
+    }";
+        const string mvvmLightSourceCode = @"    /// <summary>
+    ///     Indicates that the View Model Code Generator should process this class and produce a View Model.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    class GenerateViewModelAttribute : Attribute {
+        /// <summary>
+        ///     Implements
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">INotifyPropertyChanging﻿.</see>
+        /// </summary>
+        public bool ImplementINotifyPropertyChanging { get; set; }
+        public bool ImplementICleanup { get; set; }
+    }
+
+    /// <summary>
+    ///     Indicates that the View Model Code Generator should process this field and produce a property.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field)]
+    class GeneratePropertyAttribute : Attribute {
+        /// <summary>
+        ///     Assigns a virtual modifier to the property.
+        /// </summary>
+        public bool IsVirtual { get; set; }
+        /// <summary>
+        ///     Specifies the name of the method invoked after the property value is changed.<br/>
+        ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changed</b> pattern.
+        /// </summary>
+        public string? OnChangedMethod { get; set; }
+        /// <summary>
+        ///     Specifies the name of the method invoked when the property value is changing.<br/>
+        ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changing</b> pattern.
+        /// </summary>
+        public string? OnChangingMethod { get; set; }
+        /// <summary>
+        ///     Specifies an access modifier for a set accessor. The default value is the same as a property’s modifier.<br/>
+        ///     Available values: <i>Public, Private, Protected, Internal, ProtectedInternal, PrivateProtected.</i>
+        /// </summary>
+        public AccessModifier SetterAccessModifier { get; set; }
+    }
+
+    /// <summary>
+    ///     Indicates that the View Model Code Generator should process this method and produce a Command.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    class GenerateCommandAttribute : Attribute {
+        public bool KeepTargetAlive { get; set; }
         /// <summary>
         ///     Specifies a custom <b>CanExecute</b> method name. If the property is not specified, the method’s name should follow the <b>Can[ActionName]</b> pattern.
         /// </summary>

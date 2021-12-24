@@ -31,7 +31,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return;
             foreach(AttributeData attribute in attributeList) {
                 string attributeName = attribute.ToString();
-                if(!(attributeName.StartsWith(AttributesGenerator.PropertyAttributeFullName!) || attributeName.StartsWith(AttributesGenerator.PrismPropertyAttributeFullName!)))
+                if(!(attributeName.StartsWith(AttributesGenerator.PropertyAttributeFullName!) || attributeName.StartsWith(AttributesGenerator.PrismPropertyAttributeFullName!) || attributeName.StartsWith(AttributesGenerator.MvvmLightPropertyAttributeFullName!)))
                     source.Append('[').Append(attributeName).AppendLine("]");
             }
         }

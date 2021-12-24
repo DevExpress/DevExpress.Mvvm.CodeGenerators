@@ -8,6 +8,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static readonly string nameofImplementISS = AttributesGenerator.ImplementISS;
         static readonly string nameofImplementISPVM = AttributesGenerator.ImplementISPVM;
         static readonly string nameofImplementIAA = AttributesGenerator.ImplementIAA;
+        static readonly string nameofImplementICU = AttributesGenerator.ImplementICU;
 
         public static bool GetImplementIDEIValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
             !contextInfo.IsWinUI && AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Dx!.ViewModelAttributeSymbol!, nameofImplementIDEI, false);
@@ -17,6 +18,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Dx!.ViewModelAttributeSymbol!, nameofImplementISS, false);
         public static bool GetImplementIAAValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Prism!.ViewModelAttributeSymbol!, nameofImplementIAA, false);
+        public static bool GetImplementICUValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
+            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.MvvmLight!.ViewModelAttributeSymbol!, nameofImplementICU, false);
         public static IEnumerable<IFieldSymbol> GetFieldCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol propertySymbol) =>
             GetProcessingMembers<IFieldSymbol>(classSymbol, propertySymbol);
         public static IEnumerable<IMethodSymbol> GetCommandCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol commandSymbol) =>
