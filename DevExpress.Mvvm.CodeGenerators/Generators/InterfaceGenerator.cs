@@ -80,11 +80,16 @@ public event EventHandler? IsActiveChanged;");
     }
     class ICleanupGenerator : IInterfaceGenerator {
         readonly bool generateOnCleanupMethod;
-        public ICleanupGenerator(bool shouldGenerateOnCleanupMethod) => generateOnCleanupMethod = shouldGenerateOnCleanupMethod;
+        readonly bool isSealed;
+        public ICleanupGenerator(bool shouldGenerateOnCleanupMethod, bool isSealed) {
+            generateOnCleanupMethod = shouldGenerateOnCleanupMethod;
+            this.isSealed = isSealed;
+            }
         public string GetName() => "ICleanup";
         public void AppendImplementation(SourceBuilder source) {
-            source.AppendMultipleLines(@"private IMessenger messengerInstance;
-protected IMessenger MessengerInstance {
+            source.AppendLine("private IMessenger? messengerInstance;")
+                .AppendIf(!isSealed, "protected ")
+                .AppendMultipleLines(@"IMessenger MessengerInstance {
     get => messengerInstance ?? Messenger.Default;
     set => messengerInstance = value;
 }

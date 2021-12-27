@@ -36,7 +36,7 @@ using System.ComponentModel;";
             source = GenerateHeader(source, classSymbol, interfaces,
                 impelementRaiseChangedMethod ? inpcedInfo.RaiseMethodImplementation : null,
                 impelementRaiseChangingMethod ? inpcingInfo.RaiseMethodImplementation : null,
-                genericTypes, outerClasses, mvvm);
+                genericTypes, outerClasses, mvvm, contextInfo.Compilation);
 
 
             bool needStaticChangedEventArgs = inpcedInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangedMethod;
@@ -49,8 +49,7 @@ using System.ComponentModel;";
 
             while(source.Return != null)
                 source = source.Return.AppendLine("}");
-
-            static SourceBuilder GenerateHeader(SourceBuilder source, INamedTypeSymbol classSymbol, List<IInterfaceGenerator> interfaces, string? raiseChangedMethod, string? raiseChangingMethod, List<ITypeSymbol> genericTypes, Dictionary<string, TypeKind> outerClasses, SupportedMvvm actualMvvm) {
+            static SourceBuilder GenerateHeader(SourceBuilder source, INamedTypeSymbol classSymbol, List<IInterfaceGenerator> interfaces, string? raiseChangedMethod, string? raiseChangingMethod, List<ITypeSymbol> genericTypes, Dictionary<string, TypeKind> outerClasses, SupportedMvvm actualMvvm, Compilation compilation) {
                 source.AppendLine(defaultUsings);
                 switch(actualMvvm) {
                     case SupportedMvvm.Dx:
@@ -60,7 +59,13 @@ using System.ComponentModel;";
                         source.AppendLine("using System;").AppendLine("using Prism;").AppendLine("using Prism.Commands;");
                         break;
                     case SupportedMvvm.MvvmLight:
-                        source.AppendLine("using GalaSoft.MvvmLight;").AppendLine("using GalaSoft.MvvmLight.CommandWpf;").AppendLine("using GalaSoft.MvvmLight.Messaging;");
+                        bool isMvvmLightCommandWpfAvalible = compilation.GetTypeByMetadataName("GalaSoft.MvvmLight.CommandWpf.RelayCommand") != null;
+                        source.AppendLine("using GalaSoft.MvvmLight;");
+                        if(isMvvmLightCommandWpfAvalible)
+                            source.AppendLine("using GalaSoft.MvvmLight.CommandWpf;");
+                        else
+                            source.AppendLine("using GalaSoft.MvvmLight.Command;");
+                        source.AppendLine("using GalaSoft.MvvmLight.Messaging;");
                         break;
                     case SupportedMvvm.None:
                         break;
@@ -189,7 +194,7 @@ using System.ComponentModel;";
                         if(implICU) {
                             if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.MvvmLight!.ICUSymbol, contextInfo, mvvm)) {
                                 bool shouldGenerateOnCleanupMethod = ClassHelper.ContainsOnChangedMethod(classSymbol, "OnCleanup", 0, null);
-                                interfaces.Add(new ICleanupGenerator(shouldGenerateOnCleanupMethod));
+                                interfaces.Add(new ICleanupGenerator(shouldGenerateOnCleanupMethod, classSymbol.IsSealed));
                             }
                         }
                         break;

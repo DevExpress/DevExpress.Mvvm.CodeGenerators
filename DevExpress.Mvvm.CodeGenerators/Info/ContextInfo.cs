@@ -95,7 +95,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static bool GetIsWinUI(Compilation compilation) => GetIsDxMvvmAvailable(compilation) && compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;
         static bool GetIsDxMvvmAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("DevExpress.Mvvm.DelegateCommand") != null;
         static bool GetIsPrismAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("Prism.Commands.DelegateCommand") != null;
-        static bool GetIsMvvmLightAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("GalaSoft.MvvmLight.CommandWpf.RelayCommand") != null;
+        static bool GetIsMvvmLightAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("GalaSoft.MvvmLight.Command.RelayCommand") != null;
         public static List<SupportedMvvm> GetAvailableMvvm(Compilation compilation) {
             List<SupportedMvvm> available = new();
             if(GetIsDxMvvmAvailable(compilation))
