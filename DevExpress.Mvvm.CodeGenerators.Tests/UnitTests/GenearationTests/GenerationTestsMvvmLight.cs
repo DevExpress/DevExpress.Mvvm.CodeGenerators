@@ -212,9 +212,6 @@ namespace Test {
             public void Command3(int? arg) { }
             bool CanCommand3_(int? arg) => true;
 
-            [GenerateCommand(KeepTargetAlive = true)]
-            public void Command4(int? arg) { }
-
             [GenerateProperty]
             bool a, b;
 
@@ -329,8 +326,6 @@ namespace Test {
         public RelayCommand SomeCommand => someCommand ??= new RelayCommand(async () => await Command2(), null);
         RelayCommand<int?>? command3Command;
         public RelayCommand<int?> Command3Command => command3Command ??= new RelayCommand<int?>(Command3, CanCommand3_);
-        RelayCommand<int?>? command4Command;
-        public RelayCommand<int?> Command4Command => command4Command ??= new RelayCommand<int?>(Command4, null, true);
         static PropertyChangedEventArgs IntChangedEventArgs = new PropertyChangedEventArgs(nameof(Int));
         static PropertyChangedEventArgs StrChangedEventArgs = new PropertyChangedEventArgs(nameof(Str));
         static PropertyChangedEventArgs LongChangedEventArgs = new PropertyChangedEventArgs(nameof(Long));

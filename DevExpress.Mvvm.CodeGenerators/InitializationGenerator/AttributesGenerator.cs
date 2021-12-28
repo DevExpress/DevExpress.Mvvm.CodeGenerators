@@ -28,8 +28,6 @@
         public const string ObservesCanExecuteProperty = "ObservesCanExecuteProperty";
         public const string ObservesProperties = "ObservesProperties";
 
-        public const string KeepTargetAlive = "KeepTargetAlive";
-
         internal static string GetSourceCode(SupportedMvvm mvvm, bool isWinUI) => 
             mvvm == SupportedMvvm.Dx ? isWinUI ? dxwinUISourceCode : dxMvvmSourceCode :
             mvvm == SupportedMvvm.Prism ? prismMvvmSourceCode :
@@ -334,7 +332,6 @@
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     class GenerateCommandAttribute : Attribute {
-        public bool KeepTargetAlive { get; set; }
         /// <summary>
         ///     Specifies a custom <b>CanExecute</b> method name. If the property is not specified, the method’s name should follow the <b>Can[ActionName]</b> pattern.
         /// </summary>

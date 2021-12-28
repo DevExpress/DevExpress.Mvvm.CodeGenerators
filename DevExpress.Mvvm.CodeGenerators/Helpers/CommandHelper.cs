@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
@@ -14,18 +15,17 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static readonly string observesCanExecuteProperty = AttributesGenerator.ObservesCanExecuteProperty;
         static readonly string observesProperties = AttributesGenerator.ObservesProperties;
 
-        static readonly string keepTargetAlive = AttributesGenerator.KeepTargetAlive;
-
         public static bool GetAllowMultipleExecutionValue(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, allowMultipleExecution, false);
         public static bool GetUseCommandManagerValue(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, useCommandManager, true);
-        public static bool GetKeepTargetAliveValue(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
-            AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, keepTargetAlive, false);
         public static string GetCommandName(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol, string executeMethodName) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, commandName, executeMethodName + "Command")!;
         public static string? GetCanExecuteMethodName(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, canExecuteMethod, (string?)null);
+        public static SourceBuilder AppendCommandNameWithGenericType(this SourceBuilder source, SupportedMvvm mvvm, bool isCommand, string genericArgumentType, string name) {
+            return source.Append(" => ").AppendFirstToLowerCase(name).Append(" ??= new ").AppendCommandGenericType(mvvm, isCommand, genericArgumentType);
+        }
         public static SourceBuilder AppendCommandGenericType(this SourceBuilder source, SupportedMvvm mvvm, bool isCommand, string genericArgumentType) {
             switch(mvvm) {
                 case SupportedMvvm.Dx:
@@ -39,6 +39,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     break;
                 case SupportedMvvm.None:
                     break;
+                default:
+                    throw new InvalidEnumArgumentException();
             }
             return source;
         }
