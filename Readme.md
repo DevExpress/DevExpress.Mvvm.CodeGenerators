@@ -87,7 +87,9 @@ Your project should meet the following requirements:
 Prepare your project as outlined below to enable support for View Models generated at compile time:
 
 1. Add a reference to the **DevExpress.Mvvm.v21.1**+ or install the [DevExpress.Mvvm](https://www.nuget.org/packages/DevExpressMvvm/) NuGet package.  
+
 2. Install the [DevExpress.Mvvm.CodeGenerators](https://www.nuget.org/packages/DevExpress.Mvvm.CodeGenerators/) NuGet package in your project.
+
 3. Set the language version to **9** in the **.csproject** file:
 
     ```xaml
@@ -96,7 +98,23 @@ Prepare your project as outlined below to enable support for View Models generat
     </PropertyGroup>
     ```
 
-    For .NET Core projects, set the **IncludePackageReferencesDuringMarkupCompilation** property to **true** additionally:
+4. For .NET Framework projects with package reference modify **.csproject** file:
+    
+    **Remove PackageReference:** 
+    ```xaml
+    <PackageReference Include="DevExpress.Mvvm.CodeGenerators">
+        <Version>21.1.3</Version>
+    </PackageReference>
+    ```
+
+    **Specify the path to the analyzer**  The following code sample shows the default path:
+    ```xaml
+    <ItemGroup>
+        <Analyzer Include="$(UserProfile)\.nuget\packages\devexpress.mvvm.codegenerators\21.1.3\analyzers\dotnet\cs\DevExpress.Mvvm.CodeGenerators.dll" />
+    </ItemGroup>
+    ```
+
+5. For .NET Core projects, set the **IncludePackageReferencesDuringMarkupCompilation** property to **true** additionally:
 
     ```xaml
     <PropertyGroup>
