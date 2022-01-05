@@ -103,14 +103,14 @@ Prepare your project as outlined below to enable support for View Models generat
     **Remove PackageReference:** 
     ```xaml
     <PackageReference Include="DevExpress.Mvvm.CodeGenerators">
-        <Version>21.1.3</Version>
+        <Version>21.2.1.1</Version>
     </PackageReference>
     ```
 
     **Specify the path to the analyzer**  The following code sample shows the default path:
     ```xaml
     <ItemGroup>
-        <Analyzer Include="$(UserProfile)\.nuget\packages\devexpress.mvvm.codegenerators\21.1.3\analyzers\dotnet\cs\DevExpress.Mvvm.CodeGenerators.dll" />
+        <Analyzer Include="$(UserProfile)\.nuget\packages\devexpress.mvvm.codegenerators\21.2.1.1\analyzers\dotnet\cs\DevExpress.Mvvm.CodeGenerators.dll" />
     </ItemGroup>
     ```
 
