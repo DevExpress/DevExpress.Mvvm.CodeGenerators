@@ -103,7 +103,24 @@ Prepare your project as outlined below to enable support for View Models generat
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     </PropertyGroup>
     ```
- 
+### NuGet Package Installation Notes
+
+We recommend that you configure the [packages.config](https://docs.microsoft.com/en-us/nuget/reference/packages-config) file to install NuGet Packages. If you use [PackageReference](https://docs.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files), follow the steps below to include the code generator to a .NET Framework project:
+
+1. Open the project file.
+2. Remove the XML code that adds the package:
+    ```xml
+    <PackageReference Include="DevExpress.Mvvm.CodeGenerators">
+        <Version>2x.x.x</Version>
+    </PackageReference>
+    ```    
+3. Download the **DevExpress.Mvvm.CodeGenerators.2x.x.x.dll** file from [GitHub Releases](https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/releases) to the preferred folder.
+4. Specify the path to the analyzer: 
+    ```xml
+    <ItemGroup>
+        <Analyzer Include="...\DevExpress.Mvvm.CodeGenerators.2x.x.x.dll" />
+    </ItemGroup>
+    ``` 
 ## Documentation
  
 * [View Models Generated at Compile Time](https://docs.devexpress.com/WPF/402989/mvvm-framework/viewmodels/compile-time-generated-viewmodels)
