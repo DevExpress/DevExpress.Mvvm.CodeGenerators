@@ -111,14 +111,14 @@ We recommend that you configure the [packages.config](https://docs.microsoft.com
 2. Remove the XML code that adds the package:
     ```xml
     <PackageReference Include="DevExpress.Mvvm.CodeGenerators">
-        <Version>2x.x.x</Version>
+        <Version>XX.Y.Z</Version>
     </PackageReference>
     ```    
-3. Download the **DevExpress.Mvvm.CodeGenerators.2x.x.x.dll** file from [GitHub Releases](https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/releases) to the preferred folder.
+3. Download the **DevExpress.Mvvm.CodeGenerators.XX.Y.Z.dll** file from [GitHub Releases](https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/releases) to the preferred folder.
 4. Specify the path to the analyzer: 
     ```xml
     <ItemGroup>
-        <Analyzer Include="...\DevExpress.Mvvm.CodeGenerators.2x.x.x.dll" />
+        <Analyzer Include="[PATH_TO_YOUR_FOLDER]\DevExpress.Mvvm.CodeGenerators.XX.Y.Z.dll" />
     </ItemGroup>
     ``` 
 ## Documentation
