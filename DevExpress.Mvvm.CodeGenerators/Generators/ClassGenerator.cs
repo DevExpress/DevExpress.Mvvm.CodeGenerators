@@ -111,55 +111,55 @@ using System.ComponentModel;";
             }
         }
 
-            static void AppendGenericArguments(SourceBuilder source, List<ITypeSymbol> genericTypes) {
-                if(genericTypes.Any()) {
-                    source.Append('<');
-                    source.AppendMultipleLinesWithSeparator(genericTypes.Select(type => type.ToString()), ", ");
-                    source.Append('>');
-                }
+        static void AppendGenericArguments(SourceBuilder source, List<ITypeSymbol> genericTypes) {
+            if(genericTypes.Any()) {
+                source.Append('<');
+                source.AppendMultipleLinesWithSeparator(genericTypes.Select(type => type.ToString()), ", ");
+                source.Append('>');
             }
-            static IReadOnlyList<string> GenerateProperties(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, INPCInfo inpcedInfo, INPCInfo inpcingInfo, bool needStaticChangedEventArgs, bool needStaticChangingEventArgs, SupportedMvvm mvvm) {
-                ChangeEventRaiseMode? changedRaiseMode = needStaticChangedEventArgs
-                    ? ChangeEventRaiseMode.EventArgs
-                    : inpcedInfo.HasRaiseMethodWithStringParameter
-                        ? ChangeEventRaiseMode.PropertyName
-                        : default(ChangeEventRaiseMode?);
-                ChangeEventRaiseMode? changingRaiseMode = needStaticChangingEventArgs
-                    ? ChangeEventRaiseMode.EventArgs
-                    : inpcingInfo.HasAttribute && inpcingInfo.HasRaiseMethodWithStringParameter
-                        ? ChangeEventRaiseMode.PropertyName
-                        : default(ChangeEventRaiseMode?);
-                bool generateProperties = true;
-                List<string> propertyNames = new();
-                IEnumerable<IFieldSymbol> fieldCandidates = ClassHelper.GetFieldCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol);
-                if(fieldCandidates.Any()) {
-                    if(changedRaiseMode == null) {
-                        contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ed");
-                        generateProperties = false;
-                    }
-                    if(inpcingInfo.HasAttribute && changingRaiseMode == null) {
-                        contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ing");
-                        generateProperties = false;
-                    }
-                    if(generateProperties)
-                        foreach(IFieldSymbol fieldSymbol in fieldCandidates) {
-                            string? propertyName = PropertyGenerator.Generate(source, contextInfo, classSymbol, fieldSymbol, changedRaiseMode, changingRaiseMode, mvvm);
-                            if(propertyName != null) {
-                                propertyNames.Add(propertyName);
-                            }
+        }
+        static IReadOnlyList<string> GenerateProperties(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, INPCInfo inpcedInfo, INPCInfo inpcingInfo, bool needStaticChangedEventArgs, bool needStaticChangingEventArgs, SupportedMvvm mvvm) {
+            ChangeEventRaiseMode? changedRaiseMode = needStaticChangedEventArgs
+                ? ChangeEventRaiseMode.EventArgs
+                : inpcedInfo.HasRaiseMethodWithStringParameter
+                    ? ChangeEventRaiseMode.PropertyName
+                    : default(ChangeEventRaiseMode?);
+            ChangeEventRaiseMode? changingRaiseMode = needStaticChangingEventArgs
+                ? ChangeEventRaiseMode.EventArgs
+                : inpcingInfo.HasAttribute && inpcingInfo.HasRaiseMethodWithStringParameter
+                    ? ChangeEventRaiseMode.PropertyName
+                    : default(ChangeEventRaiseMode?);
+            bool generateProperties = true;
+            List<string> propertyNames = new();
+            IEnumerable<IFieldSymbol> fieldCandidates = ClassHelper.GetFieldCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol);
+            if(fieldCandidates.Any()) {
+                if(changedRaiseMode == null) {
+                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ed");
+                    generateProperties = false;
+                }
+                if(inpcingInfo.HasAttribute && changingRaiseMode == null) {
+                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ing");
+                    generateProperties = false;
+                }
+                if(generateProperties)
+                    foreach(IFieldSymbol fieldSymbol in fieldCandidates) {
+                        string? propertyName = PropertyGenerator.Generate(source, contextInfo, classSymbol, fieldSymbol, changedRaiseMode, changingRaiseMode, mvvm);
+                        if(propertyName != null) {
+                            propertyNames.Add(propertyName);
                         }
-                }
-                return propertyNames;
+                    }
             }
+            return propertyNames;
+        }
 
-            static void GenerateCommands(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
-                IEnumerable<IMethodSymbol> commandCandidates = ClassHelper.GetCommandCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).CommandAttributeSymbol);
-                foreach(IMethodSymbol methodSymbol in commandCandidates) {
-                    CommandGenerator.Generate(source, contextInfo, classSymbol, methodSymbol, mvvm);
-                }
+        static void GenerateCommands(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
+            IEnumerable<IMethodSymbol> commandCandidates = ClassHelper.GetCommandCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).CommandAttributeSymbol);
+            foreach(IMethodSymbol methodSymbol in commandCandidates) {
+                CommandGenerator.Generate(source, contextInfo, classSymbol, methodSymbol, mvvm);
             }
+        }
 
-            static void AddAvailableInterfaces(List<IInterfaceGenerator> interfaces, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
+        static void AddAvailableInterfaces(List<IInterfaceGenerator> interfaces, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
             switch(mvvm) {
                 case SupportedMvvm.Dx:
                     if(ClassHelper.GetImplementIDEIValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.IDEISymbol))
@@ -177,10 +177,10 @@ using System.ComponentModel;";
                     if(ClassHelper.GetImplementICUValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.MvvmLight!.ICUSymbol, contextInfo, mvvm))
                         interfaces.Add(new ICleanupGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnCleanup", 0, null), classSymbol.IsSealed));
                     break;
-                    case SupportedMvvm.None:
-                        break;
-                    default:
-                        throw new InvalidEnumArgumentException();
+                case SupportedMvvm.None:
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException();
             }
         }
     }
