@@ -12,7 +12,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static readonly DiagnosticDescriptor CanExecuteMethodNotFound = CreateDiagnosticDescriptor(canExecuteMethodNotFoundId, canExecuteMethodNotFoundTitle, canExecuteMethodNotFoundMessageFormat);
         public static readonly DiagnosticDescriptor RaiseMethodNotFound = CreateDiagnosticDescriptor(raiseMethodNotFoundId, raiseMethodNotFoundTitle, raiseMethodNotFoundMessageFormat);
         public static readonly DiagnosticDescriptor TwoSuitableMethods = CreateDiagnosticDescriptor(twoSuitableMethodsId, twoSuitableMethodsTitle, twoSuitableMethodsMessageFormat, DiagnosticSeverity.Warning);
-        public static readonly DiagnosticDescriptor TwoGenerateViewModelAttributes = CreateDiagnosticDescriptor(twoGenerateViewModelAttributesId, twoGenerateViewModelAttributesTitle, twoGenerateViewModelAttributesMessageFormat);
+        public static readonly DiagnosticDescriptor MoreThanOneGenerateViewModelAttributes = CreateDiagnosticDescriptor(moreThanOneGenerateViewModelAttributesId, moreThanOneGenerateViewModelAttributesTitle, moreThanOneGenerateViewModelAttributesMessageFormat);
         public static readonly DiagnosticDescriptor NonNullableDelegateCommandArgument = CreateDiagnosticDescriptor(nonNullableDelegateCommandArgumentId, nonNullableDelegateCommandArgumentTitle, nonNullableDelegateCommandArgumentMessageFormat);
 
         public static void ReportNoPartialModifier(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol) =>
@@ -29,8 +29,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
             context.ReportDiagnostic(RaiseMethodNotFound, SymbolNameLocation(classSymbol), end);
         public static void ReportTwoSuitableMethods(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string methodName, string parameterType) =>
             context.ReportDiagnostic(TwoSuitableMethods, SymbolNameLocation(fieldSymbol), classSymbol.Name, methodName, parameterType);
-        public static void ReportTwoGenerateViewModelAttributes(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol) =>
-            context.ReportDiagnostic(TwoGenerateViewModelAttributes, SymbolNameLocation(classSymbol), classSymbol.Name);
+        public static void ReportMoreThanOneGenerateViewModelAttributes(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol) =>
+            context.ReportDiagnostic(MoreThanOneGenerateViewModelAttributes, SymbolNameLocation(classSymbol), classSymbol.Name);
         public static void ReportNonNullableDelegateCommandArgument(this GeneratorExecutionContext context, IMethodSymbol methodSymbol) =>
             context.ReportDiagnostic(NonNullableDelegateCommandArgument, SymbolNameLocation(methodSymbol), methodSymbol.Name);
 

@@ -231,11 +231,7 @@ namespace Test {
     partial class Example0 : INotifyPropertyChanged, INotifyPropertyChanging, ICleanup {
         public event PropertyChangedEventHandler? PropertyChanged;
         public event PropertyChangingEventHandler? PropertyChanging;
-        private IMessenger? messengerInstance;
-        protected IMessenger MessengerInstance {
-            get => messengerInstance ?? Messenger.Default;
-            set => messengerInstance = value;
-        }
+        protected IMessenger MessengerInstance { get; set; } = Messenger.Default;
         public virtual void Cleanup() {
             MessengerInstance.Unregister(this);
             OnCleanup();

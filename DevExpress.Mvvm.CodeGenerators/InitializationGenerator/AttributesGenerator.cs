@@ -1,11 +1,9 @@
-﻿namespace DevExpress.Mvvm.CodeGenerators {
+﻿using System;
+
+namespace DevExpress.Mvvm.CodeGenerators {
     public static class AttributesGenerator {
-        public static readonly string ViewModelAttributeFullName = $"{InitializationGenerator.DxNamespace}.GenerateViewModelAttribute";
-        public static readonly string PropertyAttributeFullName = $"{InitializationGenerator.DxNamespace}.GeneratePropertyAttribute";
-        public static readonly string CommandAttributeFullName = $"{InitializationGenerator.DxNamespace}.GenerateCommandAttribute";
-
+        public static readonly string DxPropertyAttributeFullName = $"{InitializationGenerator.DxNamespace}.GeneratePropertyAttribute";
         public static readonly string PrismPropertyAttributeFullName = $"{InitializationGenerator.PrismNamespace}.GeneratePropertyAttribute";
-
         public static readonly string MvvmLightPropertyAttributeFullName = $"{InitializationGenerator.MvvmLightNamespace}.GeneratePropertyAttribute";
 
         public const string ImplementIDEI = "ImplementIDataErrorInfo";
@@ -28,10 +26,14 @@
         public const string ObservesCanExecuteProperty = "ObservesCanExecuteProperty";
         public const string ObservesProperties = "ObservesProperties";
 
-        internal static string GetSourceCode(SupportedMvvm mvvm, bool isWinUI) => 
-            mvvm == SupportedMvvm.Dx ? isWinUI ? dxwinUISourceCode : dxMvvmSourceCode :
-            mvvm == SupportedMvvm.Prism ? prismMvvmSourceCode :
-            mvvm == SupportedMvvm.MvvmLight ? mvvmLightSourceCode : commonSourceCode;
+        internal static string GetSourceCode(SupportedMvvm mvvm, bool isWinUI) =>
+            mvvm switch {
+                SupportedMvvm.Dx => isWinUI ? dxwinUISourceCode : dxMvvmSourceCode,
+                SupportedMvvm.Prism => prismMvvmSourceCode,
+                SupportedMvvm.MvvmLight => mvvmLightSourceCode,
+                SupportedMvvm.None => commonSourceCode,
+                _ => throw new InvalidOperationException()
+            };
 
         const string dxMvvmSourceCode = @"    /// <summary>
     ///     Indicates that the View Model Code Generator should process this class and produce a View Model.
@@ -40,13 +42,13 @@
     class GenerateViewModelAttribute : Attribute {
         /// <summary>
         ///     Implements
-        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.idataerrorinfo?view=net-5.0"">IDataErrorInfo﻿</see>
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.idataerrorinfo"">IDataErrorInfo﻿</see>
         ///     that allows you to validate data.
         /// </summary>
         public bool ImplementIDataErrorInfo { get; set; }
         /// <summary>
         ///     Implements
-        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">INotifyPropertyChanging﻿.</see>
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging"">INotifyPropertyChanging﻿.</see>
         /// </summary>
         public bool ImplementINotifyPropertyChanging { get; set; }
         /// <summary>
@@ -120,7 +122,7 @@
     class GenerateViewModelAttribute : Attribute {
         /// <summary>
         ///     Implements
-        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">INotifyPropertyChanging﻿.</see>
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging"">INotifyPropertyChanging﻿.</see>
         /// </summary>
         public bool ImplementINotifyPropertyChanging { get; set; }
     }
@@ -157,7 +159,7 @@
     class GenerateViewModelAttribute : Attribute {
         /// <summary>
         ///     Implements
-        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">INotifyPropertyChanging﻿.</see>
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging"">INotifyPropertyChanging﻿.</see>
         /// </summary>
         public bool ImplementINotifyPropertyChanging { get; set; }
         /// <summary>
@@ -227,7 +229,7 @@
     class GenerateViewModelAttribute : Attribute {
         /// <summary>
         ///     Implements
-        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">INotifyPropertyChanging﻿.</see>
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging"">INotifyPropertyChanging﻿.</see>
         /// </summary>
         public bool ImplementINotifyPropertyChanging { get; set; }
         /// <summary>
@@ -295,9 +297,12 @@
     class GenerateViewModelAttribute : Attribute {
         /// <summary>
         ///     Implements
-        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging?view=net-5.0"">INotifyPropertyChanging﻿.</see>
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging"">INotifyPropertyChanging﻿.</see>
         /// </summary>
         public bool ImplementINotifyPropertyChanging { get; set; }
+        /// <summary>
+        ///     Implements the ICleanup interface that allows you to clean your View Model (for example, flush its state to persistent storage, close the stream).
+        /// </summary>
         public bool ImplementICleanup { get; set; }
     }
 

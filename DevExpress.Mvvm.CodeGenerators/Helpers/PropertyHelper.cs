@@ -14,11 +14,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static bool GetIsVirtualValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
             AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofIsVirtual, false);
         public static string? GetChangedMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType, SupportedMvvm mvvm) {
-            string? methodName = GetChangedMethodName(fieldSymbol, info.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol!);
+            string? methodName = GetChangedMethodName(fieldSymbol, info.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changed", "oldValue", fieldType);
         }
         public static string? GetChangingMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType, SupportedMvvm mvvm) {
-            string? methodName = GetChangingMethodName(fieldSymbol, info.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol!);
+            string? methodName = GetChangingMethodName(fieldSymbol, info.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changing", "value", fieldType);
         }
         public static string GetSetterAccessModifierValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) {
@@ -31,7 +31,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return;
             foreach(AttributeData attribute in attributeList) {
                 string attributeName = attribute.ToString();
-                if(!(attributeName.StartsWith(AttributesGenerator.PropertyAttributeFullName!) || attributeName.StartsWith(AttributesGenerator.PrismPropertyAttributeFullName!) || attributeName.StartsWith(AttributesGenerator.MvvmLightPropertyAttributeFullName!)))
+                if(!(attributeName.StartsWith(AttributesGenerator.DxPropertyAttributeFullName!) || attributeName.StartsWith(AttributesGenerator.PrismPropertyAttributeFullName!) || attributeName.StartsWith(AttributesGenerator.MvvmLightPropertyAttributeFullName!)))
                     source.Append('[').Append(attributeName).AppendLine("]");
             }
         }

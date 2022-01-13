@@ -87,12 +87,8 @@ public event EventHandler? IsActiveChanged;");
             }
         public string GetName() => "ICleanup";
         public void AppendImplementation(SourceBuilder source) {
-            source.AppendLine("private IMessenger? messengerInstance;")
-                .AppendIf(!isSealed, "protected ")
-                .AppendMultipleLines(@"IMessenger MessengerInstance {
-    get => messengerInstance ?? Messenger.Default;
-    set => messengerInstance = value;
-}
+            source.AppendIf(!isSealed, "protected ")
+                  .AppendMultipleLines(@"IMessenger MessengerInstance { get; set; } = Messenger.Default;
 public virtual void Cleanup() {
     MessengerInstance.Unregister(this);");
             if(generateOnCleanupMethod)

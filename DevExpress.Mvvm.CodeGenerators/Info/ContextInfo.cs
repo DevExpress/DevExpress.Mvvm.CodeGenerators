@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     class FrameworkAttributes {
-        public INamedTypeSymbol? ViewModelAttributeSymbol { get; }
-        public INamedTypeSymbol? PropertyAttributeSymbol { get; }
-        public INamedTypeSymbol? CommandAttributeSymbol { get; }
+        public INamedTypeSymbol ViewModelAttributeSymbol { get; }
+        public INamedTypeSymbol PropertyAttributeSymbol { get; }
+        public INamedTypeSymbol CommandAttributeSymbol { get; }
         public FrameworkAttributes(Compilation compilation, SupportedMvvm mvvm) {
             string attributeNamespace = mvvm switch {
                 SupportedMvvm.None or SupportedMvvm.Dx => InitializationGenerator.DxNamespace,
@@ -96,6 +96,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static bool GetIsDxMvvmAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("DevExpress.Mvvm.DelegateCommand") != null;
         static bool GetIsPrismAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("Prism.Commands.DelegateCommand") != null;
         static bool GetIsMvvmLightAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("GalaSoft.MvvmLight.Command.RelayCommand") != null;
+        public static bool GetIsMvvmLightCommandWpfAvalible(Compilation compilation) => compilation.GetTypeByMetadataName("GalaSoft.MvvmLight.CommandWpf.RelayCommand") != null;
         public static List<SupportedMvvm> GetAvailableMvvm(Compilation compilation) {
             List<SupportedMvvm> available = new();
             if(GetIsDxMvvmAvailable(compilation))

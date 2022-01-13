@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class InitializationGenerator {
@@ -13,8 +12,12 @@ using System.Collections.Generic;
 
 #nullable enable
 
-namespace {((mvvm == SupportedMvvm.Dx || mvvm == SupportedMvvm.None) ? DxNamespace :
-             mvvm == SupportedMvvm.Prism ? PrismNamespace : MvvmLightNamespace)} {{
+namespace {mvvm switch {
+    SupportedMvvm.None or SupportedMvvm.Dx => DxNamespace,
+    SupportedMvvm.Prism => PrismNamespace,
+    SupportedMvvm.MvvmLight => MvvmLightNamespace,
+    _ => throw new InvalidOperationException()
+}} {{
 {AccessModifierGenerator.GetSourceCode()}
 
 {AttributesGenerator.GetSourceCode(mvvm, isWinUI)}

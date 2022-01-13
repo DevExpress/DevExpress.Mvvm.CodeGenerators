@@ -11,15 +11,15 @@ namespace DevExpress.Mvvm.CodeGenerators {
         static readonly string nameofImplementICU = AttributesGenerator.ImplementICU;
 
         public static bool GetImplementIDEIValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
-            !contextInfo.IsWinUI && AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Dx!.ViewModelAttributeSymbol!, nameofImplementIDEI, false);
+            !contextInfo.IsWinUI && AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Dx!.ViewModelAttributeSymbol, nameofImplementIDEI, false);
         public static bool GetImplementISPVMValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) =>
-            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol!, nameofImplementISPVM, false);
+            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol, nameofImplementISPVM, false);
         public static bool GetImplementISSValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
-            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Dx!.ViewModelAttributeSymbol!, nameofImplementISS, false);
+            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Dx!.ViewModelAttributeSymbol, nameofImplementISS, false);
         public static bool GetImplementIAAValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
-            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Prism!.ViewModelAttributeSymbol!, nameofImplementIAA, false);
+            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Prism!.ViewModelAttributeSymbol, nameofImplementIAA, false);
         public static bool GetImplementICUValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
-            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.MvvmLight!.ViewModelAttributeSymbol!, nameofImplementICU, false);
+            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.MvvmLight!.ViewModelAttributeSymbol, nameofImplementICU, false);
         public static IEnumerable<IFieldSymbol> GetFieldCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol propertySymbol) =>
             GetProcessingMembers<IFieldSymbol>(classSymbol, propertySymbol);
         public static IEnumerable<IMethodSymbol> GetCommandCandidates(INamedTypeSymbol classSymbol, INamedTypeSymbol commandSymbol) =>
@@ -30,7 +30,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(IsInterfaceImplementedInCurrentClass(classSymbol, interfaceSymbol))
                 return true;
             for(INamedTypeSymbol parent = classSymbol.BaseType!; parent != null; parent = parent.BaseType!) {
-                bool hasAttribute = AttributeHelper.HasAttribute(parent, contextInfo.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol!) && GetImplementISPVMValue(contextInfo, parent, mvvm);
+                bool hasAttribute = AttributeHelper.HasAttribute(parent, contextInfo.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol) && GetImplementISPVMValue(contextInfo, parent, mvvm);
                 bool hasImplementation = IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
                 if(hasAttribute || hasImplementation)
                     return true;

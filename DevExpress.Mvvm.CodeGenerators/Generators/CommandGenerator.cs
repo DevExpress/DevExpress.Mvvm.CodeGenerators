@@ -7,7 +7,7 @@ using System.Linq;
 namespace DevExpress.Mvvm.CodeGenerators {
     static class CommandGenerator {
         public static void Generate(SourceBuilder source, ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol, SupportedMvvm mvvm) {
-            var commandAttribute = info.GetFrameworkAttributes(mvvm).CommandAttributeSymbol!;
+            var commandAttribute = info.GetFrameworkAttributes(mvvm).CommandAttributeSymbol;
             bool isCommand = methodSymbol.ReturnsVoid;
             bool isAsyncCommand = SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType)
                 || SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType?.BaseType);
@@ -83,7 +83,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             source.AppendLine(");");
         }
         static void AppendGetterDx(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name) {
-            INamedTypeSymbol commandAttribute = info.Dx!.CommandAttributeSymbol!;
+            INamedTypeSymbol commandAttribute = info.Dx!.CommandAttributeSymbol;
             source.AppendCommandNameWithGenericType(mvvm, isCommand, genericArgumentType, name).Append('(');
             source.AppendDxParametersList(methodSymbol, commandAttribute, canExecuteMethodName, isCommand, methodSymbol.Name, info.IsWinUI);
             source.AppendLine(");");

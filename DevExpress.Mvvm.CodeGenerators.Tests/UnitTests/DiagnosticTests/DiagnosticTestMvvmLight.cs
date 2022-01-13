@@ -258,7 +258,7 @@ namespace Test {
             GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
             var asdf = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
 
-            Assert.AreEqual(GeneratorDiagnostics.TwoGenerateViewModelAttributes.Id, diagnostics[0].Id);
+            Assert.AreEqual(GeneratorDiagnostics.MoreThanOneGenerateViewModelAttributes.Id, diagnostics[0].Id);
             Assert.AreEqual(4, outputCompilation.SyntaxTrees.Count());
         }
         public static Compilation CreateCompilation(string source) =>

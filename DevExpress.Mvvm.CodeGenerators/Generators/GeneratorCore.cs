@@ -41,8 +41,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 bool hasPrismAttribute = AttributeHelper.HasAttribute(classSymbol, contextInfo.Prism?.ViewModelAttributeSymbol);
                 bool hasMvvmLightAttribute = AttributeHelper.HasAttribute(classSymbol, contextInfo.MvvmLight?.ViewModelAttributeSymbol);
 
-                if((hasDxAttribute  && hasPrismAttribute) || (hasDxAttribute && hasMvvmLightAttribute) || (hasPrismAttribute && hasMvvmLightAttribute)) {
-                    context.ReportTwoGenerateViewModelAttributes(classSymbol);
+                int mvvmCount = 0;
+                if(hasDxAttribute) mvvmCount++;
+                if(hasPrismAttribute) mvvmCount++;
+                if(hasMvvmLightAttribute) mvvmCount++;
+
+                if(mvvmCount > 1) {
+                    context.ReportMoreThanOneGenerateViewModelAttributes(classSymbol);
                     continue;
                 }
 

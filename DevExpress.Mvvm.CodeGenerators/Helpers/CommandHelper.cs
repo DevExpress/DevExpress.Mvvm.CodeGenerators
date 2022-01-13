@@ -26,24 +26,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static SourceBuilder AppendCommandNameWithGenericType(this SourceBuilder source, SupportedMvvm mvvm, bool isCommand, string genericArgumentType, string name) {
             return source.Append(" => ").AppendFirstToLowerCase(name).Append(" ??= new ").AppendCommandGenericType(mvvm, isCommand, genericArgumentType);
         }
-        public static SourceBuilder AppendCommandGenericType(this SourceBuilder source, SupportedMvvm mvvm, bool isCommand, string genericArgumentType) {
-            switch(mvvm) {
-                case SupportedMvvm.Dx:
-                    source.AppendCommandGenericTypeCore(isCommand, genericArgumentType, "DelegateCommand");
-                    break;
-                case SupportedMvvm.Prism:
-                    source.AppendCommandGenericTypeCore(true, genericArgumentType, "DelegateCommand");
-                    break;
-                case SupportedMvvm.MvvmLight:
-                    source.AppendCommandGenericTypeCore(true, genericArgumentType, "RelayCommand");
-                    break;
-                case SupportedMvvm.None:
-                    break;
-                default:
-                    throw new InvalidEnumArgumentException();
-            }
-            return source;
-        }
+        public static SourceBuilder AppendCommandGenericType(this SourceBuilder source, SupportedMvvm mvvm, bool isCommand, string genericArgumentType) => mvvm switch {
+            SupportedMvvm.Dx => source.AppendCommandGenericTypeCore(isCommand, genericArgumentType, "DelegateCommand"),
+            SupportedMvvm.Prism => source.AppendCommandGenericTypeCore(true, genericArgumentType, "DelegateCommand"),
+            SupportedMvvm.MvvmLight => source.AppendCommandGenericTypeCore(true, genericArgumentType, "RelayCommand"),
+            SupportedMvvm.None => source,
+            _ => throw new InvalidOperationException()
+        };
         static SourceBuilder AppendCommandGenericTypeCore(this SourceBuilder source, bool isCommand, string genericArgumentType, string commandType) {
             source.Append(isCommand ? commandType : "AsyncCommand");
             if(!string.IsNullOrEmpty(genericArgumentType))
