@@ -7,26 +7,27 @@
     <LangVersion>9</LangVersion>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <WarningsAsErrors>8618,8604</WarningsAsErrors>
-	<DefineConstants>WINUI</DefineConstants>
+    <DefineConstants>WINUI</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <Analyzer Include="..\..\DevExpress.Mvvm.CodeGenerators\bin\DevExpress.Mvvm.CodeGenerators.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="DevExpress.Mvvm.v21.1">
-      <HintPath>..\..\..\2021.1\Bin\WinUI\Sdk\Mvvm\DevExpress.Mvvm.v21.1.dll</HintPath>
+    <Reference Include="DevExpress.WinUI.Mvvm.v22.1">
+      <HintPath>..\..\..\2022.1\Bin\WinUI\Sdk\Mvvm\DevExpress.WinUI.Mvvm.v22.1.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
     <PackageReference Include="Prism.Wpf" Version="8.1.97" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" />
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
-	<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
   <Import Project="..\SharedTests\SharedTests.projitems" Label="Shared" />

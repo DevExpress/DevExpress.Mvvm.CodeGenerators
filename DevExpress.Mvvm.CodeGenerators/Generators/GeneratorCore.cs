@@ -37,20 +37,30 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 if(classSyntax.AttributeLists.Count == 0)
                     continue;
                 INamedTypeSymbol classSymbol = contextInfo.Compilation.GetSemanticModel(classSyntax.SyntaxTree).GetDeclaredSymbol(classSyntax)!;
+                bool hasDxAttribute = AttributeHelper.HasAttribute(classSymbol, contextInfo.Dx?.ViewModelAttributeSymbol);
+                bool hasPrismAttribute = AttributeHelper.HasAttribute(classSymbol, contextInfo.Prism?.ViewModelAttributeSymbol);
+                bool hasMvvmLightAttribute = AttributeHelper.HasAttribute(classSymbol, contextInfo.MvvmLight?.ViewModelAttributeSymbol);
+
+                int mvvmCount = 0;
+                if(hasDxAttribute) mvvmCount++;
+                if(hasPrismAttribute) mvvmCount++;
+                if(hasMvvmLightAttribute) mvvmCount++;
+
+                if(mvvmCount > 1) {
+                    context.ReportMoreThanOneGenerateViewModelAttributes(classSymbol);
+                    continue;
+                }
 
                 SupportedMvvm mvvm;
-                if(AttributeHelper.HasAttribute(classSymbol, contextInfo.Dx?.ViewModelAttributeSymbol)) {
+                if(hasDxAttribute) {
                     if(contextInfo.AvailableMvvm.Contains(SupportedMvvm.Dx))
                         mvvm = SupportedMvvm.Dx;
                     else
                         mvvm = SupportedMvvm.None;
-                    if(AttributeHelper.HasAttribute(classSymbol, contextInfo.Prism?.ViewModelAttributeSymbol)) {
-                        context.ReportTwoGenerateViewModelAttributes(classSymbol);
-                        continue;
-                    }
-                }
-                else if(AttributeHelper.HasAttribute(classSymbol, contextInfo.Prism?.ViewModelAttributeSymbol))
+                } else if(hasPrismAttribute)
                     mvvm = SupportedMvvm.Prism;
+                else if(hasMvvmLightAttribute)
+                    mvvm = SupportedMvvm.MvvmLight;
                 else continue;
 
                 if(processedSymbols.Contains(classSymbol))

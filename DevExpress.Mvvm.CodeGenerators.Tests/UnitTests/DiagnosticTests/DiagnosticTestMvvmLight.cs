@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using GalaSoft.MvvmLight.Command;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using System.ComponentModel;
@@ -6,10 +7,10 @@ using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
     [TestFixture]
-    public class DiagnosticTestsPrism {
+    public class DiagnosticTestsMvvmLight {
         [Test]
         public void NoPartialDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.Prism;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
 
 namespace Test {
     [GenerateViewModel]
@@ -31,7 +32,7 @@ namespace Test {
 
         [Test]
         public void InvalidPropertyNameDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.Prism;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
 
 namespace Test {
     [GenerateViewModel]
@@ -57,7 +58,7 @@ namespace Test {
 
         [Test]
         public void OnChangedMethodNotFoundDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.Prism;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
 
 namespace Test {
     [GenerateViewModel]
@@ -90,7 +91,7 @@ namespace Test {
 
         [Test]
         public void IncorrectCommandSignatureDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.Prism;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
 
 namespace Test {
     [GenerateViewModel]
@@ -99,7 +100,7 @@ namespace Test {
         public int Command1() {}
 
         [GenerateCommand]
-        public void Command2(int? a, int? b) {}
+        public void Command2(int a, int b) {}
     }
 
     public class Program {
@@ -122,25 +123,25 @@ namespace Test {
 
         [Test]
         public void CanExecuteMethodNotFoundDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.Prism;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
 using System.Threading.Tasks;
 
 namespace Test {
     [GenerateViewModel]
     partial class CanExecuteMethodNotFound {
         [GenerateCommand(CanExecuteMethod = ""WrongParameter"")]
-        public void Command1(int? arg) { }
+        public void Command1(int arg) { }
         [GenerateCommand(CanExecuteMethod = ""NoCreated"")]
-        public void Command2(int? arg) { }
+        public void Command2(int arg) { }
         [GenerateCommand(CanExecuteMethod = ""ReturnNoBool"")]
-        public void Command3(int? arg) { }
+        public void Command3(int arg) { }
 
         [GenerateCommand(CanExecuteMethod = ""WrongParameter"")]
-        public Task AsyncCommand1(int? arg) => Task.CompletedTask;
+        public Task AsyncCommand1(int arg) => Task.CompletedTask;
         [GenerateCommand(CanExecuteMethod = ""NoCreated"")]
-        public Task AsyncCommand2(int? arg) => Task.CompletedTask;
+        public Task AsyncCommand2(int arg) => Task.CompletedTask;
         [GenerateCommand(CanExecuteMethod = ""ReturnNoBool"")]
-        public Task AsyncCommand3(int? arg) => Task.CompletedTask;
+        public Task AsyncCommand3(int arg) => Task.CompletedTask;
 
         public bool WrongParameter() => true;
         public bool WrongParameter(string arg) => arg.Length > 0;
@@ -168,7 +169,7 @@ namespace Test {
 
         [Test]
         public void RaiseMethodNotFoundDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.Prism;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
 using System.ComponentModel;
 
 namespace Test {
@@ -200,40 +201,8 @@ namespace Test {
         }
 
         [Test]
-        public void NonNullableDelegateCommandArgumentDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.Prism;
-using System.ComponentModel;
-
-namespace Test {
-    [GenerateViewModel]
-    partial class NonNullableArgumentClass {
-        [GenerateCommand]
-        void IntArgument(int arg) { }
-        [GenerateCommand]
-        void StructArgument(StructArg arg) { ]
-    }
-
-    struct StructArg { }
-    public class Program {
-        public static void Main(string[] args) { }
-    }
-}
-";
-            Compilation inputCompilation = CreateCompilation(sourceCode);
-            ViewModelGenerator generator = new ViewModelGenerator();
-
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
-
-            Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
-            Assert.AreEqual(2, diagnostics.Count());
-            foreach(var diagnostic in diagnostics)
-                Assert.AreEqual(GeneratorDiagnostics.NonNullableDelegateCommandArgument.Id, diagnostic.Id);
-        }
-
-        [Test]
         public void TwoSuitableMethodsDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.Prism;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
 using System.Threading.Tasks;
 
 namespace Test {
@@ -265,12 +234,12 @@ namespace Test {
             foreach(var diagnostic in diagnostics)
                 Assert.AreEqual(GeneratorDiagnostics.TwoSuitableMethods.Id, diagnostic.Id);
         }
-
-        [Test]
-        public void TwoGenerateViewModelAttributeDiagnostic() {
-            var sourceCode = @"namespace Test {
-    [DevExpress.Mvvm.CodeGenerators.GenerateViewModel]
-    [DevExpress.Mvvm.CodeGenerators.Prism.GenerateViewModel]
+        [TestCase("[DevExpress.Mvvm.CodeGenerators.Prism.GenerateViewModel]\r\n")]
+        [TestCase("[DevExpress.Mvvm.CodeGenerators.GenerateViewModel]\r\n")]
+        public void TwoGenerateViewModelAttributeDiagnostic(string generateViewModel) {
+            var sourceCode = "namespace Test {\r\n"
+                + generateViewModel +
+    @"[DevExpress.Mvvm.CodeGenerators.MvvmLight.GenerateViewModel]
     partial class TwoGenerateViewModelAttributeClass { }
     }
 ";
@@ -278,25 +247,26 @@ namespace Test {
                                      new[] { CSharpSyntaxTree.ParseText(sourceCode) },
                                      new[] {
                                          MetadataReference.CreateFromFile(typeof(System.Windows.Input.ICommand).Assembly.Location),
-                                         MetadataReference.CreateFromFile(typeof(DelegateCommand).Assembly.Location),
+                                         MetadataReference.CreateFromFile(typeof(RelayCommand).Assembly.Location),
                                          MetadataReference.CreateFromFile(typeof(Prism.Commands.DelegateCommand).Assembly.Location),
+                                         MetadataReference.CreateFromFile(typeof(DevExpress.Mvvm.DelegateCommand).Assembly.Location),
                                          MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                                          MetadataReference.CreateFromFile(typeof(INotifyPropertyChanged).Assembly.Location),
                                      },
                                      new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
             ViewModelGenerator generator = new ViewModelGenerator();
             GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
+            var asdf = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
 
             Assert.AreEqual(GeneratorDiagnostics.MoreThanOneGenerateViewModelAttributes.Id, diagnostics[0].Id);
-            Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
+            Assert.AreEqual(4, outputCompilation.SyntaxTrees.Count());
         }
         public static Compilation CreateCompilation(string source) =>
             CSharpCompilation.Create("MyCompilation",
                                      new[] { CSharpSyntaxTree.ParseText(source) },
                                      new[] {
                                          MetadataReference.CreateFromFile(typeof(System.Windows.Input.ICommand).Assembly.Location),
-                                         MetadataReference.CreateFromFile(typeof(Prism.Commands.DelegateCommand).Assembly.Location),
+                                         MetadataReference.CreateFromFile(typeof(RelayCommand).Assembly.Location),
                                          MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                                          MetadataReference.CreateFromFile(typeof(INotifyPropertyChanged).Assembly.Location),
                                      },

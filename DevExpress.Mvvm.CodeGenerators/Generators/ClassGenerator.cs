@@ -36,7 +36,7 @@ using System.ComponentModel;";
             source = GenerateHeader(source, classSymbol, interfaces,
                 impelementRaiseChangedMethod ? inpcedInfo.RaiseMethodImplementation : null,
                 impelementRaiseChangingMethod ? inpcingInfo.RaiseMethodImplementation : null,
-                genericTypes, outerClasses, mvvm);
+                genericTypes, outerClasses, mvvm, contextInfo.Compilation);
 
 
             bool needStaticChangedEventArgs = inpcedInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangedMethod;
@@ -49,8 +49,7 @@ using System.ComponentModel;";
 
             while(source.Return != null)
                 source = source.Return.AppendLine("}");
-
-            static SourceBuilder GenerateHeader(SourceBuilder source, INamedTypeSymbol classSymbol, List<IInterfaceGenerator> interfaces, string? raiseChangedMethod, string? raiseChangingMethod, List<ITypeSymbol> genericTypes, Dictionary<string, TypeKind> outerClasses, SupportedMvvm actualMvvm) {
+            static SourceBuilder GenerateHeader(SourceBuilder source, INamedTypeSymbol classSymbol, List<IInterfaceGenerator> interfaces, string? raiseChangedMethod, string? raiseChangingMethod, List<ITypeSymbol> genericTypes, Dictionary<string, TypeKind> outerClasses, SupportedMvvm actualMvvm, Compilation compilation) {
                 source.AppendLine(defaultUsings);
                 switch(actualMvvm) {
                     case SupportedMvvm.Dx:
@@ -58,6 +57,14 @@ using System.ComponentModel;";
                         break;
                     case SupportedMvvm.Prism:
                         source.AppendLine("using System;").AppendLine("using Prism;").AppendLine("using Prism.Commands;");
+                        break;
+                    case SupportedMvvm.MvvmLight:
+                        source.AppendLine("using GalaSoft.MvvmLight;");
+                        if(ContextInfo.GetIsMvvmLightCommandWpfAvalible(compilation))
+                            source.AppendLine("using GalaSoft.MvvmLight.CommandWpf;");
+                        else
+                            source.AppendLine("using GalaSoft.MvvmLight.Command;");
+                        source.AppendLine("using GalaSoft.MvvmLight.Messaging;");
                         break;
                     case SupportedMvvm.None:
                         break;
@@ -102,90 +109,78 @@ using System.ComponentModel;";
                     source.AppendLine();
                 return source;
             }
+        }
 
-            static void AppendGenericArguments(SourceBuilder source, List<ITypeSymbol> genericTypes) {
-                if(genericTypes.Any()) {
-                    source.Append('<');
-                    source.AppendMultipleLinesWithSeparator(genericTypes.Select(type => type.ToString()), ", ");
-                    source.Append('>');
-                }
+        static void AppendGenericArguments(SourceBuilder source, List<ITypeSymbol> genericTypes) {
+            if(genericTypes.Any()) {
+                source.Append('<');
+                source.AppendMultipleLinesWithSeparator(genericTypes.Select(type => type.ToString()), ", ");
+                source.Append('>');
             }
-            static IReadOnlyList<string> GenerateProperties(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, INPCInfo inpcedInfo, INPCInfo inpcingInfo, bool needStaticChangedEventArgs, bool needStaticChangingEventArgs, SupportedMvvm mvvm) {
-                ChangeEventRaiseMode? changedRaiseMode = needStaticChangedEventArgs
-                    ? ChangeEventRaiseMode.EventArgs
-                    : inpcedInfo.HasRaiseMethodWithStringParameter
-                        ? ChangeEventRaiseMode.PropertyName
-                        : default(ChangeEventRaiseMode?);
-                ChangeEventRaiseMode? changingRaiseMode = needStaticChangingEventArgs
-                    ? ChangeEventRaiseMode.EventArgs
-                    : inpcingInfo.HasAttribute && inpcingInfo.HasRaiseMethodWithStringParameter
-                        ? ChangeEventRaiseMode.PropertyName
-                        : default(ChangeEventRaiseMode?);
-                bool generateProperties = true;
-                List<string> propertyNames = new();
-                IEnumerable<IFieldSymbol> fieldCandidates = ClassHelper.GetFieldCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol!);
-                if(fieldCandidates.Any()) {
-                    if(changedRaiseMode == null) {
-                        contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ed");
-                        generateProperties = false;
+        }
+        static IReadOnlyList<string> GenerateProperties(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, INPCInfo inpcedInfo, INPCInfo inpcingInfo, bool needStaticChangedEventArgs, bool needStaticChangingEventArgs, SupportedMvvm mvvm) {
+            ChangeEventRaiseMode? changedRaiseMode = needStaticChangedEventArgs
+                ? ChangeEventRaiseMode.EventArgs
+                : inpcedInfo.HasRaiseMethodWithStringParameter
+                    ? ChangeEventRaiseMode.PropertyName
+                    : default(ChangeEventRaiseMode?);
+            ChangeEventRaiseMode? changingRaiseMode = needStaticChangingEventArgs
+                ? ChangeEventRaiseMode.EventArgs
+                : inpcingInfo.HasAttribute && inpcingInfo.HasRaiseMethodWithStringParameter
+                    ? ChangeEventRaiseMode.PropertyName
+                    : default(ChangeEventRaiseMode?);
+            bool generateProperties = true;
+            List<string> propertyNames = new();
+            IEnumerable<IFieldSymbol> fieldCandidates = ClassHelper.GetFieldCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol);
+            if(fieldCandidates.Any()) {
+                if(changedRaiseMode == null) {
+                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ed");
+                    generateProperties = false;
+                }
+                if(inpcingInfo.HasAttribute && changingRaiseMode == null) {
+                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ing");
+                    generateProperties = false;
+                }
+                if(generateProperties)
+                    foreach(IFieldSymbol fieldSymbol in fieldCandidates) {
+                        string? propertyName = PropertyGenerator.Generate(source, contextInfo, classSymbol, fieldSymbol, changedRaiseMode, changingRaiseMode, mvvm);
+                        if(propertyName != null) {
+                            propertyNames.Add(propertyName);
+                        }
                     }
-                    if(inpcingInfo.HasAttribute && changingRaiseMode == null) {
-                        contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ing");
-                        generateProperties = false;
-                    }
-                    if(generateProperties)
-                        foreach(IFieldSymbol fieldSymbol in fieldCandidates) {
-                            string? propertyName = PropertyGenerator.Generate(source, contextInfo, classSymbol, fieldSymbol, changedRaiseMode, changingRaiseMode, mvvm);
-                            if(propertyName != null) {
-                                propertyNames.Add(propertyName);
-                            }
-                        }
-                }
-                return propertyNames;
             }
+            return propertyNames;
+        }
 
-            static void GenerateCommands(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
-                IEnumerable<IMethodSymbol> commandCandidates = ClassHelper.GetCommandCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).CommandAttributeSymbol!);
-                foreach(IMethodSymbol methodSymbol in commandCandidates) {
-                    CommandGenerator.Generate(source, contextInfo, classSymbol, methodSymbol, mvvm);
-                }
+        static void GenerateCommands(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
+            IEnumerable<IMethodSymbol> commandCandidates = ClassHelper.GetCommandCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).CommandAttributeSymbol);
+            foreach(IMethodSymbol methodSymbol in commandCandidates) {
+                CommandGenerator.Generate(source, contextInfo, classSymbol, methodSymbol, mvvm);
             }
+        }
 
-            static void AddAvailableInterfaces(List<IInterfaceGenerator> interfaces, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
-                switch(mvvm) {
-                    case SupportedMvvm.Dx:
-                        bool implIDEI = ClassHelper.GetImplementIDEIValue(contextInfo, classSymbol);
-                        bool implISS = ClassHelper.GetImplementISSValue(contextInfo, classSymbol);
-                        bool implISPVM = ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol, mvvm);
-                        if(implIDEI) {
-                            if(!ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.IDEISymbol))
-                                interfaces.Add(new IDataErrorInfoGenerator());
-                        }
-                        if(implISPVM) {
-                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Dx!.ISPVMSymbol, contextInfo, mvvm)) {
-                                bool shouldGenerateChangedMethod = ClassHelper.ContainsOnChangedMethod(classSymbol, "OnParentViewModelChanged", 1, "object");
-                                interfaces.Add(new ISupportParentViewModelGenerator(shouldGenerateChangedMethod));
-                            }
-                        }
-                        if(implISS) {
-                            if(!ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.ISSSymbol))
-                                interfaces.Add(new ISupportServicesGenerator(classSymbol.IsSealed));
-                        }
-                        break;
-                    case SupportedMvvm.Prism:
-                        bool implIAA = ClassHelper.GetImplementIAAValue(contextInfo, classSymbol);
-                        if(implIAA) {
-                            if(!ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Prism!.IAASymbol, contextInfo, mvvm)) {
-                                bool shouldGenerateChangedMethod = ClassHelper.ContainsOnChangedMethod(classSymbol, "OnIsActiveChanged", 0, null);
-                                interfaces.Add(new IActiveAwareGenerator(shouldGenerateChangedMethod));
-                            }
-                        }
-                        break;
-                    case SupportedMvvm.None:
-                        break;
-                    default:
-                        throw new InvalidEnumArgumentException();
-                }
+        static void AddAvailableInterfaces(List<IInterfaceGenerator> interfaces, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
+            switch(mvvm) {
+                case SupportedMvvm.Dx:
+                    if(ClassHelper.GetImplementIDEIValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.IDEISymbol))
+                        interfaces.Add(new IDataErrorInfoGenerator());
+                    if(ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol, mvvm) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Dx!.ISPVMSymbol, contextInfo, mvvm))
+                        interfaces.Add(new ISupportParentViewModelGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnParentViewModelChanged", 1, "object")));
+                    if(ClassHelper.GetImplementISSValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.ISSSymbol))
+                        interfaces.Add(new ISupportServicesGenerator(classSymbol.IsSealed));
+                    break;
+                case SupportedMvvm.Prism:
+                    if(ClassHelper.GetImplementIAAValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Prism!.IAASymbol, contextInfo, mvvm))
+                        interfaces.Add(new IActiveAwareGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnIsActiveChanged", 0, null)));
+                    break;
+                case SupportedMvvm.MvvmLight:
+                    if(ClassHelper.GetImplementICUValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.MvvmLight!.ICUSymbol, contextInfo, mvvm))
+                        interfaces.Add(new ICleanupGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnCleanup", 0, null), classSymbol.IsSealed));
+                    break;
+                case SupportedMvvm.None:
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException();
             }
         }
     }

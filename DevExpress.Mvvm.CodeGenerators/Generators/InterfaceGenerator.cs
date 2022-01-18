@@ -78,4 +78,22 @@ public bool IsActive {
 public event EventHandler? IsActiveChanged;");
         }
     }
+    class ICleanupGenerator : IInterfaceGenerator {
+        readonly bool generateOnCleanupMethod;
+        readonly bool isSealed;
+        public ICleanupGenerator(bool shouldGenerateOnCleanupMethod, bool isSealed) {
+            generateOnCleanupMethod = shouldGenerateOnCleanupMethod;
+            this.isSealed = isSealed;
+            }
+        public string GetName() => "ICleanup";
+        public void AppendImplementation(SourceBuilder source) {
+            source.AppendIf(!isSealed, "protected ")
+                  .AppendMultipleLines(@"IMessenger MessengerInstance { get; set; } = Messenger.Default;
+public virtual void Cleanup() {
+    MessengerInstance.Unregister(this);");
+            if(generateOnCleanupMethod)
+                source.AppendLine("    OnCleanup();");
+            source.AppendLine("}");
+        }
+    }
 }

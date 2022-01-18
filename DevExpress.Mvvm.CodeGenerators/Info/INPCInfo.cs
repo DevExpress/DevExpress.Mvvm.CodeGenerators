@@ -15,15 +15,15 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static INPCInfo GetINPCedInfo(ContextInfo info, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) =>
             new INPCInfo(classSymbol,
                          info.INPCedSymbol,
-                         symbol => AttributeHelper.HasAttribute(symbol, info.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol!),
+                         symbol => AttributeHelper.HasAttribute(symbol, info.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol),
                          "RaisePropertyChanged",
                          "System.ComponentModel.PropertyChangedEventArgs",
                          "void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);");
         public static INPCInfo GetINPCingInfo(ContextInfo info, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) =>
             new INPCInfo(classSymbol,
                          info.INPCingSymbol,
-                         symbol => AttributeHelper.HasAttribute(symbol, info.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol!) &&
-                                   AttributeHelper.GetPropertyActualValue(symbol, info.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol!, AttributesGenerator.ImplementINPCing, false),
+                         symbol => AttributeHelper.HasAttribute(symbol, info.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol) &&
+                                   AttributeHelper.GetPropertyActualValue(symbol, info.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol, AttributesGenerator.ImplementINPCing, false),
                          "RaisePropertyChanging",
                          "System.ComponentModel.PropertyChangingEventArgs",
                          "void RaisePropertyChanging(PropertyChangingEventArgs e) => PropertyChanging?.Invoke(this, e);");

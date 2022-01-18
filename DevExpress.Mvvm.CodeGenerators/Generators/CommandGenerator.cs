@@ -1,12 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class CommandGenerator {
         public static void Generate(SourceBuilder source, ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol, SupportedMvvm mvvm) {
-            var commandAttribute = info.GetFrameworkAttributes(mvvm).CommandAttributeSymbol!;
+            var commandAttribute = info.GetFrameworkAttributes(mvvm).CommandAttributeSymbol;
             bool isCommand = methodSymbol.ReturnsVoid;
             bool isAsyncCommand = SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType)
                 || SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType?.BaseType);
@@ -29,24 +30,29 @@ namespace DevExpress.Mvvm.CodeGenerators {
             string name = CommandHelper.GetCommandName(methodSymbol, commandAttribute, methodSymbol.Name);
             string genericArgumentType = parameterType?.ToDisplayStringNullable() ?? string.Empty;
 
-            if(mvvm == SupportedMvvm.Prism) {
-                source.AppendCommandGenericType(true, genericArgumentType).Append("? ").AppendFirstToLowerCase(name).AppendLine(";");
-            } else { 
-                source.AppendCommandGenericType(isCommand, genericArgumentType).Append("? ").AppendFirstToLowerCase(name).AppendLine(";");
-            }
+            source.AppendCommandGenericType(mvvm, isCommand, genericArgumentType).Append("? ").AppendFirstToLowerCase(name).AppendLine(";");
 
             CSharpSyntaxNode commandSyntaxNode = (CSharpSyntaxNode)methodSymbol.DeclaringSyntaxReferences[0].GetSyntax();
             XMLCommentHelper.AppendComment(source, commandSyntaxNode);
 
-            if(mvvm == SupportedMvvm.Prism) {
-                string observesCanExecuteProperty = CommandHelper.GetObservesCanExecuteProperty(methodSymbol, commandAttribute);
-                string[] observesProperties = CommandHelper.GetObservesProperties(methodSymbol, commandAttribute);
+            source.Append("public ").AppendCommandGenericType(mvvm, isCommand, genericArgumentType).Append(" ").Append(name);
 
-                source.Append("public ").AppendCommandGenericType(true, genericArgumentType).Append(" ").Append(name);
-                AppendGetterPrism(source, info, methodSymbol, isCommand, canExecuteMethodName, genericArgumentType, name, observesCanExecuteProperty, observesProperties);
-            } else {
-                source.Append("public ").AppendCommandGenericType(isCommand, genericArgumentType).Append(' ').Append(name);
-                AppendGetterDx(source, info, methodSymbol, isCommand, canExecuteMethodName, genericArgumentType, name);
+            switch(mvvm) {
+                case SupportedMvvm.None:
+                    break;
+                case SupportedMvvm.Dx:
+                    AppendGetterDx(source, info, methodSymbol, mvvm, isCommand, canExecuteMethodName, genericArgumentType, name);
+                    break;
+                case SupportedMvvm.Prism:
+                    string observesCanExecuteProperty = CommandHelper.GetObservesCanExecuteProperty(methodSymbol, commandAttribute);
+                    string[] observesProperties = CommandHelper.GetObservesProperties(methodSymbol, commandAttribute);
+                    AppendGetterPrism(source, info, methodSymbol, mvvm, isCommand, canExecuteMethodName, genericArgumentType, name, observesCanExecuteProperty, observesProperties);
+                    break;
+                case SupportedMvvm.MvvmLight:
+                    AppendGetterMvvmLight(source, info, methodSymbol, mvvm, isCommand, canExecuteMethodName, genericArgumentType, name);
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException();
             }
         }
 
@@ -64,8 +70,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
             return canExecuteMethodName ?? "null";
         }
 
-        static void AppendGetterPrism(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name, string observesCanExecuteProperty, string[] observesProperties) {
-            source.Append(" => ").AppendFirstToLowerCase(name).Append(" ??= new ").AppendCommandGenericType(true, genericArgumentType).AppendMethodNamePrism(isCommand, methodSymbol.Name, genericArgumentType);
+        static void AppendGetterPrism(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name, string observesCanExecuteProperty, string[] observesProperties) {
+            source.AppendCommandNameWithGenericType(mvvm, isCommand, genericArgumentType, name).AppendMethodName(isCommand, methodSymbol.Name, genericArgumentType);
             if(canExecuteMethodName != "null")
                 source.Append(", ").Append(canExecuteMethodName);
             if(!string.IsNullOrEmpty(observesCanExecuteProperty))
@@ -76,12 +82,17 @@ namespace DevExpress.Mvvm.CodeGenerators {
                         source.Append(").ObservesProperty(() => ").Append(property);
             source.AppendLine(");");
         }
-        static void AppendGetterDx(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name) {
-            source.Append(" => ").AppendFirstToLowerCase(name).Append(" ??= new ").AppendCommandGenericType(isCommand, genericArgumentType).Append('(');
-            source.AppendParametersList(methodSymbol, info.Dx!.CommandAttributeSymbol!, canExecuteMethodName, isCommand, methodSymbol.Name, info.IsWinUI);
+        static void AppendGetterDx(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name) {
+            INamedTypeSymbol commandAttribute = info.Dx!.CommandAttributeSymbol;
+            source.AppendCommandNameWithGenericType(mvvm, isCommand, genericArgumentType, name).Append('(');
+            source.AppendDxParametersList(methodSymbol, commandAttribute, canExecuteMethodName, isCommand, methodSymbol.Name, info.IsWinUI);
             source.AppendLine(");");
         }
-        static void AppendParametersList(this SourceBuilder source, IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {
+        static void AppendGetterMvvmLight(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name) {
+            source.AppendCommandNameWithGenericType(mvvm, isCommand, genericArgumentType, name).AppendMethodName(isCommand, methodSymbol.Name, genericArgumentType);
+            source.Append(", ").Append(canExecuteMethodName).AppendLine(");");
+        }
+        static void AppendDxParametersList(this SourceBuilder source, IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {
             source.Append(executeMethod).Append(", ").Append(canExecuteMethodName);
             if(!isCommand) {
                 string allowMultipleExecution = CommandHelper.GetAllowMultipleExecutionValue(methodSymbol, commandAttributeSymbol).BoolToStringValue();

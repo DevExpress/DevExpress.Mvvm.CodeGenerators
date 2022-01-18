@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
@@ -22,13 +23,23 @@ namespace DevExpress.Mvvm.CodeGenerators {
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, commandName, executeMethodName + "Command")!;
         public static string? GetCanExecuteMethodName(IMethodSymbol methodSymbol, INamedTypeSymbol commandSymbol) =>
             AttributeHelper.GetPropertyActualValue(methodSymbol, commandSymbol, canExecuteMethod, (string?)null);
-        public static SourceBuilder AppendCommandGenericType(this SourceBuilder source, bool isCommand, string genericArgumentType) {
-            source.Append(isCommand ? "DelegateCommand" : "AsyncCommand");
+        public static SourceBuilder AppendCommandNameWithGenericType(this SourceBuilder source, SupportedMvvm mvvm, bool isCommand, string genericArgumentType, string name) {
+            return source.Append(" => ").AppendFirstToLowerCase(name).Append(" ??= new ").AppendCommandGenericType(mvvm, isCommand, genericArgumentType);
+        }
+        public static SourceBuilder AppendCommandGenericType(this SourceBuilder source, SupportedMvvm mvvm, bool isCommand, string genericArgumentType) => mvvm switch {
+            SupportedMvvm.Dx => source.AppendCommandGenericTypeCore(isCommand, genericArgumentType, "DelegateCommand"),
+            SupportedMvvm.Prism => source.AppendCommandGenericTypeCore(true, genericArgumentType, "DelegateCommand"),
+            SupportedMvvm.MvvmLight => source.AppendCommandGenericTypeCore(true, genericArgumentType, "RelayCommand"),
+            SupportedMvvm.None => source,
+            _ => throw new InvalidOperationException()
+        };
+        static SourceBuilder AppendCommandGenericTypeCore(this SourceBuilder source, bool isCommand, string genericArgumentType, string commandType) {
+            source.Append(isCommand ? commandType : "AsyncCommand");
             if(!string.IsNullOrEmpty(genericArgumentType))
                 source.Append('<').Append(genericArgumentType).Append('>');
             return source;
         }
-        public static SourceBuilder AppendMethodNamePrism(this SourceBuilder source, bool isCommand, string methodSymbolName, string genericArgumentType) {
+        public static SourceBuilder AppendMethodName(this SourceBuilder source, bool isCommand, string methodSymbolName, string genericArgumentType) {
             bool isGeneric = !string.IsNullOrEmpty(genericArgumentType);
             source.Append('(');
             if(isCommand) {

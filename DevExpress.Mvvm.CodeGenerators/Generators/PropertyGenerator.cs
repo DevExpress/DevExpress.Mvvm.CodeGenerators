@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace DevExpress.Mvvm.CodeGenerators {
     static class PropertyGenerator {
         public static string? Generate(SourceBuilder source, ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, ChangeEventRaiseMode? changedEventRaiseMode, ChangeEventRaiseMode? changingEventRaiseMode, SupportedMvvm mvvm) {
-            var propertyAttributeSymbol = info.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol!;
+            var propertyAttributeSymbol = info.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol;
             string propertyName = PropertyHelper.CreatePropertyName(fieldSymbol.Name);
             if(propertyName == fieldSymbol.Name)
                 info.Context.ReportInvalidPropertyName(fieldSymbol, propertyName);
