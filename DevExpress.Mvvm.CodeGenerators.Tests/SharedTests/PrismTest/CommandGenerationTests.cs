@@ -4,6 +4,7 @@ using System.Reflection;
 using DevExpress.Mvvm.CodeGenerators.Prism;
 using Prism.Commands;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Prism.Mvvm.Tests {
     [GenerateViewModel]
@@ -41,7 +42,17 @@ namespace Prism.Mvvm.Tests {
         void WithCanExecutePropertyAndOservesProperty() { }
 
         public void SomeMethod() { }
+        [First]
+        [Second]
+        [Third]
+        [GenerateCommand]
+        void AttributeTest() { }
     }
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
+    public sealed class FirstAttribute : Attribute { }
+    [AttributeUsage(AttributeTargets.Method)]
+    public sealed class SecondAttribute : Attribute { }
+    public sealed class ThirdAttribute : Attribute { }
 
     [TestFixture]
     public class CommandGenerationTests {
@@ -119,6 +130,15 @@ namespace Prism.Mvvm.Tests {
             var expressionsWithCanExecuteProperty = (HashSet<string>)typeof(DelegateCommandBase).GetField("_observedPropertiesExpressions", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(generated.WithCanExecutePropertyAndOservesPropertyCommand);
             Assert.AreEqual(3, expressionsWithCanExecuteProperty.Count);
             Assert.IsTrue(expressionsWithCanExecuteProperty.Contains($"() => value({generated.GetType().FullName}).CanExecuteProperty"));
+        }
+        [Test]
+        public void AttributeGenerationTest() {
+            var generated = new GenerateCommands();
+
+            var attributes = generated.GetType().GetProperty("AttributeTestCommand").GetCustomAttributes().ToList();
+            Assert.AreEqual(2, attributes.Count);
+            Assert.IsTrue(attributes[0] is FirstAttribute);
+            Assert.IsTrue(attributes[1] is ThirdAttribute);
         }
     }
 }

@@ -69,5 +69,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return parameters.Count() == 0;
             return parameters.Count() == 1 && PropertyHelper.IsСompatibleType(parameters.First().Type, parameterType);
         }
+        public static bool CanAppendAttribute(AttributeData attribute, ContextInfo info) {
+            ImmutableArray<AttributeData> innerAttributeList = attribute.AttributeClass!.GetAttributes();
+            if(innerAttributeList.Length == 0)
+                return true;
+            object? attributeTargets = innerAttributeList.FirstOrDefault(attr => IsAttributeUsageSymbol(attr, info))?.ConstructorArguments[0].Value;
+            return attributeTargets != null && (((AttributeTargets)attributeTargets & AttributeTargets.Property) != 0);
+        }
+        static bool IsAttributeUsageSymbol(AttributeData attribute, ContextInfo info) => SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, info.AttributeUsageSymbol);
     }
 }

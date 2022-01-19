@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
@@ -38,7 +39,17 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         void WithNullableString4(string str) { }
         bool CanWithNullableString1(string str) => str?.Length > 0;
         bool CanWithNullableString2(string str) => str.Length > 0;
+        [First]
+        [Second]
+        [Third]
+        [GenerateCommand]
+        void AttributeTest() { }
     }
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
+    public sealed class FirstAttribute : Attribute { }
+    [AttributeUsage(AttributeTargets.Method)]
+    public sealed class SecondAttribute : Attribute { }
+    public sealed class ThirdAttribute : Attribute { }
 
     [TestFixture]
     public class CommandGenerationTests {
@@ -133,6 +144,15 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.IsFalse(generated.WithNullableString2Command.CanExecute(""));
             Assert.IsTrue(generated.WithNullableString3Command.CanExecute(""));
             Assert.IsFalse(generated.WithNullableString4Command.CanExecute(null));
+        }
+        [Test]
+        public void AttributeGenerationTest() {
+            var generated = new GenerateCommands();
+
+            var attributes = generated.GetType().GetProperty("AttributeTestCommand").GetCustomAttributes().ToList();
+            Assert.AreEqual(2, attributes.Count);
+            Assert.IsTrue(attributes[0] is FirstAttribute);
+            Assert.IsTrue(attributes[1] is ThirdAttribute);
         }
     }
 }
