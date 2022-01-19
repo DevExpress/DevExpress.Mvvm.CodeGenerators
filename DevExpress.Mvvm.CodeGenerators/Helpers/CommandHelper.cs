@@ -69,11 +69,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return parameters.Count() == 0;
             return parameters.Count() == 1 && PropertyHelper.IsСompatibleType(parameters.First().Type, parameterType);
         }
-        public static bool CanGenerateAttribute(AttributeData attribute) {
+        public static bool CanGenerateAttribute(AttributeData attribute, ContextInfo info) {
             ImmutableArray<AttributeData> innerAttributeList = attribute.AttributeClass!.GetAttributes();
-            return innerAttributeList.Length == 0 ||
-                   (((IEnumerable<AttributeData>)attribute.AttributeClass!.GetAttributes())
-                   .FirstOrDefault(attr => attr.ToString().StartsWith("System.AttributeUsageAttribute"))?.ToString().Contains("System.AttributeTargets.Property") ?? false);
+            if(innerAttributeList.Length == 0)
+                return true;
+            object? attributeTargets = ((IEnumerable<AttributeData>)innerAttributeList)
+                   ?.FirstOrDefault(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, info.AttributeUsageSymbol))?.ConstructorArguments[0].Value;
+            return attributeTargets != null ? ((AttributeTargets)attributeTargets & AttributeTargets.Property) != 0 : false;
         }
     }
 }

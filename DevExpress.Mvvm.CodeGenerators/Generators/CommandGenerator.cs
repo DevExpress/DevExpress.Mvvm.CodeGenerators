@@ -35,7 +35,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             CSharpSyntaxNode commandSyntaxNode = (CSharpSyntaxNode)methodSymbol.DeclaringSyntaxReferences[0].GetSyntax();
             XMLCommentHelper.AppendComment(source, commandSyntaxNode);
 
-            AttributeHelper.AppendAttributesList(source, methodSymbol);
+            AttributeHelper.AppendAttributesList(source, methodSymbol, info);
 
             source.Append("public ").AppendCommandGenericType(mvvm, isCommand, genericArgumentType).Append(" ").Append(name);
 

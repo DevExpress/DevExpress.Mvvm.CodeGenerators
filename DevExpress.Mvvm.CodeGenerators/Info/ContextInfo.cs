@@ -59,6 +59,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public INamedTypeSymbol INPCingSymbol { get; }
         public INamedTypeSymbol TaskSymbol { get; }
         public INamedTypeSymbol BoolSymbol { get; }
+        public INamedTypeSymbol AttributeUsageSymbol { get; }
 
         public bool IsWinUI { get; }
         public List<SupportedMvvm> AvailableMvvm { get; }
@@ -81,6 +82,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
             TaskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task")!;
             BoolSymbol = compilation.GetTypeByMetadataName("System.Boolean")!;
+            AttributeUsageSymbol = compilation.GetTypeByMetadataName("System.AttributeUsageAttribute")!;
 
             IsWinUI = GetIsWinUI(compilation);
         }

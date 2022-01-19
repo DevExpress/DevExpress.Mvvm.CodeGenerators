@@ -30,13 +30,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return null;
             return sourceSymbol.GetAttributes().FirstOrDefault(ad => SymbolEqualityComparer.Default.Equals(ad.AttributeClass, attributeSymbol));
         }
-        public static void AppendAttributesList(SourceBuilder source, ISymbol symbol) {
+        public static void AppendAttributesList(SourceBuilder source, ISymbol symbol, ContextInfo info) {
             ImmutableArray<AttributeData> attributeList = symbol.GetAttributes();
             if(attributeList.Length == 1)
                 return;
             foreach(AttributeData attribute in attributeList) {
                 string attributeName = attribute.ToString();
-                if(symbol is IFieldSymbol ? !PropertyHelper.IsGeneratePropertyAttribute(attributeName) : CommandHelper.CanGenerateAttribute(attribute))
+                if(symbol is IFieldSymbol ? !PropertyHelper.IsGeneratePropertyAttribute(attributeName) : CommandHelper.CanGenerateAttribute(attribute, info))
                     source.Append('[').Append(attributeName).AppendLine("]");
             }
         }
