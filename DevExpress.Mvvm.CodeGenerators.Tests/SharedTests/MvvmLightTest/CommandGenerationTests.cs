@@ -4,6 +4,7 @@ using System.Reflection;
 using DevExpress.Mvvm.CodeGenerators.MvvmLight;
 using GalaSoft.MvvmLight.Helpers;
 using System.Linq;
+
 #if NETCOREAPP
 using GalaSoft.MvvmLight.Command;
 #else
@@ -122,6 +123,7 @@ namespace MvvmLight.Mvvm.Tests {
             Assert.IsTrue(generated.WithNullableString3Command.CanExecute(""));
             Assert.IsFalse(generated.WithNullableString4Command.CanExecute(null));
         }
+
         [Test]
         public void AttributeGenerationTest() {
             var generated = new GenerateCommands();
