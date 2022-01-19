@@ -18,7 +18,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             CSharpSyntaxNode fieldSyntaxNode = (CSharpSyntaxNode)fieldSymbol.DeclaringSyntaxReferences[0].GetSyntax().Parent!.Parent!;
             XMLCommentHelper.AppendComment(source, fieldSyntaxNode);
 
-            AttributeHelper.AppendAttributesList(source, fieldSymbol, info);
+            AttributeHelper.AppendFieldAttriutes(source, fieldSymbol, info);
 
             bool isVirtual = PropertyHelper.GetIsVirtualValue(fieldSymbol, propertyAttributeSymbol);
             string virtuality = isVirtual ? "virtual " : string.Empty;

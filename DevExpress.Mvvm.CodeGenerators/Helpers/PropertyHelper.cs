@@ -79,10 +79,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
             CommandHelper.GetMethods(classSymbol,
                                      methodSymbol => methodSymbol.ReturnsVoid && methodSymbol.Name == methodName && methodSymbol.Parameters.Length < 2 &&
                                                     (methodSymbol.Parameters.Length == 0 || IsСompatibleType(methodSymbol.Parameters.First().Type, fieldType)));
-        public static bool IsGeneratePropertyAttribute(string attributeName) {
-            return attributeName.StartsWith(AttributesGenerator.DxPropertyAttributeFullName!) ||
+        public static bool CanAppendAttribute(string attributeName) {
+            return !(attributeName.StartsWith(AttributesGenerator.DxPropertyAttributeFullName!) ||
                    attributeName.StartsWith(AttributesGenerator.PrismPropertyAttributeFullName!) ||
-                   attributeName.StartsWith(AttributesGenerator.MvvmLightPropertyAttributeFullName!);
+                   attributeName.StartsWith(AttributesGenerator.MvvmLightPropertyAttributeFullName!));
         }
     }
 }
