@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.ComponentModel;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
@@ -68,6 +67,12 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(parameterType == null)
                 return parameters.Count() == 0;
             return parameters.Count() == 1 && PropertyHelper.IsСompatibleType(parameters.First().Type, parameterType);
+        }
+        public static bool CanGenerateAttribute(AttributeData attribute) {
+            ImmutableArray<AttributeData> innerAttributeList = attribute.AttributeClass!.GetAttributes();
+            return innerAttributeList.Length == 0 ||
+                   (((IEnumerable<AttributeData>)attribute.AttributeClass!.GetAttributes())
+                   .FirstOrDefault(attr => attr.ToString().StartsWith("System.AttributeUsageAttribute"))?.ToString().Contains("System.AttributeTargets.Property") ?? false);
         }
     }
 }

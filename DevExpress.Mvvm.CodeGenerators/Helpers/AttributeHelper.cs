@@ -1,5 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
@@ -29,6 +29,16 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(attributeSymbol == null) //avoid excessive operations
                 return null;
             return sourceSymbol.GetAttributes().FirstOrDefault(ad => SymbolEqualityComparer.Default.Equals(ad.AttributeClass, attributeSymbol));
+        }
+        public static void AppendAttributesList(SourceBuilder source, ISymbol symbol) {
+            ImmutableArray<AttributeData> attributeList = symbol.GetAttributes();
+            if(attributeList.Length == 1)
+                return;
+            foreach(AttributeData attribute in attributeList) {
+                string attributeName = attribute.ToString();
+                if(symbol is IFieldSymbol ? !PropertyHelper.IsGeneratePropertyAttribute(attributeName) : CommandHelper.CanGenerateAttribute(attribute))
+                    source.Append('[').Append(attributeName).AppendLine("]");
+            }
         }
     }
 }

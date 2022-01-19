@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
@@ -24,16 +23,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static string GetSetterAccessModifierValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) {
             int enumIndex = AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofSetterAccessModifier, 0);
             return AccessModifierGenerator.GetCodeRepresentation((AccessModifier)enumIndex);
-        }
-        public static void AppendAttributesList(SourceBuilder source, IFieldSymbol fieldSymbol) {
-            ImmutableArray<AttributeData> attributeList = fieldSymbol.GetAttributes();
-            if(attributeList.Length == 1)
-                return;
-            foreach(AttributeData attribute in attributeList) {
-                string attributeName = attribute.ToString();
-                if(!(attributeName.StartsWith(AttributesGenerator.DxPropertyAttributeFullName!) || attributeName.StartsWith(AttributesGenerator.PrismPropertyAttributeFullName!) || attributeName.StartsWith(AttributesGenerator.MvvmLightPropertyAttributeFullName!)))
-                    source.Append('[').Append(attributeName).AppendLine("]");
-            }
         }
         public static NullableAnnotation GetNullableAnnotation(ITypeSymbol type) =>
             type.IsReferenceType && type.NullableAnnotation == NullableAnnotation.None
@@ -90,5 +79,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
             CommandHelper.GetMethods(classSymbol,
                                      methodSymbol => methodSymbol.ReturnsVoid && methodSymbol.Name == methodName && methodSymbol.Parameters.Length < 2 &&
                                                     (methodSymbol.Parameters.Length == 0 || IsСompatibleType(methodSymbol.Parameters.First().Type, fieldType)));
+        public static bool IsGeneratePropertyAttribute(string attributeName) {
+            return attributeName.StartsWith(AttributesGenerator.DxPropertyAttributeFullName!) ||
+                   attributeName.StartsWith(AttributesGenerator.PrismPropertyAttributeFullName!) ||
+                   attributeName.StartsWith(AttributesGenerator.MvvmLightPropertyAttributeFullName!);
+        }
     }
 }
