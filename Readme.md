@@ -114,6 +114,10 @@ Prepare your project as outlined below to enable support for View Models generat
 
 ## Release Notes
 
+### 21.2.2 
+- Our View Model Code Generator now supports the [MVVM Light Toolkit](https://github.com/lbugnion/mvvmlight). 
+- We implemented the following suggestion: [Proposal: additional attributes for generated commands](https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/issues/14).
+
 ### 21.2.1
 
 Our View Model Code Generator now supports the [Prism Library](https://prismlibrary.com).  
