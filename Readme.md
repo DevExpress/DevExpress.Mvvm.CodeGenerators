@@ -131,6 +131,10 @@ We recommend that you configure the [packages.config](https://docs.microsoft.com
 
 ## Release Notes
 
+### 21.2.2 
+- Our View Model Code Generator now supports the [MVVM Light Toolkit](https://github.com/lbugnion/mvvmlight). 
+- We implemented the following suggestion: [Proposal: additional attributes for generated commands](https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/issues/14).
+
 ### 21.2.1
 
 Our View Model Code Generator now supports the [Prism Library](https://prismlibrary.com).  
