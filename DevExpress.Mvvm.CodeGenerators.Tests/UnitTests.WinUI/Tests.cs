@@ -228,8 +228,8 @@ namespace Test {
         IUIServiceContainer ServiceContainer => serviceContainer ??= new UIServiceContainer();
         IUIServiceContainer ISupportUIServices.ServiceContainer => ServiceContainer;
 
-        protected object? GetUIService(Type type, string key = null) => ServiceContainer.GetService(type, key);
-        protected T? GetUIService<T>(string key = null) where T : class => ServiceContainer.GetService<T>(key);
+        protected object? GetUIService(Type type, string? key = null) => ServiceContainer.GetService(type, key);
+        protected T? GetUIService<T>(string? key = null) where T : class => ServiceContainer.GetService<T>(key);
 
         protected void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
 

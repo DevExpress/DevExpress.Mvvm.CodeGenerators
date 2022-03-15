@@ -60,9 +60,9 @@ public object? ParentViewModel {
                       .AppendLine(@"IUIServiceContainer ISupportUIServices.ServiceContainer => ServiceContainer;");
                 source.AppendLine();
                 source.AppendIf(!isSealed, protectedModifier)
-                      .AppendLine("object? GetUIService(Type type, string key = null) => ServiceContainer.GetService(type, key);");
+                      .AppendLine("object? GetUIService(Type type, string? key = null) => ServiceContainer.GetService(type, key);");
                 source.AppendIf(!isSealed, protectedModifier)
-                      .AppendLine("T? GetUIService<T>(string key = null) where T : class => ServiceContainer.GetService<T>(key);");
+                      .AppendLine("T? GetUIService<T>(string? key = null) where T : class => ServiceContainer.GetService<T>(key);");
                 return;
             }
             source.AppendLine("IServiceContainer? serviceContainer;")
