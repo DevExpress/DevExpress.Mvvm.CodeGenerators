@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
@@ -29,6 +30,19 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
 
         [GenerateCommand]
         public Task<int> GenericTask() => task;
+
+#if WINUI
+        [GenerateCommand]
+        public Task CancellationTokenWithNoArg(CancellationToken token) => Task.CompletedTask;
+        //[GenerateCommand]
+        //public Task CancellationTokenWithArg(CancellationToken token, int arg) => Task.CompletedTask;
+        //[GenerateCommand]
+        //public Task CancellationTokenWithNullableArg(CancellationToken token, int? arg) => Task.CompletedTask;
+        //public Task CancellationTokenSomeMethod(CancellationToken token) => Task.CompletedTask;
+
+        //[GenerateCommand(Name = "CancellationTokenMyAsyncCommand", CanExecuteMethod = "CanDoIt")]
+        //public Task CancellationTokenMethod(CancellationToken token, int arg) => Task.CompletedTask;
+#endif
     }
 
     [TestFixture]
@@ -50,37 +64,41 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public void CallRequiredMethodForAsyncCommand() {
             var generated = new GenerateAsyncCommands();
 
+#if !WINUI
             var method = GetFieldValue<Func<int, Task>, AsyncCommand<int>>(generated.MyAsyncCommand, "executeMethod");
+            var canMethod = GetFieldValue<Func<int, bool>, AsyncCommand<int>>(generated.MyAsyncCommand, "canExecuteMethod");
+            var canMethod2 = GetFieldValue<Func<int, bool>, AsyncCommand>(generated.GenericTaskCommand, "canExecuteMethod");
+
             var expectedMethod = generated.GetType().GetMethod("Method");
             Assert.AreEqual(expectedMethod, method.Method);
-
-            var canMethod = GetFieldValue<Func<int, bool>, AsyncCommand<int>>(generated.MyAsyncCommand, "canExecuteMethod");
             var expectedCanMethod = generated.GetType().GetMethod("CanDoIt");
             Assert.AreEqual(expectedCanMethod, canMethod.Method);
+            Assert.IsNull(canMethod2);
+#endif
 
-#if !WINUI
             var allowMultipleExecution = generated.MyAsyncCommand.AllowMultipleExecution;
             var expectedAllowMultipleExecution = false;
             Assert.AreEqual(expectedAllowMultipleExecution, allowMultipleExecution);
 
+            allowMultipleExecution = generated.AllowMultipleExecutionCommand.AllowMultipleExecution;
+            Assert.AreEqual(true, allowMultipleExecution);
+
+#if !WINUI
             var useCommandManager = GetFieldValue<bool, AsyncCommand<int>>(generated.MyAsyncCommand, "useCommandManager");
             Assert.AreEqual(true, useCommandManager);
             useCommandManager = GetFieldValue<bool, AsyncCommand>(generated.AsyncCommandWithoutCommandManager, "useCommandManager");
             Assert.AreEqual(false, useCommandManager);
-
-            allowMultipleExecution = generated.AllowMultipleExecutionCommand.AllowMultipleExecution;
-            Assert.AreEqual(true, allowMultipleExecution);
-#endif
-
-            var canExecuteMethod = GetFieldValue<Func<int, bool>, AsyncCommand>(generated.GenericTaskCommand, "canExecuteMethod");
-            Assert.IsNull(canExecuteMethod);
+#endif      
         }
+#if !WINUI
         static TResult GetFieldValue<TResult, T>(T source, string fieldName) {
-            var fieldInfo = source.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+            var fieldInfo = source.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
+                ?? source.GetType().BaseType?.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
             Assert.IsNotNull(fieldInfo);
 
             return (TResult)fieldInfo.GetValue(source);
         }
+#endif
 
         [Test]
         public void ArgumentTypeForAsyncCommand() {

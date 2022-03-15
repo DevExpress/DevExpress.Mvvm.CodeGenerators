@@ -6,6 +6,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
     static class ClassHelper {
         static readonly string nameofImplementIDEI = AttributesGenerator.ImplementIDEI;
         static readonly string nameofImplementISS = AttributesGenerator.ImplementISS;
+        static readonly string nameofImplementISSWinUI = AttributesGenerator.ImplementISSWinUI;
         static readonly string nameofImplementISPVM = AttributesGenerator.ImplementISPVM;
         static readonly string nameofImplementIAA = AttributesGenerator.ImplementIAA;
         static readonly string nameofImplementICU = AttributesGenerator.ImplementICU;
@@ -15,7 +16,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static bool GetImplementISPVMValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) =>
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol, nameofImplementISPVM, false);
         public static bool GetImplementISSValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
-            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Dx!.ViewModelAttributeSymbol, nameofImplementISS, false);
+            AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Dx!.ViewModelAttributeSymbol, contextInfo.IsWinUI ? nameofImplementISSWinUI : nameofImplementISS, false);
         public static bool GetImplementIAAValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
             AttributeHelper.GetPropertyActualValue(classSymbol, contextInfo.Prism!.ViewModelAttributeSymbol, nameofImplementIAA, false);
         public static bool GetImplementICUValue(ContextInfo contextInfo, INamedTypeSymbol classSymbol) =>
@@ -26,7 +27,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
             GetProcessingMembers<IMethodSymbol>(classSymbol, commandSymbol);
         public static bool IsInterfaceImplementedInCurrentClass(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol) =>
             classSymbol.Interfaces.Contains(interfaceSymbol);
-        public static bool IsInterfaceImplemented(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol, ContextInfo contextInfo, SupportedMvvm mvvm) {
+        public static bool IsInterfaceImplemented(INamedTypeSymbol classSymbol, INamedTypeSymbol? interfaceSymbol, ContextInfo contextInfo, SupportedMvvm mvvm) {
+            if(interfaceSymbol == null)
+                return false;
             if(IsInterfaceImplementedInCurrentClass(classSymbol, interfaceSymbol))
                 return true;
             for(INamedTypeSymbol parent = classSymbol.BaseType!; parent != null; parent = parent.BaseType!) {

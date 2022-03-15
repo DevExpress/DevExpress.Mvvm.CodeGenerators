@@ -46,9 +46,25 @@ public object? ParentViewModel {
     class ISupportServicesGenerator : IInterfaceGenerator {
         const string protectedModifier = "protected ";
         readonly bool isSealed;
-        public ISupportServicesGenerator(bool isSealed) => this.isSealed = isSealed;
-        public string GetName() => "ISupportServices";
+        readonly bool isWinUI;
+        public ISupportServicesGenerator(bool isSealed, bool isWinUI) {
+            this.isSealed = isSealed;
+            this.isWinUI = isWinUI;
+        }
+        public string GetName() => isWinUI ? "ISupportUIServices" : "ISupportServices";
         public void AppendImplementation(SourceBuilder source) {
+            if(isWinUI) {
+                source.AppendLine();
+                source.AppendLine("IUIServiceContainer? serviceContainer;")
+                      .AppendLine(@"IUIServiceContainer ServiceContainer => serviceContainer ??= new UIServiceContainer();")
+                      .AppendLine(@"IUIServiceContainer ISupportUIServices.ServiceContainer => ServiceContainer;");
+                source.AppendLine();
+                source.AppendIf(!isSealed, protectedModifier)
+                      .AppendLine("object? GetUIService(Type type, string key = null) => ServiceContainer.GetService(type, key);");
+                source.AppendIf(!isSealed, protectedModifier)
+                      .AppendLine("T? GetUIService<T>(string key = null) where T : class => ServiceContainer.GetService<T>(key);");
+                return;
+            }
             source.AppendLine("IServiceContainer? serviceContainer;")
                   .AppendIf(!isSealed, protectedModifier)
                   .AppendMultipleLines(@"IServiceContainer ServiceContainer { get => serviceContainer ??= new ServiceContainer(this); }

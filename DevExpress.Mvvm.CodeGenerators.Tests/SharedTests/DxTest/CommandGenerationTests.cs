@@ -66,6 +66,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.IsNull(generated.GetType().GetProperty("SomeMethodCommand"));
         }
 
+#if !WINUI
         [Test]
         public void CallRequiredMethodForCommand() {
             var generated = new GenerateCommands();
@@ -82,7 +83,6 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             var expectedCanMethod = generated.GetType().GetMethod("CanDoIt");
             Assert.AreEqual(expectedCanMethod, canMethod.Method);
 
-#if !WINUI
             var useCommandManager = GetFieldValue<bool, DelegateCommand<int>>(generated.Command, "useCommandManager");
             Assert.AreEqual(true, useCommandManager);
 
@@ -91,8 +91,9 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
 
             var canExecuteMethod = GetFieldValue<Func<int, bool>, DelegateCommand>(generated.CommandWithoutCommandManager, "canExecuteMethod");
             Assert.IsNull(canExecuteMethod);
-#endif
+
         }
+#endif
         static TResult GetFieldValue<TResult, T>(T source, string fieldName) {
             var fieldInfo = source.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
             Assert.IsNotNull(fieldInfo);

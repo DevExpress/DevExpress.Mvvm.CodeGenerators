@@ -10,6 +10,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public const string ImplementINPCing = "ImplementINotifyPropertyChanging";
         public const string ImplementISPVM = "ImplementISupportParentViewModel";
         public const string ImplementISS = "ImplementISupportServices";
+        public const string ImplementISSWinUI = "ImplementISupportUIServices";
         public const string ImplementIAA = "ImplementIActiveAware";
         public const string ImplementICU = "ImplementICleanup";
 
@@ -164,18 +165,12 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public bool ImplementINotifyPropertyChanging { get; set; }
         /// <summary>
         ///     Implements
-        ///     <see href=""https://docs.devexpress.com/CoreLibraries/DevExpress.Mvvm.ISupportParentViewModel"">ISupportParentViewModel</see>
-        ///     that allows you to establish a parent-child relationship between View Models.
-        /// </summary>
-        public bool ImplementISupportParentViewModel { get; set; }
-        /// <summary>
-        ///     Implements
         ///     <see href=""https://docs.devexpress.com/CoreLibraries/DevExpress.Mvvm.ISupportServices"">ISupportServices</see>
         ///     that allows you to include the
         ///     <see href=""https://docs.devexpress.com/WPF/17444/mvvm-framework/services/getting-started"">Services</see>
         ///     mechanism to your View Model.
         /// </summary>
-        public bool ImplementISupportServices { get; set; }
+        public bool ImplementISupportUIServices { get; set; }
     }
 
     /// <summary>

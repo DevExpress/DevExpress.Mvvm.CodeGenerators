@@ -1,7 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
-
+using System;
+using System.Text.RegularExpressions;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
     [TestFixture]
@@ -142,7 +143,6 @@ namespace Test {
 ";
             string generatedCode = GenerateCode(source);
             Assert.AreEqual(expected, generatedCode);
-
         }
         [Test]
         public void PrivateInSealedClass() {
@@ -185,3 +185,4 @@ namespace Test {
         }
     }
 }
+

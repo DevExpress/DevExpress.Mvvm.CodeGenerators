@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
-    [GenerateViewModel(ImplementINotifyPropertyChanging = true,
 #if !WINUI
-    ImplementIDataErrorInfo = true, 
+    [GenerateViewModel(ImplementINotifyPropertyChanging = true, ImplementIDataErrorInfo = true, ImplementISupportServices = true)]
+#else 
+    [GenerateViewModel(ImplementINotifyPropertyChanging = true, ImplementISupportUIServices = true)]
 #endif
-    ImplementISupportServices = true)]
     public partial class NullableAnnotation {
 #nullable enable
         public NullableAnnotation() {

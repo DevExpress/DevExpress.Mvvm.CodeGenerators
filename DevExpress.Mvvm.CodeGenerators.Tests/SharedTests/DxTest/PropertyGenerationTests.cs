@@ -6,6 +6,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public int a = 0;
         public void OnParentViewModelChanged(object o) { a = 1; }
     }
+#if !WINUI
     [GenerateViewModel(ImplementISupportParentViewModel = true)]
     partial class WithInheritedParentViewModelMethod : ViewModelParent {
     }
@@ -14,6 +15,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         public int a = 0;
         void OnParentViewModelChanged(object o) { a = 1; }
     }
+#endif
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     partial class GenerateProperties {
         [GenerateProperty(IsVirtual = true)]
@@ -36,6 +38,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.IsNotNull(generated.GetType().GetProperty("Property"));
             Assert.IsNull(generated.GetType().GetProperty("NotProperty"));
         }
+#if !WINUI
         [Test]
         public void ISupportParentViewModelTest() {
             var generatedWithParent = new WithInheritedParentViewModelMethod();
@@ -48,6 +51,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             Assert.AreEqual(1, generated.a);
             Assert.Throws<System.InvalidOperationException>(() => generated.ParentViewModel = generated);
         }
+#endif
         [Test]
         public void DoNotGeneratePrismMembers() {
             var generated = new WithTwoMvvmAttribute();

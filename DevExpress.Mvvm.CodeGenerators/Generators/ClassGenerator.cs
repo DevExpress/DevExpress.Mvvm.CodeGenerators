@@ -10,6 +10,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
         const string defaultUsings =
 @"using System.Collections.Generic;
 using System.ComponentModel;";
+        const string defaultUsingsWinUI =
+@"using System;
+using System.Collections.Generic;
+using System.ComponentModel;";
 
         public static void GenerateSourceCode(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
             List<IInterfaceGenerator> interfaces = new();
@@ -33,7 +37,7 @@ using System.ComponentModel;";
 
             Dictionary<string, TypeKind> outerClasses = ClassHelper.GetOuterClasses(classSymbol);
 
-            source = GenerateHeader(source, classSymbol, interfaces,
+            source = GenerateHeader(contextInfo, source, classSymbol, interfaces,
                 impelementRaiseChangedMethod ? inpcedInfo.RaiseMethodImplementation : null,
                 impelementRaiseChangingMethod ? inpcingInfo.RaiseMethodImplementation : null,
                 genericTypes, outerClasses, mvvm, contextInfo.Compilation);
@@ -49,8 +53,8 @@ using System.ComponentModel;";
 
             while(source.Return != null)
                 source = source.Return.AppendLine("}");
-            static SourceBuilder GenerateHeader(SourceBuilder source, INamedTypeSymbol classSymbol, List<IInterfaceGenerator> interfaces, string? raiseChangedMethod, string? raiseChangingMethod, List<ITypeSymbol> genericTypes, Dictionary<string, TypeKind> outerClasses, SupportedMvvm actualMvvm, Compilation compilation) {
-                source.AppendLine(defaultUsings);
+            static SourceBuilder GenerateHeader(ContextInfo contextInfo, SourceBuilder source, INamedTypeSymbol classSymbol, List<IInterfaceGenerator> interfaces, string? raiseChangedMethod, string? raiseChangingMethod, List<ITypeSymbol> genericTypes, Dictionary<string, TypeKind> outerClasses, SupportedMvvm actualMvvm, Compilation compilation) {
+                source.AppendLine(contextInfo.IsWinUI ? defaultUsingsWinUI : defaultUsings);
                 switch(actualMvvm) {
                     case SupportedMvvm.Dx:
                         source.AppendLine("using DevExpress.Mvvm;");
@@ -167,7 +171,7 @@ using System.ComponentModel;";
                     if(ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol, mvvm) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Dx!.ISPVMSymbol, contextInfo, mvvm))
                         interfaces.Add(new ISupportParentViewModelGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnParentViewModelChanged", 1, "object")));
                     if(ClassHelper.GetImplementISSValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.ISSSymbol))
-                        interfaces.Add(new ISupportServicesGenerator(classSymbol.IsSealed));
+                        interfaces.Add(new ISupportServicesGenerator(classSymbol.IsSealed, contextInfo.IsWinUI));
                     break;
                 case SupportedMvvm.Prism:
                     if(ClassHelper.GetImplementIAAValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Prism!.IAASymbol, contextInfo, mvvm))

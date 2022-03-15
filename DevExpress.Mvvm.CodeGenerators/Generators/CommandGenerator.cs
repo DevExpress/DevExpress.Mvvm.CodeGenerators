@@ -12,12 +12,31 @@ namespace DevExpress.Mvvm.CodeGenerators {
             bool isAsyncCommand = SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType)
                 || SymbolEqualityComparer.Default.Equals(info.TaskSymbol, methodSymbol.ReturnType?.BaseType);
 
-            if(methodSymbol.Parameters.Length > 1 || !(isCommand || isAsyncCommand)) {
-                info.Context.ReportIncorrectCommandSignature(methodSymbol);
-                return;
-            }
-
             ITypeSymbol? parameterType = methodSymbol.Parameters.FirstOrDefault()?.Type;
+            if(info.IsWinUI && isAsyncCommand) {
+                switch(methodSymbol.Parameters.Length) {
+                    case 0: break;
+                    case 1:
+                        if(SymbolEqualityComparer.Default.Equals(parameterType, info.Dx?.CancellationTokenSymbol))
+                            parameterType = null;
+                        break;
+                    case 2:
+                        var secondParameterType = methodSymbol.Parameters[1].Type;
+                        if(!SymbolEqualityComparer.Default.Equals(secondParameterType, info.Dx?.CancellationTokenSymbol)) {
+                            info.Context.ReportIncorrectCommandSignature(methodSymbol);
+                            return;
+                        }
+                        break;
+                    default: 
+                        info.Context.ReportIncorrectCommandSignature(methodSymbol);
+                        break;
+                }
+            } else {
+                if(methodSymbol.Parameters.Length > 1 || !(isCommand || isAsyncCommand)) {
+                    info.Context.ReportIncorrectCommandSignature(methodSymbol);
+                    return;
+                }
+            }
 
             if(mvvm == SupportedMvvm.Prism) {
                 if((parameterType?.IsValueType == true) && (parameterType.NullableAnnotation != NullableAnnotation.Annotated)) {

@@ -24,13 +24,20 @@ namespace DevExpress.Mvvm.CodeGenerators {
     }
     class DXFrameworkAttributes : FrameworkAttributes {
         public INamedTypeSymbol IDEISymbol { get; }
-        public INamedTypeSymbol ISPVMSymbol { get; }
+        public INamedTypeSymbol? ISPVMSymbol { get; }
         public INamedTypeSymbol ISSSymbol { get; }
-        public DXFrameworkAttributes(Compilation compilation) 
+        public INamedTypeSymbol? CancellationTokenSymbol { get; }
+        public DXFrameworkAttributes(Compilation compilation, bool isWinUI) 
             : base(compilation, SupportedMvvm.Dx) {
             IDEISymbol = compilation.GetTypeByMetadataName(typeof(IDataErrorInfo).FullName)!;
-            ISSSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices")!;
-            ISPVMSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel")!;
+            if(isWinUI) {
+                ISSSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportUIServices")!;
+                ISPVMSymbol = null;
+                CancellationTokenSymbol = compilation.GetTypeByMetadataName("System.Threading.CancellationToken");
+            } else {
+                ISSSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportServices")!;
+                ISPVMSymbol = compilation.GetTypeByMetadataName("DevExpress.Mvvm.ISupportParentViewModel")!;
+            }
         }
     }
     class PrismFrameworkAttributes : FrameworkAttributes {
@@ -69,9 +76,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
             Compilation = compilation;
 
             AvailableMvvm = GetAvailableMvvm(compilation);
+            IsWinUI = GetIsWinUI(compilation);
 
             if(AvailableMvvm.Contains(SupportedMvvm.Dx) || AvailableMvvm.Contains(SupportedMvvm.None))
-                Dx = new DXFrameworkAttributes(Compilation);
+                Dx = new DXFrameworkAttributes(Compilation, IsWinUI);
             if(AvailableMvvm.Contains(SupportedMvvm.Prism))
                 Prism = new PrismFrameworkAttributes(Compilation);
             if(AvailableMvvm.Contains(SupportedMvvm.MvvmLight))
@@ -83,8 +91,6 @@ namespace DevExpress.Mvvm.CodeGenerators {
             TaskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task")!;
             BoolSymbol = compilation.GetTypeByMetadataName("System.Boolean")!;
             AttributeUsageSymbol = compilation.GetTypeByMetadataName("System.AttributeUsageAttribute")!;
-
-            IsWinUI = GetIsWinUI(compilation);
         }
 
         public FrameworkAttributes GetFrameworkAttributes(SupportedMvvm mvvm) => mvvm switch {

@@ -1,5 +1,9 @@
 ﻿using NUnit.Framework;
 using System.ComponentModel;
+#if WINUI
+using ISupportServices = DevExpress.Mvvm.ISupportUIServices;
+using IServiceContainer = DevExpress.Mvvm.IUIServiceContainer;
+#endif
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
     partial class SimpleClass { }
@@ -18,16 +22,23 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
     partial class ImplementIDEI { }
 #endif
 
+#if !WINUI
     [GenerateViewModel(ImplementISupportServices = false)]
     partial class NotImplementISS { }
     [GenerateViewModel(ImplementISupportServices = true)]
     partial class ImplementISS { }
-
-    [GenerateViewModel(ImplementINotifyPropertyChanging = true,
-#if !WINUI
-    ImplementIDataErrorInfo = true, 
+#else
+    [GenerateViewModel(ImplementISupportUIServices = false)]
+    partial class NotImplementISS { }
+    [GenerateViewModel(ImplementISupportUIServices = true)]
+    partial class ImplementISS { }
 #endif
-    ImplementISupportServices = true)]
+
+#if !WINUI
+    [GenerateViewModel(ImplementINotifyPropertyChanging = true, ImplementIDataErrorInfo = true, ImplementISupportServices = true)]
+#else
+    [GenerateViewModel(ImplementINotifyPropertyChanging = true, ImplementISupportUIServices = true)]
+#endif
     partial class FullImplemented : INotifyPropertyChanged, INotifyPropertyChanging, IDataErrorInfo, ISupportServices {
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
