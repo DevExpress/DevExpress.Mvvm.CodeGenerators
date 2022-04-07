@@ -70,7 +70,7 @@
   <PropertyGroup>
     <Title>DevExpress.Mvvm.CodeGenerators</Title>
     <Product>DevExpress.Mvvm.CodeGenerators</Product>
-    <Version>21.2.4</Version>
+    <Version>22.1.0</Version>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Company>Developer Express Inc.</Company>
   </PropertyGroup>
@@ -87,7 +87,7 @@
     <PackageReleaseNotes>https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators#release-notes</PackageReleaseNotes>
     <PackageTags>devexpress dxmvvm dx mvvm wpf xaml sourcegenerator generator</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <Copyright>Copyright © 2000-2021 Developer Express Inc.</Copyright>
+    <Copyright>Copyright © 2000-2022 Developer Express Inc.</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIconUrl>https://secure.gravatar.com/avatar/6b38f1e9ffd8b069bcdc2741934fdbcf?s=512&amp;r=g&amp;d=retro</PackageIconUrl>
   </PropertyGroup>
