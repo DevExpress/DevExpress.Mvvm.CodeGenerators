@@ -164,11 +164,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         /// </summary>
         public bool ImplementINotifyPropertyChanging { get; set; }
         /// <summary>
-        ///     Implements
-        ///     <see href=""https://docs.devexpress.com/CoreLibraries/DevExpress.Mvvm.ISupportServices"">ISupportServices</see>
-        ///     that allows you to include the
-        ///     <see href=""https://docs.devexpress.com/WPF/17444/mvvm-framework/services/getting-started"">Services</see>
-        ///     mechanism to your View Model.
+        ///     Implements <b>ISupportUIServices</b> that allows you to include the UI Services mechanism to your View Model.
         /// </summary>
         public bool ImplementISupportUIServices { get; set; }
     }
