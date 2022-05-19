@@ -316,7 +316,7 @@ namespace Test {
         protected IServiceContainer ServiceContainer { get => serviceContainer ??= new ServiceContainer(this); }
         IServiceContainer ISupportServices.ServiceContainer { get => ServiceContainer; }
         protected T? GetService<T>() where T : class => ServiceContainer.GetService<T>();
-        protected T? GetRequiredService<T>() where T : class => ServiceContainer.GetRequiredService<T>();
+        protected T GetRequiredService<T>() where T : class => ServiceContainer.GetRequiredService<T>();
 
         protected void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
         protected void RaisePropertyChanging(PropertyChangingEventArgs e) => PropertyChanging?.Invoke(this, e);

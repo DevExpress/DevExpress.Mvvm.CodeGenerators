@@ -72,7 +72,7 @@ IServiceContainer ISupportServices.ServiceContainer { get => ServiceContainer; }
             source.AppendIf(!isSealed, protectedModifier)
                   .AppendLine("T? GetService<T>() where T : class => ServiceContainer.GetService<T>();")
                   .AppendIf(!isSealed, protectedModifier)
-                  .AppendLine("T? GetRequiredService<T>() where T : class => ServiceContainer.GetRequiredService<T>();");
+                  .AppendLine("T GetRequiredService<T>() where T : class => ServiceContainer.GetRequiredService<T>();");
         }
     }
     class IActiveAwareGenerator : IInterfaceGenerator {
