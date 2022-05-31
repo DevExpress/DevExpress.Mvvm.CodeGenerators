@@ -15,7 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="DevExpress.WinUI.Mvvm.v22.1">
-      <HintPath>..\..\..\2022.1\Bin\WinUI\Sdk\Mvvm\DevExpress.WinUI.Mvvm.v22.1.dll</HintPath>
+      <HintPath>..\..\..\..\2022.1\Bin\WinUI\Sdk\Mvvm\DevExpress.WinUI.Mvvm.v22.1.dll</HintPath>
     </Reference>
   </ItemGroup>
 

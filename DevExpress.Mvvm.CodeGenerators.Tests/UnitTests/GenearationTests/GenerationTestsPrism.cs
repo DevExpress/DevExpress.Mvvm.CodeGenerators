@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System;
 using Prism.Commands;
 using DevExpress.Mvvm.CodeGenerators;
+using DevExpress.Mvvm.CodeGenerators.Tests;
 
 namespace Prism.Mvvm.Tests {
     [TestFixture]
@@ -51,7 +52,7 @@ namespace Prism.Mvvm.Tests {
         }
 
         [Test]
-        public void PrismUsing_Command() {
+        public void Using_Command() {
             var source = @"
         using DevExpress.Mvvm.CodeGenerators.Prism; 
         namespace Test {
@@ -139,26 +140,7 @@ using Prism.Commands;
         }
 
         static string GenerateCode(string source) {
-            var references = new[] {
-                MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.RangeAttribute).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(System.Windows.Input.ICommand).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(DelegateCommand).Assembly.Location),
-            };
-            Compilation inputCompilation = CSharpCompilation.Create("MyCompilation",
-                                                                    new[] { CSharpSyntaxTree.ParseText(source) },
-                                                                    references,
-                                                                    new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-            ViewModelGenerator generator = new ViewModelGenerator();
-
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            driver = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
-
-            GeneratorDriverRunResult runResult = driver.GetRunResult();
-            GeneratorRunResult generatorResult = runResult.Results[0];
-
-            var generatedCode = generatorResult.GeneratedSources[1].SourceText.ToString();
-            return generatedCode;
+            return GeneratorHelper.GenerateCode(source, typeof(DelegateCommand));
         }
         [Test]
         public void FormattingTest() {

@@ -2,6 +2,8 @@
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
@@ -163,25 +165,7 @@ namespace Test {
         }
 
         static string GenerateCode(string source) {
-            var references = new[] {
-                MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.RangeAttribute).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(System.Windows.Input.ICommand).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-            };
-            Compilation inputCompilation = CSharpCompilation.Create("MyCompilation",
-                                                                    new[] { CSharpSyntaxTree.ParseText(source) },
-                                                                    references,
-                                                                    new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-            ViewModelGenerator generator = new ViewModelGenerator();
-
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            driver = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
-
-            GeneratorDriverRunResult runResult = driver.GetRunResult();
-            GeneratorRunResult generatorResult = runResult.Results[0];
-
-            var generatedCode = generatorResult.GeneratedSources[1].SourceText.ToString();
-            return generatedCode;
+            return GeneratorHelper.GenerateCode(source, null);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 SupportedMvvm.None or SupportedMvvm.Dx => InitializationGenerator.DxNamespace,
                 SupportedMvvm.Prism => InitializationGenerator.PrismNamespace,
                 SupportedMvvm.MvvmLight => InitializationGenerator.MvvmLightNamespace,
+                SupportedMvvm.MvvmToolkit => InitializationGenerator.MvvmToolkitNamespace,
                 _ => throw new InvalidOperationException()
             };
             ViewModelAttributeSymbol = compilation.GetTypeByMetadataName($"{attributeNamespace}.GenerateViewModelAttribute")!;
@@ -47,11 +48,16 @@ namespace DevExpress.Mvvm.CodeGenerators {
             IAASymbol = compilation.GetTypeByMetadataName("Prism.IActiveAware")!;
         }
     }
-    class MvmLightFrameWorkAttributes : FrameworkAttributes {
+    class MvvmLightFrameWorkAttributes : FrameworkAttributes {
         public INamedTypeSymbol ICUSymbol { get; }
-        public MvmLightFrameWorkAttributes(Compilation compilation)
+        public MvvmLightFrameWorkAttributes(Compilation compilation)
             : base(compilation, SupportedMvvm.MvvmLight) {
             ICUSymbol = compilation.GetTypeByMetadataName("GalaSoft.MvvmLight.ICleanup")!;
+        }
+    }
+    class MvvmToolkitFrameWorkAttributes : FrameworkAttributes {
+        public MvvmToolkitFrameWorkAttributes(Compilation compilation)
+            : base(compilation, SupportedMvvm.MvvmToolkit) {
         }
     }
     class ContextInfo {
@@ -60,7 +66,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         public DXFrameworkAttributes? Dx { get; }
         public PrismFrameworkAttributes? Prism { get; }
-        public MvmLightFrameWorkAttributes? MvvmLight { get; }
+        public MvvmLightFrameWorkAttributes? MvvmLight { get; }
+        public MvvmToolkitFrameWorkAttributes? MvvmToolkit { get; }
 
         public INamedTypeSymbol INPCedSymbol { get; }
         public INamedTypeSymbol INPCingSymbol { get; }
@@ -83,7 +90,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(AvailableMvvm.Contains(SupportedMvvm.Prism))
                 Prism = new PrismFrameworkAttributes(Compilation);
             if(AvailableMvvm.Contains(SupportedMvvm.MvvmLight))
-                MvvmLight = new MvmLightFrameWorkAttributes(Compilation);
+                MvvmLight = new MvvmLightFrameWorkAttributes(Compilation);
+            if(AvailableMvvm.Contains(SupportedMvvm.MvvmToolkit))
+                MvvmToolkit = new MvvmToolkitFrameWorkAttributes(Compilation);
 
             INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName)!;
             INPCingSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName)!;
@@ -97,31 +106,35 @@ namespace DevExpress.Mvvm.CodeGenerators {
             SupportedMvvm.None or SupportedMvvm.Dx => Dx!,
             SupportedMvvm.Prism => Prism!,
             SupportedMvvm.MvvmLight => MvvmLight!,
+            SupportedMvvm.MvvmToolkit => MvvmToolkit!,
             _ => throw new InvalidOperationException()
         };
 
         public static bool GetIsWinUI(Compilation compilation) => GetIsDxMvvmAvailable(compilation) && compilation.GetTypeByMetadataName("DevExpress.Mvvm.POCO.ViewModelSource") == null;
-        static bool GetIsDxMvvmAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("DevExpress.Mvvm.DelegateCommand") != null;
-        static bool GetIsPrismAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("Prism.Commands.DelegateCommand") != null;
-        static bool GetIsMvvmLightAvailable(Compilation compilation) => compilation.GetTypeByMetadataName("GalaSoft.MvvmLight.Command.RelayCommand") != null;
-        public static bool GetIsMvvmLightCommandWpfAvalible(Compilation compilation) => compilation.GetTypeByMetadataName("GalaSoft.MvvmLight.CommandWpf.RelayCommand") != null;
+        static bool GetIsDxMvvmAvailable(Compilation compilation) => IsTypeAvailable(compilation, "DevExpress.Mvvm.DelegateCommand");
+        public static bool GetIsMvvmLightCommandAvalible(Compilation compilation) => IsTypeAvailable(compilation, "GalaSoft.MvvmLight.Command.RelayCommand");
+        public static bool GetIsMvvmLightCommandWpfAvalible(Compilation compilation) => IsTypeAvailable(compilation, "GalaSoft.MvvmLight.CommandWpf.RelayCommand");
+        static bool IsTypeAvailable(Compilation compilation, string type) => compilation.GetTypeByMetadataName(type) != null;
         public static List<SupportedMvvm> GetAvailableMvvm(Compilation compilation) {
             List<SupportedMvvm> available = new();
             if(GetIsDxMvvmAvailable(compilation))
                 available.Add(SupportedMvvm.Dx);
-            if(GetIsPrismAvailable(compilation))
+            if(IsTypeAvailable(compilation, "Prism.Commands.DelegateCommand"))
                 available.Add(SupportedMvvm.Prism);
-            if(GetIsMvvmLightAvailable(compilation))
+            if(GetIsMvvmLightCommandAvalible(compilation))
                 available.Add(SupportedMvvm.MvvmLight);
+            if(IsTypeAvailable(compilation, "Microsoft.Toolkit.Mvvm.Input.RelayCommand"))
+                available.Add(SupportedMvvm.MvvmToolkit);
             if(!available.Any())
                 available.Add(SupportedMvvm.None);
             return available;
         }
     }
     internal enum SupportedMvvm {
-        None = 0,
-        Dx = 1,
-        Prism = 2,
-        MvvmLight = 3,
+        None,
+        Dx,
+        Prism,
+        MvvmLight,
+        MvvmToolkit,
     }
 }

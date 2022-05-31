@@ -70,6 +70,9 @@ using System.ComponentModel;";
                             source.AppendLine("using GalaSoft.MvvmLight.Command;");
                         source.AppendLine("using GalaSoft.MvvmLight.Messaging;");
                         break;
+                    case SupportedMvvm.MvvmToolkit:
+                        source.AppendLine("using Microsoft.Toolkit.Mvvm;").AppendLine("using Microsoft.Toolkit.Mvvm.Input;");
+                        break;
                     case SupportedMvvm.None:
                         break;
                     default:
@@ -180,6 +183,8 @@ using System.ComponentModel;";
                 case SupportedMvvm.MvvmLight:
                     if(ClassHelper.GetImplementICUValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.MvvmLight!.ICUSymbol, contextInfo, mvvm))
                         interfaces.Add(new ICleanupGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnCleanup", 0, null), classSymbol.IsSealed));
+                    break;
+                case SupportedMvvm.MvvmToolkit:
                     break;
                 case SupportedMvvm.None:
                     break;

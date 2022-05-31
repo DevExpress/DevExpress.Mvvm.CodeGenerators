@@ -69,8 +69,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     string[] observesProperties = CommandHelper.GetObservesProperties(methodSymbol, commandAttribute);
                     AppendGetterPrism(source, info, methodSymbol, mvvm, isCommand, canExecuteMethodName, genericArgumentType, name, observesCanExecuteProperty, observesProperties);
                     break;
-                case SupportedMvvm.MvvmLight:
-                    AppendGetterMvvmLight(source, info, methodSymbol, mvvm, isCommand, canExecuteMethodName, genericArgumentType, name);
+                case SupportedMvvm.MvvmLight or SupportedMvvm.MvvmToolkit:
+                    AppendGetterRelayCommand(source, info, methodSymbol, mvvm, isCommand, canExecuteMethodName, genericArgumentType, name);
                     break;
                 default:
                     throw new InvalidEnumArgumentException();
@@ -109,7 +109,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             source.AppendDxParametersList(methodSymbol, commandAttribute, canExecuteMethodName, isCommand, methodSymbol.Name, info.IsWinUI);
             source.AppendLine(");");
         }
-        static void AppendGetterMvvmLight(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name) {
+        static void AppendGetterRelayCommand(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name) {
             source.AppendCommandNameWithGenericType(mvvm, isCommand, genericArgumentType, name).AppendMethodName(isCommand, methodSymbol.Name, genericArgumentType);
             source.Append(", ").Append(canExecuteMethodName).AppendLine(");");
         }

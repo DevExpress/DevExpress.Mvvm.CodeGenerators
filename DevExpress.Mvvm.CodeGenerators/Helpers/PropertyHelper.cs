@@ -82,7 +82,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static bool CanAppendAttribute(string attributeName) {
             return !(attributeName.StartsWith(AttributesGenerator.DxPropertyAttributeFullName!) ||
                    attributeName.StartsWith(AttributesGenerator.PrismPropertyAttributeFullName!) ||
-                   attributeName.StartsWith(AttributesGenerator.MvvmLightPropertyAttributeFullName!));
+                   attributeName.StartsWith(AttributesGenerator.MvvmLightPropertyAttributeFullName!) ||
+                   attributeName.StartsWith(AttributesGenerator.MvvmToolkitPropertyAttributeFullName!));
         }
     }
 }
