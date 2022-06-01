@@ -1,4 +1,4 @@
-﻿using GalaSoft.MvvmLight.Command;
+﻿using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
@@ -7,10 +7,10 @@ using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
     [TestFixture]
-    public class DiagnosticTestsMvvmLight {
+    public class DiagnosticTestsMvvmToolkit {
         [Test]
         public void NoPartialDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 
 namespace Test {
     [GenerateViewModel]
@@ -32,7 +32,7 @@ namespace Test {
 
         [Test]
         public void InvalidPropertyNameDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 
 namespace Test {
     [GenerateViewModel]
@@ -58,7 +58,7 @@ namespace Test {
 
         [Test]
         public void OnChangedMethodNotFoundDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 
 namespace Test {
     [GenerateViewModel]
@@ -91,7 +91,7 @@ namespace Test {
 
         [Test]
         public void IncorrectCommandSignatureDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 
 namespace Test {
     [GenerateViewModel]
@@ -123,7 +123,7 @@ namespace Test {
 
         [Test]
         public void CanExecuteMethodNotFoundDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 using System.Threading.Tasks;
 
 namespace Test {
@@ -169,7 +169,7 @@ namespace Test {
 
         [Test]
         public void RaiseMethodNotFoundDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 using System.ComponentModel;
 
 namespace Test {
@@ -202,7 +202,7 @@ namespace Test {
 
         [Test]
         public void TwoSuitableMethodsDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 using System.Threading.Tasks;
 
 namespace Test {
@@ -239,7 +239,7 @@ namespace Test {
         public void TwoGenerateViewModelAttributeDiagnostic(string generateViewModel) {
             var sourceCode = "namespace Test {\r\n"
                 + generateViewModel +
-    @"[DevExpress.Mvvm.CodeGenerators.MvvmLight.GenerateViewModel]
+    @"[DevExpress.Mvvm.CodeGenerators.MvvmToolkit.GenerateViewModel]
     partial class TwoGenerateViewModelAttributeClass { }
     }
 ";

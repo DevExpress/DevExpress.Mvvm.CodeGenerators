@@ -46,6 +46,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 if(hasDxAttribute) mvvmCount++;
                 if(hasPrismAttribute) mvvmCount++;
                 if(hasMvvmLightAttribute) mvvmCount++;
+                if(hasMvvmToolkitAttribute) mvvmCount++;
 
                 if(mvvmCount > 1) {
                     context.ReportMoreThanOneGenerateViewModelAttributes(classSymbol);

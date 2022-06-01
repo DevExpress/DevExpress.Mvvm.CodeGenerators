@@ -292,14 +292,6 @@ namespace Test {
             Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
         }
         public static Compilation CreateCompilation(string source) =>
-            CSharpCompilation.Create("MyCompilation",
-                                     new[] { CSharpSyntaxTree.ParseText(source) },
-                                     new[] {
-                                         MetadataReference.CreateFromFile(typeof(System.Windows.Input.ICommand).Assembly.Location),
-                                         MetadataReference.CreateFromFile(typeof(Prism.Commands.DelegateCommand).Assembly.Location),
-                                         MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                                         MetadataReference.CreateFromFile(typeof(INotifyPropertyChanged).Assembly.Location),
-                                     },
-                                     new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            GeneratorHelper.CreateCompilation(source, new[] { typeof(INotifyPropertyChanged), typeof(Prism.Commands.DelegateCommand) });
     }
 }
