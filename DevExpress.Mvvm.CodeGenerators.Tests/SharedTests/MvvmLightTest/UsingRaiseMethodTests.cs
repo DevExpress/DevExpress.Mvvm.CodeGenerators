@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel;
 using DevExpress.Mvvm.CodeGenerators.MvvmLight;
 using GalaSoft.MvvmLight;
+using DevExpress.Mvvm.CodeGenerators.Tests;
 
 namespace MvvmLight.Mvvm.Tests {
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]

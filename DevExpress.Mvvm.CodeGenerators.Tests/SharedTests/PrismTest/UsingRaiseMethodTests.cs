@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using DevExpress.Mvvm.CodeGenerators.Prism;
+using DevExpress.Mvvm.CodeGenerators.Tests;
 
 namespace Prism.Mvvm.Tests {
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
