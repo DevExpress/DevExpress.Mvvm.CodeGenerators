@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MvvmLightTest\NullableAnnotationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MvvmLightTest\PropertyGenerationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MvvmLightTest\UsingRaiseMethodTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MvvmToolkit\PropertyGenerationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PrismTest\AsyncCommandGenerationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PrismTest\AttributeTransferTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PrismTest\CommandGenerationTests.cs" />
@@ -32,8 +33,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)PrismTest\NullableAnnotationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PrismTest\PropertyGenerationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PrismTest\UsingRaiseMethodTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)MvvmToolkit\" />
   </ItemGroup>
 </Project>
