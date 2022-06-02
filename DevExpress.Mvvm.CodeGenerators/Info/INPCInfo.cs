@@ -76,7 +76,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     }
                     return default(RaiseMethodPrefix?);
                 })
-                .FirstOrDefault();
+                .FirstOrDefault(x => x != null);
         }
     }
 }
