@@ -1,8 +1,12 @@
 ﻿using NUnit.Framework;
 using System;
 using System.ComponentModel;
+using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
+using Microsoft.Toolkit.Mvvm;
+using DevExpress.Mvvm.CodeGenerators.Tests;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
-namespace DevExpress.Mvvm.CodeGenerators.Tests {
+namespace MvvmToolkit.Mvvm.Tests {
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     partial class DefaultRaiseMethod {
         [GenerateProperty]
@@ -50,34 +54,8 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         int value;
     }
 
-    class ParentWithEventArgsParameterOnMethod : INotifyPropertyChanged, INotifyPropertyChanging {
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs) => PropertyChanged?.Invoke(this, eventArgs);
-        protected void OnPropertyChanging(PropertyChangingEventArgs eventArgs) => PropertyChanging?.Invoke(this, eventArgs);
-    }
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
-    partial class ChildWithParentsImplementedOnMethod : ParentWithEventArgsParameterOnMethod {
-        [GenerateProperty]
-        int value;
-    }
-
-    class ParentWithEventArgsParameterOnStringMethod : INotifyPropertyChanged, INotifyPropertyChanging {
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        protected void OnPropertyChanging(string propertyName) => PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
-    }
-    [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
-    partial class ChildWithParentsImplementedOnStringMethod : ParentWithEventArgsParameterOnStringMethod {
-        [GenerateProperty]
-        int value;
-    }
-
-    [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
-    partial class ChildWithParentsStringParameterRaiseMethod4 : BindableBase {
+    partial class ChildWithParentsStringParameterRaiseMethod4 : ObservableObject {
         [GenerateProperty]
         int value;
     }
@@ -140,33 +118,6 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
                 );
         }
 
-        [Test]
-        public void ParentWithEventArgsParameterOnMethod() {
-            var generated = new ChildWithParentsImplementedOnMethod();
-            Assert.Throws<Exception>(() =>
-                DoWith.PropertyChangedEvent(
-                    generated,
-                    () => DoWith.PropertyChangingEvent(
-                                    generated,
-                                    () => generated.Value = 1,
-                                    e => throw new Exception()),
-                    e => throw new Exception())
-                );
-        }
-
-        [Test]
-        public void ParentWithEventArgsParameterOnStringMethod() {
-            var generated = new ChildWithParentsImplementedOnStringMethod();
-            Assert.Throws<Exception>(() =>
-                DoWith.PropertyChangedEvent(
-                    generated,
-                    () => DoWith.PropertyChangingEvent(
-                                    generated,
-                                    () => generated.Value = 1,
-                                    e => throw new Exception()),
-                    e => throw new Exception())
-                );
-        }
         [Test]
         public void ParentWithStringParameterRaiseMethod() {
             var generated = new ChildWithParentsStringParameterRaiseMethod4();

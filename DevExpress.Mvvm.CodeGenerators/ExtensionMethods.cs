@@ -25,5 +25,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static string TypeToString(this TypeKind type) => type == TypeKind.Structure ? "struct" : type.ToString().ToLower();
 
         public static string BoolToStringValue(this bool val) => val ? "true" : "false";
+
+        internal static string ToStringValue(this RaiseMethodPrefix val) {
+            return val switch {
+                RaiseMethodPrefix.On => "On",
+                RaiseMethodPrefix.Raise => "Raise",
+                _ => throw new InvalidOperationException(),
+            };
+        }
     }
 }

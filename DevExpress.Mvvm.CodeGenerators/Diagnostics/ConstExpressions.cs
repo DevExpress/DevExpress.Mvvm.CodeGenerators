@@ -34,7 +34,7 @@
 
         const string raiseMethodNotFoundId = idPrefix + "0008";
         const string raiseMethodNotFoundTitle = "Cannot find Raise methods";
-        const string raiseMethodNotFoundMessageFormat = "Cannot find the 'void RaisePropertyChang{0}(PropertyChang{0}EventArgs)' or 'void RaisePropertyChang{0}(string)' methods";
+        const string raiseMethodNotFoundMessageFormat = "Cannot find the 'void RaisePropertyChang{0}(PropertyChang{0}EventArgs)' or 'void OnPropertyChang{0}(PropertyChang{0}EventArgs)' or 'void RaisePropertyChang{0}(string)' or 'void OnPropertyChang{0}(string)' methods";
 
         const string genericViewModelId = idPrefix + "0009";
         const string genericViewModelTitle = "Cannot generate the generic View Model";
