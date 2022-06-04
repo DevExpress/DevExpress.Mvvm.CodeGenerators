@@ -6,7 +6,7 @@
     <AssemblyName>DevExpress.Mvvm.CodeGenerators.NetCoreTests</AssemblyName>
     <LangVersion>9</LangVersion>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
-    <WarningsAsErrors>8618,8604</WarningsAsErrors>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 

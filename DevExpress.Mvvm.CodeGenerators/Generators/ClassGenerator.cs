@@ -182,17 +182,17 @@ using System.ComponentModel;";
                 case SupportedMvvm.Dx:
                     if(ClassHelper.GetImplementIDEIValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.IDEISymbol))
                         interfaces.Add(new IDataErrorInfoGenerator());
-                    if(ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol, mvvm) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Dx!.ISPVMSymbol, contextInfo, mvvm))
+                    if(ClassHelper.ShouldImplementInterface(classSymbol, contextInfo.Dx!.ISPVMSymbol, contextInfo, mvvm, (context, type) => ClassHelper.GetImplementISPVMValue(context, type, mvvm)))
                         interfaces.Add(new ISupportParentViewModelGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnParentViewModelChanged", 1, "object")));
                     if(ClassHelper.GetImplementISSValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.ISSSymbol))
                         interfaces.Add(new ISupportServicesGenerator(classSymbol.IsSealed, contextInfo.IsWinUI));
                     break;
                 case SupportedMvvm.Prism:
-                    if(ClassHelper.GetImplementIAAValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Prism!.IAASymbol, contextInfo, mvvm))
+                    if(ClassHelper.ShouldImplementInterface(classSymbol, contextInfo.Prism!.IAASymbol, contextInfo, mvvm, ClassHelper.GetImplementIAAValue))
                         interfaces.Add(new IActiveAwareGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnIsActiveChanged", 0, null)));
                     break;
                 case SupportedMvvm.MvvmLight:
-                    if(ClassHelper.GetImplementICUValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.MvvmLight!.ICUSymbol, contextInfo, mvvm))
+                    if(ClassHelper.ShouldImplementInterface(classSymbol, contextInfo.MvvmLight!.ICUSymbol, contextInfo, mvvm, ClassHelper.GetImplementICUValue))
                         interfaces.Add(new ICleanupGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnCleanup", 0, null), classSymbol.IsSealed));
                     break;
                 case SupportedMvvm.MvvmToolkit:

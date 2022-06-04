@@ -6,7 +6,8 @@
     <AssemblyName>DevExpress.Mvvm.CodeGenerators.WinUITests</AssemblyName>
     <LangVersion>9</LangVersion>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
-    <WarningsAsErrors>8618,8604</WarningsAsErrors>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <NoWarn>0105</NoWarn>
     <DefineConstants>WINUI</DefineConstants>
   </PropertyGroup>
 
