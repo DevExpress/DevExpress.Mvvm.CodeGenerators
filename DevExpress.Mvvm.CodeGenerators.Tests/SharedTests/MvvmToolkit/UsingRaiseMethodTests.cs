@@ -45,8 +45,8 @@ namespace MvvmToolkit.Mvvm.Tests {
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
 
-        protected void RaisePropertyChanged(PropertyChangedEventArgs eventArgs) => PropertyChanged?.Invoke(this, eventArgs);
-        protected void RaisePropertyChanging(PropertyChangingEventArgs eventArgs) => PropertyChanging?.Invoke(this, eventArgs);
+        protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs) => PropertyChanged?.Invoke(this, eventArgs);
+        protected void OnPropertyChanging(PropertyChangingEventArgs eventArgs) => PropertyChanging?.Invoke(this, eventArgs);
     }
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     partial class ChildWithParentsImplementedRaiseMethod : ParentWithEventArgsParameterRaiseMethod {

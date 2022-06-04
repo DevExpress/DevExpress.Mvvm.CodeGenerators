@@ -214,26 +214,26 @@ namespace Test {
         public event PropertyChangedEventHandler? PropertyChanged;
         public event PropertyChangingEventHandler? PropertyChanging;
 
-        protected void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
-        protected void RaisePropertyChanging(PropertyChangingEventArgs e) => PropertyChanging?.Invoke(this, e);
+        protected void OnPropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
+        protected void OnPropertyChanging(PropertyChangingEventArgs e) => PropertyChanging?.Invoke(this, e);
 
         public int Int {
             get => _Int;
             set {
                 if(EqualityComparer<int>.Default.Equals(_Int, value)) return;
-                RaisePropertyChanging(IntChangingEventArgs);
+                OnPropertyChanging(IntChangingEventArgs);
                 _Int = value;
-                RaisePropertyChanged(IntChangedEventArgs);
+                OnPropertyChanged(IntChangedEventArgs);
             }
         }
         public string? Str {
             get => _Str;
             set {
                 if(EqualityComparer<string?>.Default.Equals(_Str, value)) return;
-                RaisePropertyChanging(StrChangingEventArgs);
+                OnPropertyChanging(StrChangingEventArgs);
                 OnStrChanging_(value);
                 _Str = value;
-                RaisePropertyChanged(StrChangedEventArgs);
+                OnPropertyChanged(StrChangedEventArgs);
                 OnStrChanged_();
             }
         }
@@ -246,10 +246,10 @@ namespace Test {
             get => _Long;
             set {
                 if(EqualityComparer<long>.Default.Equals(_Long, value)) return;
-                RaisePropertyChanging(LongChangingEventArgs);
+                OnPropertyChanging(LongChangingEventArgs);
                 var oldValue = _Long;
                 _Long = value;
-                RaisePropertyChanged(LongChangedEventArgs);
+                OnPropertyChanged(LongChangedEventArgs);
                 OnLongChanged(oldValue);
             }
         }
@@ -257,37 +257,37 @@ namespace Test {
             get => _DateTime;
             set {
                 if(EqualityComparer<System.DateTime>.Default.Equals(_DateTime, value)) return;
-                RaisePropertyChanging(DateTimeChangingEventArgs);
+                OnPropertyChanging(DateTimeChangingEventArgs);
                 OnDateTimeChanging();
                 _DateTime = value;
-                RaisePropertyChanged(DateTimeChangedEventArgs);
+                OnPropertyChanged(DateTimeChangedEventArgs);
             }
         }
         public virtual double Double {
             get => _Double;
             protected set {
                 if(EqualityComparer<double>.Default.Equals(_Double, value)) return;
-                RaisePropertyChanging(DoubleChangingEventArgs);
+                OnPropertyChanging(DoubleChangingEventArgs);
                 _Double = value;
-                RaisePropertyChanged(DoubleChangedEventArgs);
+                OnPropertyChanged(DoubleChangedEventArgs);
             }
         }
         public bool A {
             get => a;
             set {
                 if(EqualityComparer<bool>.Default.Equals(a, value)) return;
-                RaisePropertyChanging(AChangingEventArgs);
+                OnPropertyChanging(AChangingEventArgs);
                 a = value;
-                RaisePropertyChanged(AChangedEventArgs);
+                OnPropertyChanged(AChangedEventArgs);
             }
         }
         public bool B {
             get => b;
             set {
                 if(EqualityComparer<bool>.Default.Equals(b, value)) return;
-                RaisePropertyChanging(BChangingEventArgs);
+                OnPropertyChanging(BChangingEventArgs);
                 b = value;
-                RaisePropertyChanged(BChangedEventArgs);
+                OnPropertyChanged(BChangedEventArgs);
             }
         }
         RelayCommand<int?>? command1Command;

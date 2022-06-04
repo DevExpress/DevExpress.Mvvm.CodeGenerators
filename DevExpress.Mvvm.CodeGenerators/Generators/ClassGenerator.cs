@@ -53,8 +53,8 @@ using System.ComponentModel;";
                 genericTypes, outerClasses, mvvm, contextInfo.Compilation);
 
 
-            bool needStaticChangedEventArgs = inpcedInfo.RaiseMethodWithEventArgsPrefix != null || impelementRaiseChangedMethod;
-            bool needStaticChangingEventArgs = inpcingInfo.HasAttribute && (inpcingInfo.RaiseMethodWithEventArgsPrefix != null || impelementRaiseChangingMethod);
+            bool needStaticChangedEventArgs = inpcedInfo.HasMethodWithEventArgsPrefix || impelementRaiseChangedMethod;
+            bool needStaticChangingEventArgs = inpcingInfo.HasAttribute && (inpcingInfo.HasMethodWithEventArgsPrefix || impelementRaiseChangingMethod);
             IReadOnlyList<string> propertyNames = GenerateProperties(source, contextInfo, classSymbol, inpcedInfo, inpcingInfo, needStaticChangedEventArgs, needStaticChangingEventArgs, mvvm);
 
             GenerateCommands(source, contextInfo, classSymbol, mvvm);
@@ -136,18 +136,19 @@ using System.ComponentModel;";
             }
         }
         static IReadOnlyList<string> GenerateProperties(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, INPCInfo inpcedInfo, INPCInfo inpcingInfo, bool needStaticChangedEventArgs, bool needStaticChangingEventArgs, SupportedMvvm mvvm) {
-            RaiseInfo? changedInfo = GetRaiseInfo(inpcedInfo, needStaticChangedEventArgs, true);
-            RaiseInfo? changingInfo = GetRaiseInfo(inpcingInfo, needStaticChangingEventArgs, inpcingInfo.HasAttribute);
+            RaiseMethodPrefix prefix = mvvm.GetRasiePrefix();
+            RaiseInfo? changedInfo = GetRaiseInfo(inpcedInfo, needStaticChangedEventArgs, true, prefix);
+            RaiseInfo? changingInfo = GetRaiseInfo(inpcingInfo, needStaticChangingEventArgs, inpcingInfo.HasAttribute, prefix);
             bool generateProperties = true;
             List<string> propertyNames = new();
             IEnumerable<IFieldSymbol> fieldCandidates = ClassHelper.GetFieldCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol);
             if(fieldCandidates.Any()) {
                 if(changedInfo == null) {
-                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ed");
+                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ed", prefix);
                     generateProperties = false;
                 }
                 if(inpcingInfo.HasAttribute && changingInfo == null) {
-                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ing");
+                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ing", prefix);
                     generateProperties = false;
                 }
                 if(generateProperties)
@@ -161,11 +162,11 @@ using System.ComponentModel;";
             return propertyNames;
         }
 
-        private static RaiseInfo? GetRaiseInfo(INPCInfo inpcingInfo, bool needStaticChangingEventArgs, bool hasAttribute) {
+        private static RaiseInfo? GetRaiseInfo(INPCInfo inpcingInfo, bool needStaticChangingEventArgs, bool hasAttribute, RaiseMethodPrefix prefix) {
             return needStaticChangingEventArgs
-                ? new RaiseInfo(ChangeEventRaiseMode.EventArgs, inpcingInfo.RaiseMethodWithEventArgsPrefix != null ? inpcingInfo.RaiseMethodWithEventArgsPrefix.Value : RaiseMethodPrefix.Raise)
-                : hasAttribute && inpcingInfo.RaiseMethodWithStringPrefix != null
-                    ? new RaiseInfo(ChangeEventRaiseMode.PropertyName, inpcingInfo.RaiseMethodWithStringPrefix.Value)
+                ? new RaiseInfo(ChangeEventRaiseMode.EventArgs, prefix)
+                : hasAttribute && inpcingInfo.HasMethodWithStringPrefix
+                    ? new RaiseInfo(ChangeEventRaiseMode.PropertyName, prefix)
                     : default(RaiseInfo?);
         }
 

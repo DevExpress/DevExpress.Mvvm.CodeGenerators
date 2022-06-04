@@ -34,11 +34,7 @@
 
         const string raiseMethodNotFoundId = idPrefix + "0008";
         const string raiseMethodNotFoundTitle = "Cannot find Raise methods";
-        const string raiseMethodNotFoundMessageFormat = "Cannot find the 'void RaisePropertyChang{0}(PropertyChang{0}EventArgs)' or 'void OnPropertyChang{0}(PropertyChang{0}EventArgs)' or 'void RaisePropertyChang{0}(string)' or 'void OnPropertyChang{0}(string)' methods";
-
-        const string genericViewModelId = idPrefix + "0009";
-        const string genericViewModelTitle = "Cannot generate the generic View Model";
-        const string genericViewModelMessageFormat = "The '{0}' class must be non-generic";
+        const string raiseMethodNotFoundMessageFormat = "Cannot find the 'void RaisePropertyChang{0}(PropertyChang{0}EventArgs)' or 'void RaisePropertyChang{0}(string)' methods";
 
         const string twoSuitableMethodsId = idPrefix + "1001";
         const string twoSuitableMethodsTitle = "The class contains two suitable methods";
@@ -51,5 +47,9 @@
         const string nonNullableDelegateCommandArgumentId = idPrefix + "0011";
         const string nonNullableDelegateCommandArgumentTitle = "Non Nullable DelegateCommand Argument";
         const string nonNullableDelegateCommandArgumentMessageFormat = "The {0} method parameter cannot be of value types (int, double, bool, etc). Use the Nullable<T> parameter instead.";
+
+        const string onMethodNotFoundId = idPrefix + "0012";
+        const string onMethodNotFoundTitle = "Cannot find OnPropertyChanged methods";
+        const string onMethodNotFoundMessageFormat = "Cannot find the 'void OnPropertyChang{0}(PropertyChang{0}EventArgs)' or 'void OnPropertyChang{0}(string)' methods";
     }
 }

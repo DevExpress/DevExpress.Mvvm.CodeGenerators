@@ -197,7 +197,7 @@ namespace Test {
             Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
             Assert.AreEqual(2, diagnostics.Count());
             foreach(var diagnostic in diagnostics)
-                Assert.AreEqual(GeneratorDiagnostics.RaiseMethodNotFound.Id, diagnostic.Id);
+                Assert.AreEqual(GeneratorDiagnostics.OnMethodNotFound.Id, diagnostic.Id);
         }
 
         [Test]

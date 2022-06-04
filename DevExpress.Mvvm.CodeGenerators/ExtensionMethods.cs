@@ -33,5 +33,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 _ => throw new InvalidOperationException(),
             };
         }
+
+        internal static RaiseMethodPrefix GetRasiePrefix(this SupportedMvvm mvvm) {
+            return mvvm switch {
+                SupportedMvvm.None or SupportedMvvm.Dx or SupportedMvvm.Prism or SupportedMvvm.MvvmLight => RaiseMethodPrefix.Raise,
+                SupportedMvvm.MvvmToolkit => RaiseMethodPrefix.On,
+                _ => throw new InvalidOperationException()
+            };
+        }
     }
 }
