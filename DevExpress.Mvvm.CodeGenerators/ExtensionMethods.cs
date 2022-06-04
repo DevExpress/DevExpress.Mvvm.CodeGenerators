@@ -16,6 +16,12 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 NullableAnnotation.Annotated => NullableFlowState.MaybeNull,
                 _ => NullableFlowState.None
             };
+        public static IEnumerable<INamedTypeSymbol> GetParents(this INamedTypeSymbol typeSymbol) {
+            for(INamedTypeSymbol parent = typeSymbol.BaseType!; parent != null; parent = parent.BaseType!) {
+                yield return parent;
+            }
+        }
+
         #endregion
 
         #region String

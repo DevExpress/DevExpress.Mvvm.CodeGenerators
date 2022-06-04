@@ -36,7 +36,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 return true;
             if(IsInterfaceImplementedInCurrentClass(classSymbol, interfaceSymbol))
                 return false;
-            for(INamedTypeSymbol parent = classSymbol.BaseType!; parent != null; parent = parent.BaseType!) {
+            foreach(INamedTypeSymbol parent in classSymbol.GetParents()) {
                 bool hasAttribute = AttributeHelper.HasAttribute(parent, contextInfo.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol) && getShouldImplementValue(contextInfo, parent);
                 bool hasImplementation = IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
                 if(hasAttribute || hasImplementation)

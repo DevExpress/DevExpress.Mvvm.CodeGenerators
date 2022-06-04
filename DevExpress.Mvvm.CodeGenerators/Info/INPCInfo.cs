@@ -45,7 +45,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             HasMethodWithStringPrefix = HasRaiseMethod(classSymbol, methodName, "string", true, prefix);
 
             bool isRaiseMethodGenerated = false;
-            for(INamedTypeSymbol parent = classSymbol.BaseType!; parent != null; parent = parent.BaseType!) {
+            foreach(INamedTypeSymbol parent in classSymbol.GetParents()) {
                 bool hasAttribute = checkAttribute(parent);
                 bool hasImplementation = ClassHelper.IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
                 if(hasAttribute || hasImplementation)
