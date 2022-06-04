@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DxTest\UsingRaiseMethodTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MvvmLightTest\AsyncCommandGenerationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MvvmLightTest\AttributeTransferTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MvvmToolkit\AsyncCommandGenerationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MvvmToolkit\AttributeTransferTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MvvmToolkit\CommandGenerationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MvvmLightTest\InterfacesTests.cs" />
