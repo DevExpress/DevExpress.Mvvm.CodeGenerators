@@ -22,6 +22,11 @@ namespace Prism.Mvvm.Tests {
     class ParentWithoutRaiseMethod : INotifyPropertyChanged, INotifyPropertyChanging {
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
+        public ParentWithoutRaiseMethod() {
+            //avoid warnings
+            PropertyChanged?.Invoke(null, null);
+            PropertyChanging?.Invoke(null, null);
+        }
     }
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     partial class ChildWithoutRaiseMethod : ParentWithoutRaiseMethod {

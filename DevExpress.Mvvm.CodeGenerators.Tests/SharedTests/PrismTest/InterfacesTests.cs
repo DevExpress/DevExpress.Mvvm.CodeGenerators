@@ -36,6 +36,10 @@ namespace Prism.Mvvm.Tests {
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
         public event EventHandler IsActiveChanged;
+        public FullImplemented() {
+            //avoid warninngs
+            IsActiveChanged?.Invoke(null, null);
+        }
     }
 
 

@@ -6,7 +6,7 @@
 		<AssemblyName></AssemblyName>
 		<LangVersion>9</LangVersion>
 		<IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
-		<WarningsAsErrors>8618,8604</WarningsAsErrors>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>

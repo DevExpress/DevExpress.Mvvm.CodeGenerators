@@ -34,6 +34,7 @@ namespace MvvmLight.Mvvm.Tests {
         int? nullableInt2;
         [GenerateProperty]
         string string2;
+#pragma warning disable 8632
         [GenerateProperty]
         string? nullableString2;
 
@@ -47,5 +48,6 @@ namespace MvvmLight.Mvvm.Tests {
         Task NonNullableParameterAsync2(string str) => Task.CompletedTask;
 
         void OnString1Changed(string str) { }
+#pragma warning restore 8632
     }
 }
