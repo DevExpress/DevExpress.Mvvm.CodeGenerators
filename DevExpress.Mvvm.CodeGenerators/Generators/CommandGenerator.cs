@@ -77,7 +77,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             }
         }
 
-        static string GetCanExecuteMethodName(ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol, ITypeSymbol? parameterType, INamedTypeSymbol commandAttributeSymbol) {
+        static string? GetCanExecuteMethodName(ContextInfo info, INamedTypeSymbol classSymbol, IMethodSymbol methodSymbol, ITypeSymbol? parameterType, INamedTypeSymbol commandAttributeSymbol) {
             string? canExecuteMethodName = CommandHelper.GetCanExecuteMethodName(methodSymbol, commandAttributeSymbol);
             if(canExecuteMethodName == null) {
                 IEnumerable<IMethodSymbol> candidate = CommandHelper.GetCanExecuteMethodCandidates(classSymbol, "Can" + methodSymbol.Name, parameterType, info);
@@ -88,12 +88,12 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     info.Context.ReportCanExecuteMethodNotFound(methodSymbol, canExecuteMethodName, parameterType?.ToDisplayStringNullable() ?? string.Empty, CommandHelper.GetMethods(classSymbol, canExecuteMethodName));
                 }
             }
-            return canExecuteMethodName ?? "null";
+            return canExecuteMethodName;
         }
 
-        static void AppendGetterPrism(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name, string observesCanExecuteProperty, string[] observesProperties) {
+        static void AppendGetterPrism(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string? canExecuteMethodName, string genericArgumentType, string name, string observesCanExecuteProperty, string[] observesProperties) {
             source.AppendCommandNameWithGenericType(mvvm, isCommand, genericArgumentType, name).AppendMethodName(isCommand, methodSymbol.Name, genericArgumentType);
-            if(canExecuteMethodName != "null")
+            if(canExecuteMethodName != null)
                 source.Append(", ").Append(canExecuteMethodName);
             if(!string.IsNullOrEmpty(observesCanExecuteProperty))
                 source.Append(").ObservesCanExecute(() => ").Append(observesCanExecuteProperty);
@@ -103,18 +103,25 @@ namespace DevExpress.Mvvm.CodeGenerators {
                         source.Append(").ObservesProperty(() => ").Append(property);
             source.AppendLine(");");
         }
-        static void AppendGetterDx(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name) {
+        static void AppendGetterDx(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string? canExecuteMethodName, string genericArgumentType, string name) {
             INamedTypeSymbol commandAttribute = info.Dx!.CommandAttributeSymbol;
             source.AppendCommandNameWithGenericType(mvvm, isCommand, genericArgumentType, name).Append('(');
             source.AppendDxParametersList(methodSymbol, commandAttribute, canExecuteMethodName, isCommand, methodSymbol.Name, info.IsWinUI);
             source.AppendLine(");");
         }
-        static void AppendGetterRelayCommand(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string canExecuteMethodName, string genericArgumentType, string name) {
+        static void AppendGetterRelayCommand(SourceBuilder source, ContextInfo info, IMethodSymbol methodSymbol, SupportedMvvm mvvm, bool isCommand, string? canExecuteMethodName, string genericArgumentType, string name) {
             source.AppendCommandNameWithGenericType(mvvm, isCommand, genericArgumentType, name).AppendMethodName(isCommand, methodSymbol.Name, genericArgumentType);
-            source.Append(", ").Append(canExecuteMethodName).AppendLine(");");
+            if(mvvm == SupportedMvvm.MvvmLight) {
+                source.Append(", ");
+                source.Append(canExecuteMethodName ?? "null");
+            } else if(canExecuteMethodName != null) {
+                source.Append(", ");
+                source.Append(canExecuteMethodName);
+            }
+            source.AppendLine(");");
         }
-        static void AppendDxParametersList(this SourceBuilder source, IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {
-            source.Append(executeMethod).Append(", ").Append(canExecuteMethodName);
+        static void AppendDxParametersList(this SourceBuilder source, IMethodSymbol methodSymbol, INamedTypeSymbol commandAttributeSymbol, string? canExecuteMethodName, bool isCommand, string executeMethod, bool isWinUI) {
+            source.Append(executeMethod).Append(", ").Append(canExecuteMethodName ?? "null");
             if(!isCommand) {
                 string allowMultipleExecution = CommandHelper.GetAllowMultipleExecutionValue(methodSymbol, commandAttributeSymbol).BoolToStringValue();
                 source.Append(", ").Append(allowMultipleExecution);

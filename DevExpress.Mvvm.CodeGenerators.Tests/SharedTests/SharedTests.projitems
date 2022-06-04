@@ -25,6 +25,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)MvvmLightTest\NullableAnnotationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MvvmLightTest\PropertyGenerationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MvvmLightTest\UsingRaiseMethodTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MvvmToolkit\InterfacesTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MvvmToolkit\NullableAnnotationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MvvmToolkit\PropertyGenerationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MvvmToolkit\UsingRaiseMethodTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PrismTest\AsyncCommandGenerationTests.cs" />

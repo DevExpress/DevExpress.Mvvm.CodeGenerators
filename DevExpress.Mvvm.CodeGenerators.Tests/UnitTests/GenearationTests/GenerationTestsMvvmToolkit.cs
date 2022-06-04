@@ -296,7 +296,7 @@ namespace Test {
         /// </summary>
         public RelayCommand<int?> Command1Command => command1Command ??= new RelayCommand<int?>(Command1, CanCommand1);
         RelayCommand? someCommand;
-        public RelayCommand SomeCommand => someCommand ??= new RelayCommand(async () => await Command2(), null);
+        public RelayCommand SomeCommand => someCommand ??= new RelayCommand(async () => await Command2());
         RelayCommand<int?>? command3Command;
         public RelayCommand<int?> Command3Command => command3Command ??= new RelayCommand<int?>(Command3, CanCommand3_);
         static PropertyChangedEventArgs IntChangedEventArgs = new PropertyChangedEventArgs(nameof(Int));
