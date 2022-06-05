@@ -114,16 +114,19 @@ Prepare your project as outlined below to enable support for View Models generat
 
 ## Release Notes
 
+### 22.1.1
+- Our View Model Code Generator now [supports](https://docs.devexpress.com/WPF/402989/mvvm-framework/viewmodels/compile-time-generated-viewmodels#microsoft-mvvm-toolkit) the [Microsoft MVVM Toolkit](https://docs.microsoft.com/en-us/windows/communitytoolkit/mvvm/introduction). 
+
 ### 22.1.0 
 - The View Model Code Generator now supports the updated WinUI MVVM Framework that is available in the **DevExpress.WinUI.Mvvm.v22.1** assembly. If your **WinUI** project uses **DevExpress.Mvvm.v21.2**, replace it with **DevExpress.WinUI.Mvvm.v22.1**.
 
 ### 21.2.2 
-- Our View Model Code Generator now supports the [MVVM Light Toolkit](https://github.com/lbugnion/mvvmlight). 
+- Our View Model Code Generator now [supports](https://docs.devexpress.com/WPF/402989/mvvm-framework/viewmodels/compile-time-generated-viewmodels#mvvm-light-toolkit) the [MVVM Light Toolkit](https://github.com/lbugnion/mvvmlight). 
 - We implemented the following suggestion: [Proposal: additional attributes for generated commands](https://github.com/DevExpress/DevExpress.Mvvm.CodeGenerators/issues/14).
 
 ### 21.2.1
 
-Our View Model Code Generator now supports the [Prism Library](https://prismlibrary.com).  
+Our View Model Code Generator now [supports](https://docs.devexpress.com/WPF/402989/mvvm-framework/viewmodels/compile-time-generated-viewmodels#prism-library) the [Prism Library](https://prismlibrary.com). 
 
 ### 21.1.3
 
