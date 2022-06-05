@@ -82,6 +82,15 @@ Your project should meet the following requirements:
 - .NET Framework v4.6.1+ or .NET Core v3.0+
 - Visual Studio v16.9.0+
 
+## Supported MVVM Frameworks
+
+Our View Model Code Generator [supports](https://docs.devexpress.com/WPF/402989/mvvm-framework/viewmodels/compile-time-generated-viewmodels#third-party-libraries-support) following MVVM frameworks:
+- [DevExpress WPF MVVM Framework](https://docs.devexpress.com/WPF/15112/mvvm-framework)
+- [DevExpress WPF MVVM Framework](https://docs.devexpress.com/WinUI/102569/mvvm-framework)
+- [Microsoft MVVM Toolkit](https://docs.microsoft.com/en-us/windows/communitytoolkit/mvvm/introduction)
+- [MVVM Light Toolkit](https://github.com/lbugnion/mvvmlight)
+- [Prism Library](https://prismlibrary.com)
+
 ## Prepare Your Project
 
 Prepare your project as outlined below to enable support for View Models generated at compile time:
