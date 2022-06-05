@@ -23,12 +23,9 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = CreateCompilation(sourceCode);
-            ViewModelGenerator generator = new ViewModelGenerator();
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
 
-            Assert.AreEqual(2, outputCompilation.SyntaxTrees.Count());
+            Assert.AreEqual(2, trees.Count());
             Assert.AreEqual(GeneratorDiagnostics.NoPartialModifier.Id, diagnostics[0].Id);
         }
 
@@ -48,13 +45,10 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = CreateCompilation(sourceCode);
-            ViewModelGenerator generator = new ViewModelGenerator();
 
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
 
-            Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
+            Assert.AreEqual(3, trees.Count());
             Assert.AreEqual(GeneratorDiagnostics.InvalidPropertyName.Id, diagnostics[0].Id);
         }
 
@@ -79,13 +73,9 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = CreateCompilation(sourceCode);
-            ViewModelGenerator generator = new ViewModelGenerator();
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
 
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
-
-            Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
+            Assert.AreEqual(3, trees.Count());
             Assert.AreEqual(4, diagnostics.Count());
             foreach(var diagnostic in diagnostics)
                 Assert.AreEqual(GeneratorDiagnostics.OnChangedMethodNotFound.Id, diagnostic.Id);
@@ -110,13 +100,10 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = CreateCompilation(sourceCode);
-            ViewModelGenerator generator = new ViewModelGenerator();
 
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
 
-            Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
+            Assert.AreEqual(3, trees.Count());
 
             Assert.AreEqual(2, diagnostics.Count());
             Assert.AreEqual(GeneratorDiagnostics.IncorrectCommandSignature.Id, diagnostics[0].Id);
@@ -157,13 +144,9 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = CreateCompilation(sourceCode);
-            ViewModelGenerator generator = new ViewModelGenerator();
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
 
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
-
-            Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
+            Assert.AreEqual(3, trees.Count());
             Assert.AreEqual(6, diagnostics.Count());
             foreach(var diagnostic in diagnostics)
                 Assert.AreEqual(GeneratorDiagnostics.CanExecuteMethodNotFound.Id, diagnostic.Id);
@@ -190,13 +173,9 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = CreateCompilation(sourceCode);
-            ViewModelGenerator generator = new ViewModelGenerator();
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
 
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
-
-            Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
+            Assert.AreEqual(3, trees.Count());
             Assert.AreEqual(2, diagnostics.Count());
             foreach(var diagnostic in diagnostics)
                 Assert.AreEqual(GeneratorDiagnostics.OnMethodNotFound.Id, diagnostic.Id);
@@ -225,13 +204,9 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = CreateCompilation(sourceCode);
-            ViewModelGenerator generator = new ViewModelGenerator();
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
 
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
-
-            Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
+            Assert.AreEqual(3, trees.Count());
             Assert.AreEqual(2, diagnostics.Count());
             foreach(var diagnostic in diagnostics)
                 Assert.AreEqual(GeneratorDiagnostics.TwoSuitableMethods.Id, diagnostic.Id);
@@ -250,13 +225,8 @@ namespace Test {
     }
 }
 ";
-            Compilation inputCompilation = CreateCompilation(sourceCode);
-            ViewModelGenerator generator = new ViewModelGenerator();
-
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
-
-            Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
+            Assert.AreEqual(3, trees.Count());
             Assert.AreEqual(GeneratorDiagnostics.NoBaseObservableRecipientClass.Id, diagnostics.Single().Id);
         }
         [TestCase("[DevExpress.Mvvm.CodeGenerators.Prism.GenerateViewModel]\r\n")]
@@ -268,18 +238,15 @@ namespace Test {
     partial class TwoGenerateViewModelAttributeClass { }
     }
 ";
-            Compilation inputCompilation = GeneratorHelper.CreateCompilation(sourceCode, new[] {
-                typeof(INotifyPropertyChanged), 
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(GeneratorHelper.CreateCompilation(sourceCode, new[] {
+                typeof(INotifyPropertyChanged),
                 typeof(RelayCommand),
                 typeof(Prism.Commands.DelegateCommand),
                 typeof(DevExpress.Mvvm.DelegateCommand),
-            });
-            ViewModelGenerator generator = new ViewModelGenerator();
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-            var asdf = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
+            }));
 
             Assert.AreEqual(GeneratorDiagnostics.MoreThanOneGenerateViewModelAttributes.Id, diagnostics[0].Id);
-            Assert.AreEqual(4, outputCompilation.SyntaxTrees.Count());
+            Assert.AreEqual(4, trees.Count());
         }
         public static Compilation CreateCompilation(string source) =>
             GeneratorHelper.CreateCompilation(source, new[] { typeof(INotifyPropertyChanged), typeof(RelayCommand) });
