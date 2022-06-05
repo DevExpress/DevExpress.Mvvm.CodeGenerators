@@ -4,6 +4,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using System.ComponentModel;
 using System.Linq;
+using System.Collections.Immutable;
+using System.Collections.Generic;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
     [TestFixture]
@@ -233,6 +235,29 @@ namespace Test {
             Assert.AreEqual(2, diagnostics.Count());
             foreach(var diagnostic in diagnostics)
                 Assert.AreEqual(GeneratorDiagnostics.TwoSuitableMethods.Id, diagnostic.Id);
+        }
+        [Test]
+        public void NoBaseObservableRecipientClass() {
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+
+namespace Test {
+    [GenerateViewModel]
+    partial class Broadcast {
+        [GenerateProperty(Broadcast = true)]
+        int value;
+        public Broadcast() => value.ToString(); //avoid not used warning
+    }
+}
+";
+            Compilation inputCompilation = CreateCompilation(sourceCode);
+            ViewModelGenerator generator = new ViewModelGenerator();
+
+            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+            _ = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
+
+            Assert.AreEqual(3, outputCompilation.SyntaxTrees.Count());
+            Assert.AreEqual(GeneratorDiagnostics.NoBaseObservableRecipientClass.Id, diagnostics.Single().Id);
         }
         [TestCase("[DevExpress.Mvvm.CodeGenerators.Prism.GenerateViewModel]\r\n")]
         [TestCase("[DevExpress.Mvvm.CodeGenerators.GenerateViewModel]\r\n")]

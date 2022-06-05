@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Diagnostics;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class PropertyGenerator {
@@ -8,6 +9,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
             string propertyName = PropertyHelper.CreatePropertyName(fieldSymbol.Name);
             if(propertyName == fieldSymbol.Name)
                 info.Context.ReportInvalidPropertyName(fieldSymbol, propertyName);
+            bool toolkitBroadcast = PropertyHelper.GetBroadcastAttributeValue(fieldSymbol, propertyAttributeSymbol);
+            if(toolkitBroadcast && !info.Compilation.HasImplicitConversion(classSymbol, info.MvvmToolkit!.ObservableRecipientSymbol)) {
+                info.Context.ReportNoBaseObservableRecipientClass(fieldSymbol, propertyName);
+                return null;
+            }
 
             string? changedMethod = PropertyHelper.GetChangedMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type, mvvm);
             string? changingMethod = PropertyHelper.GetChangingMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type, mvvm);
@@ -37,11 +43,17 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(!string.IsNullOrEmpty(changingMethod))
                 source.Tab.Tab.AppendLine(changingMethod);
 
-            if(!string.IsNullOrEmpty(changedMethod) && !changedMethod.EndsWith("();"))
+            if(toolkitBroadcast)
+                Debug.Assert(mvvm == SupportedMvvm.MvvmToolkit); 
+
+            if(toolkitBroadcast || (!string.IsNullOrEmpty(changedMethod) && !changedMethod.EndsWith("();")))
                 source.Tab.Tab.Append("var oldValue = ").Append(fieldName).AppendLine(";");
             source.Tab.Tab.Append(fieldName).AppendLine(" = value;");
 
             AppendRaiseChangeMethod(source.Tab.Tab, changedInfo, propertyName, "ed");
+
+            if(toolkitBroadcast)
+                source.Tab.Tab.AppendLine($"Broadcast<{typeName}>(oldValue, value, nameof({propertyName}));");
 
             if(!string.IsNullOrEmpty(changedMethod))
                 source.Tab.Tab.AppendLine(changedMethod);

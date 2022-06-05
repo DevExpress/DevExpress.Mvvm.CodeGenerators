@@ -51,5 +51,9 @@
         const string onMethodNotFoundId = idPrefix + "0012";
         const string onMethodNotFoundTitle = "Cannot find OnPropertyChanged methods";
         const string onMethodNotFoundMessageFormat = "Cannot find the 'void OnPropertyChang{0}(PropertyChang{0}EventArgs)' or 'void OnPropertyChang{0}(string)' methods";
+
+        const string noBaseObservableRecipientClassId = idPrefix + "0013";
+        const string noBaseObservableRecipientClassTitle = "Class should be inherited from the ObservableRecipient class";
+        const string noBaseObservableRecipientClassMessageFormat = "Inherit from the 'ObservableRecipient' class to use the 'Broadcast=true' option in the '{0}' property";
     }
 }

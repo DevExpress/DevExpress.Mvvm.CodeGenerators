@@ -56,8 +56,10 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
     }
     class MvvmToolkitFrameWorkAttributes : FrameworkAttributes {
+        public INamedTypeSymbol ObservableRecipientSymbol { get; }
         public MvvmToolkitFrameWorkAttributes(Compilation compilation)
             : base(compilation, SupportedMvvm.MvvmToolkit) {
+            ObservableRecipientSymbol = compilation.GetTypeByMetadataName("Microsoft.Toolkit.Mvvm.ComponentModel.ObservableRecipient")!;
         }
     }
     class ContextInfo {

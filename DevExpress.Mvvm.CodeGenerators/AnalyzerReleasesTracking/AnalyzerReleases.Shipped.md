@@ -44,3 +44,4 @@ DXCG0003 | DevExpress.Mvvm.CodeGenerators | error | Cannot find the DevExpress.M
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
 DXCG0012 | DevExpress.Mvvm.CodeGenerators | error | Cannot find OnPropertyChanged methods
+DXCG0013 | DevExpress.Mvvm.CodeGenerators | error | Class should be inherited from the ObservableRecipient class

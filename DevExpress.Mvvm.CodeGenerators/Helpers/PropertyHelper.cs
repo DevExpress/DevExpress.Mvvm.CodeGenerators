@@ -4,14 +4,9 @@ using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     static class PropertyHelper {
-        static readonly string nameofIsVirtual = AttributesGenerator.IsVirtual;
-        static readonly string nameofChangedMethod = AttributesGenerator.OnChangedMethod;
-        static readonly string nameofChangingMethod = AttributesGenerator.OnChangingMethod;
-        static readonly string nameofSetterAccessModifier = AttributesGenerator.SetterAccessModifier;
-
         public static string CreatePropertyName(string fieldName) => fieldName.TrimStart('_').FirstToUpperCase();
         public static bool GetIsVirtualValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
-            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofIsVirtual, false);
+            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, AttributesGenerator.IsVirtual, false);
         public static string? GetChangedMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string propertyName, ITypeSymbol fieldType, SupportedMvvm mvvm) {
             string? methodName = GetChangedMethodName(fieldSymbol, info.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol);
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changed", "oldValue", fieldType);
@@ -21,9 +16,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
             return GetMethod(info, classSymbol, fieldSymbol, methodName, "On" + propertyName + "Changing", "value", fieldType);
         }
         public static string GetSetterAccessModifierValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) {
-            int enumIndex = AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofSetterAccessModifier, 0);
+            int enumIndex = AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, AttributesGenerator.SetterAccessModifier, 0);
             return AccessModifierGenerator.GetCodeRepresentation((AccessModifier)enumIndex);
         }
+        public static bool GetBroadcastAttributeValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
+            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, AttributesGenerator.Broadcast, false);
         public static NullableAnnotation GetNullableAnnotation(ITypeSymbol type) =>
             type.IsReferenceType && type.NullableAnnotation == NullableAnnotation.None
                 ? NullableAnnotation.Annotated
@@ -49,9 +46,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
 
         static string? GetChangedMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
-            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofChangedMethod, (string?)null);
+            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, AttributesGenerator.OnChangedMethod, (string?)null);
         static string? GetChangingMethodName(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
-            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, nameofChangingMethod, (string?)null);
+            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, AttributesGenerator.OnChangingMethod, (string?)null);
         static string? GetMethod(ContextInfo info, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string? methodName, string defaultMethodName, string parameterName, ITypeSymbol fieldType) {
             bool useDefaultName = false;
             if(methodName == null) {
