@@ -55,5 +55,9 @@
         const string noBaseObservableRecipientClassId = idPrefix + "0013";
         const string noBaseObservableRecipientClassTitle = "Class should be inherited from the ObservableRecipient class";
         const string noBaseObservableRecipientClassMessageFormat = "Inherit from the 'ObservableRecipient' class to use the 'Broadcast=true' option in the '{0}' property";
+
+        const string noBaseObservableValidatorClassId = idPrefix + "0014";
+        const string noBaseObservableValidatorClassTitle = "Class should be inherited from the ObservableValidator class";
+        const string noBaseObservableValidatorClassMessageFormat = "Inherit from the 'ObservableValidator' class to use the 'Validate=true' option in the '{0}' property";
     }
 }

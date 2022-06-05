@@ -27,6 +27,14 @@ namespace MvvmToolkit.Mvvm.Tests {
         int value;
     }
 
+    [GenerateViewModel]
+    partial class Validator : ObservableValidator {
+        [System.ComponentModel.DataAnnotations.Range(0, 9)]
+        [GenerateProperty(Validate = true)]
+        int value;
+    }
+
+
     [TestFixture]
     public class PropertyGenerationTests {
         [Test]
@@ -60,6 +68,21 @@ namespace MvvmToolkit.Mvvm.Tests {
                 messageCount++;
             });
             broadcast.Value = 1;
+            Assert.AreEqual(1, messageCount);
+            broadcast.Value = 1;
+            Assert.AreEqual(1, messageCount);
+        }
+        [Test]
+        public void ValidateProperty() { 
+            var validator = new Validator();
+            int messageCount = 0;
+
+            validator.ErrorsChanged += (o, e) => {
+                Assert.AreEqual("Value", e.PropertyName);
+                Assert.AreEqual(validator, o);
+                messageCount++;
+            };
+            validator.Value = 13;
             Assert.AreEqual(1, messageCount);
         }
 #endif

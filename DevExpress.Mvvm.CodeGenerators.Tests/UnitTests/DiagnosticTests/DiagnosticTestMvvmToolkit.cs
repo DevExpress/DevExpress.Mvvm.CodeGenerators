@@ -229,6 +229,24 @@ namespace Test {
             Assert.AreEqual(3, trees.Count());
             Assert.AreEqual(GeneratorDiagnostics.NoBaseObservableRecipientClass.Id, diagnostics.Single().Id);
         }
+        [Test]
+        public void NoBaseObservableValidatorClass() {
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+
+namespace Test {
+    [GenerateViewModel]
+    partial class Validator {
+        [GenerateProperty(Validate = true)]
+        int value;
+        public Validator() => value.ToString(); //avoid not used warning
+    }
+}
+";
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
+            Assert.AreEqual(3, trees.Count());
+            Assert.AreEqual(GeneratorDiagnostics.NoBaseObservableValidatorClass.Id, diagnostics.Single().Id);
+        }
         [TestCase("[DevExpress.Mvvm.CodeGenerators.Prism.GenerateViewModel]\r\n")]
         [TestCase("[DevExpress.Mvvm.CodeGenerators.GenerateViewModel]\r\n")]
         public void TwoGenerateViewModelAttributeDiagnostic(string generateViewModel) {

@@ -21,6 +21,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
         }
         public static bool GetBroadcastAttributeValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
             AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, AttributesGenerator.Broadcast, false);
+        public static bool GetValidateAttributeValue(IFieldSymbol fieldSymbol, INamedTypeSymbol propertySymbol) =>
+            AttributeHelper.GetPropertyActualValue(fieldSymbol, propertySymbol, AttributesGenerator.Validate, false);
         public static NullableAnnotation GetNullableAnnotation(ITypeSymbol type) =>
             type.IsReferenceType && type.NullableAnnotation == NullableAnnotation.None
                 ? NullableAnnotation.Annotated

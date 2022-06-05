@@ -16,6 +16,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static readonly DiagnosticDescriptor MoreThanOneGenerateViewModelAttributes = CreateDiagnosticDescriptor(moreThanOneGenerateViewModelAttributesId, moreThanOneGenerateViewModelAttributesTitle, moreThanOneGenerateViewModelAttributesMessageFormat);
         public static readonly DiagnosticDescriptor NonNullableDelegateCommandArgument = CreateDiagnosticDescriptor(nonNullableDelegateCommandArgumentId, nonNullableDelegateCommandArgumentTitle, nonNullableDelegateCommandArgumentMessageFormat);
         public static readonly DiagnosticDescriptor NoBaseObservableRecipientClass = CreateDiagnosticDescriptor(noBaseObservableRecipientClassId, noBaseObservableRecipientClassTitle, noBaseObservableRecipientClassMessageFormat);
+        public static readonly DiagnosticDescriptor NoBaseObservableValidatorClass = CreateDiagnosticDescriptor(noBaseObservableValidatorClassId, noBaseObservableValidatorClassTitle, noBaseObservableValidatorClassMessageFormat);
 
         public static void ReportNoPartialModifier(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol) =>
             context.ReportDiagnostic(NoPartialModifier, SymbolNameLocation(classSymbol), classSymbol.Name);
@@ -43,6 +44,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         public static void ReportNoBaseObservableRecipientClass(this GeneratorExecutionContext context, IFieldSymbol fieldSymbol, string propertyName) =>
             context.ReportDiagnostic(NoBaseObservableRecipientClass, SymbolNameLocation(fieldSymbol), propertyName);
+        public static void ReportNoBaseObservableValidatorClass(this GeneratorExecutionContext context, IFieldSymbol fieldSymbol, string propertyName) =>
+            context.ReportDiagnostic(NoBaseObservableValidatorClass, SymbolNameLocation(fieldSymbol), propertyName);
 
         static void ReportDiagnostic(this GeneratorExecutionContext context, DiagnosticDescriptor descriptor, Location location, params object[] messageArgs) =>
             context.ReportDiagnostic(Diagnostic.Create(descriptor, location, messageArgs));

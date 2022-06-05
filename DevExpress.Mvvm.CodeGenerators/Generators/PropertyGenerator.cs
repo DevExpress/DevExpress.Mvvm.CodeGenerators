@@ -14,6 +14,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 info.Context.ReportNoBaseObservableRecipientClass(fieldSymbol, propertyName);
                 return null;
             }
+            bool toolkitValidate = PropertyHelper.GetValidateAttributeValue(fieldSymbol, propertyAttributeSymbol);
+            if(toolkitValidate && !info.Compilation.HasImplicitConversion(classSymbol, info.MvvmToolkit!.ObservableValidatorSymbol)) {
+                info.Context.ReportNoBaseObservableValidatorClass(fieldSymbol, propertyName);
+                return null;
+            }
 
             string? changedMethod = PropertyHelper.GetChangedMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type, mvvm);
             string? changingMethod = PropertyHelper.GetChangingMethod(info, classSymbol, fieldSymbol, propertyName, fieldSymbol.Type, mvvm);
@@ -43,7 +48,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(!string.IsNullOrEmpty(changingMethod))
                 source.Tab.Tab.AppendLine(changingMethod);
 
-            if(toolkitBroadcast)
+            if(toolkitBroadcast || toolkitValidate)
                 Debug.Assert(mvvm == SupportedMvvm.MvvmToolkit); 
 
             if(toolkitBroadcast || (!string.IsNullOrEmpty(changedMethod) && !changedMethod.EndsWith("();")))
@@ -54,6 +59,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
             if(toolkitBroadcast)
                 source.Tab.Tab.AppendLine($"Broadcast<{typeName}>(oldValue, value, nameof({propertyName}));");
+            if(toolkitValidate)
+                source.Tab.Tab.AppendLine($"ValidateProperty(value, nameof({propertyName}));");
 
             if(!string.IsNullOrEmpty(changedMethod))
                 source.Tab.Tab.AppendLine(changedMethod);

@@ -20,6 +20,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public const string OnChangingMethod = "OnChangingMethod";
         public const string SetterAccessModifier = "SetterAccessModifier";
         public const string Broadcast = "Broadcast";
+        public const string Validate = "Validate";
 
         public const string AllowMultipleExecution = "AllowMultipleExecution";
         public const string UseCommandManager = "UseCommandManager";
@@ -378,9 +379,14 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public AccessModifier SetterAccessModifier { get; set; }
         /// <summary>
         ///     Broadcasts a PropertyChangedMessage after the property value is changed. 
-        ///     Inherit your class from the ObservableRecipient to enable this functionality. 
+        ///     Inherit your class from the ObservableRecipient class to enable this functionality. 
         /// </summary>
         public bool Broadcast{ get; set; }
+        /// <summary>
+        ///     Validates property value and raises the ErrorsChanged event if needed. 
+        ///     Inherit your class from the ObservableValidator class to enable this functionality. 
+        /// </summary>
+        public bool Validate{ get; set; }
     }
 
     /// <summary>
