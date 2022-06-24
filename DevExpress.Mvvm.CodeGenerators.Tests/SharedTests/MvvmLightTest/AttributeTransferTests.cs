@@ -32,13 +32,13 @@ namespace MvvmLight.Mvvm.Tests {
     [TestFixture]
     public class AttributeTransferTests {
         [Test]
-        public void AttributeTransfer() {
-            var noAttributeProperty = typeof(AttributeTransfer).GetProperty("NoAttribute");
+        public void AttributeTransferTest() {
+            var noAttributeProperty = typeof(AttributeTransfer).GetProperty(nameof(AttributeTransfer.NoAttribute));
             var attributes = Attribute.GetCustomAttributes(noAttributeProperty);
             var expectedAttributes = new Attribute[] { };
             Assert.AreEqual(expectedAttributes, attributes);
 
-            var withMultipleAttributesProperty = typeof(AttributeTransfer).GetProperty("WithMultipleAttributes");
+            var withMultipleAttributesProperty = typeof(AttributeTransfer).GetProperty(nameof(AttributeTransfer.WithMultipleAttributes));
             attributes = Attribute.GetCustomAttributes(withMultipleAttributesProperty);
             expectedAttributes = new Attribute[] {
                 new System.ComponentModel.DataAnnotations.RangeAttribute(0, 1),

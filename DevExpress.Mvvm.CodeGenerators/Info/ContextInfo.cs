@@ -48,17 +48,17 @@ namespace DevExpress.Mvvm.CodeGenerators {
             IAASymbol = compilation.GetTypeByMetadataName("Prism.IActiveAware")!;
         }
     }
-    class MvvmLightFrameWorkAttributes : FrameworkAttributes {
+    class MvvmLightFrameworkAttributes : FrameworkAttributes {
         public INamedTypeSymbol ICUSymbol { get; }
-        public MvvmLightFrameWorkAttributes(Compilation compilation)
+        public MvvmLightFrameworkAttributes(Compilation compilation)
             : base(compilation, SupportedMvvm.MvvmLight) {
             ICUSymbol = compilation.GetTypeByMetadataName("GalaSoft.MvvmLight.ICleanup")!;
         }
     }
-    class MvvmToolkitFrameWorkAttributes : FrameworkAttributes {
+    class MvvmToolkitFrameworkAttributes : FrameworkAttributes {
         public INamedTypeSymbol ObservableRecipientSymbol { get; }
         public INamedTypeSymbol ObservableValidatorSymbol { get; }
-        public MvvmToolkitFrameWorkAttributes(Compilation compilation)
+        public MvvmToolkitFrameworkAttributes(Compilation compilation)
             : base(compilation, SupportedMvvm.MvvmToolkit) {
             ObservableRecipientSymbol = compilation.GetTypeByMetadataName("Microsoft.Toolkit.Mvvm.ComponentModel.ObservableRecipient")!;
             ObservableValidatorSymbol = compilation.GetTypeByMetadataName("Microsoft.Toolkit.Mvvm.ComponentModel.ObservableValidator")!;
@@ -70,8 +70,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
 
         public DXFrameworkAttributes? Dx { get; }
         public PrismFrameworkAttributes? Prism { get; }
-        public MvvmLightFrameWorkAttributes? MvvmLight { get; }
-        public MvvmToolkitFrameWorkAttributes? MvvmToolkit { get; }
+        public MvvmLightFrameworkAttributes? MvvmLight { get; }
+        public MvvmToolkitFrameworkAttributes? MvvmToolkit { get; }
 
         public INamedTypeSymbol INPCedSymbol { get; }
         public INamedTypeSymbol INPCingSymbol { get; }
@@ -94,9 +94,9 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(AvailableMvvm.Contains(SupportedMvvm.Prism))
                 Prism = new PrismFrameworkAttributes(Compilation);
             if(AvailableMvvm.Contains(SupportedMvvm.MvvmLight))
-                MvvmLight = new MvvmLightFrameWorkAttributes(Compilation);
+                MvvmLight = new MvvmLightFrameworkAttributes(Compilation);
             if(AvailableMvvm.Contains(SupportedMvvm.MvvmToolkit))
-                MvvmToolkit = new MvvmToolkitFrameWorkAttributes(Compilation);
+                MvvmToolkit = new MvvmToolkitFrameworkAttributes(Compilation);
 
             INPCedSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanged).FullName)!;
             INPCingSymbol = compilation.GetTypeByMetadataName(typeof(INotifyPropertyChanging).FullName)!;

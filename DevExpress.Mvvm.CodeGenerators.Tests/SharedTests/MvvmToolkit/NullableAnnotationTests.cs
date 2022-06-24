@@ -19,12 +19,8 @@ namespace MvvmToolkit.Mvvm.Tests {
 
         [GenerateCommand]
         void NullableParameter1(string? str) { }
-        //[GenerateCommand]
-        //void NonNullableParameter1(string str) { }
         [GenerateCommand]
         Task NullableParameterAsync1(string? str) => Task.CompletedTask;
-        //[GenerateCommand]
-        //Task NonNullableParameterAsync1(string str) => Task.CompletedTask;
 
 #nullable disable
         [GenerateProperty]
