@@ -5,6 +5,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static readonly string DxPropertyAttributeFullName = $"{InitializationGenerator.DxNamespace}.GeneratePropertyAttribute";
         public static readonly string PrismPropertyAttributeFullName = $"{InitializationGenerator.PrismNamespace}.GeneratePropertyAttribute";
         public static readonly string MvvmLightPropertyAttributeFullName = $"{InitializationGenerator.MvvmLightNamespace}.GeneratePropertyAttribute";
+        public static readonly string MvvmToolkitPropertyAttributeFullName = $"{InitializationGenerator.MvvmToolkitNamespace}.GeneratePropertyAttribute";
 
         public const string ImplementIDEI = "ImplementIDataErrorInfo";
         public const string ImplementINPCing = "ImplementINotifyPropertyChanging";
@@ -18,6 +19,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public const string OnChangedMethod = "OnChangedMethod";
         public const string OnChangingMethod = "OnChangingMethod";
         public const string SetterAccessModifier = "SetterAccessModifier";
+        public const string Broadcast = "Broadcast";
+        public const string Validate = "Validate";
 
         public const string AllowMultipleExecution = "AllowMultipleExecution";
         public const string UseCommandManager = "UseCommandManager";
@@ -32,6 +35,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 SupportedMvvm.Dx => isWinUI ? dxwinUISourceCode : dxMvvmSourceCode,
                 SupportedMvvm.Prism => prismMvvmSourceCode,
                 SupportedMvvm.MvvmLight => mvvmLightSourceCode,
+                SupportedMvvm.MvvmToolkit => mvvmToolkitSourceCode,
                 SupportedMvvm.None => commonSourceCode,
                 _ => throw new InvalidOperationException()
             };
@@ -321,6 +325,68 @@ namespace DevExpress.Mvvm.CodeGenerators {
         ///     Available values: <i>Public, Private, Protected, Internal, ProtectedInternal, PrivateProtected.</i>
         /// </summary>
         public AccessModifier SetterAccessModifier { get; set; }
+    }
+
+    /// <summary>
+    ///     Indicates that the View Model Code Generator should process this method and produce a Command.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    class GenerateCommandAttribute : Attribute {
+        /// <summary>
+        ///     Specifies a custom <b>CanExecute</b> method name. If the property is not specified, the method’s name should follow the <b>Can[ActionName]</b> pattern.
+        /// </summary>
+        public string? CanExecuteMethod { get; set; }
+        /// <summary>
+        ///     Specifies a custom <b>Command</b> name. The default value is <b>[ActionName]Command</b>.
+        /// </summary>
+        public string? Name { get; set; }
+    }";
+        const string mvvmToolkitSourceCode = @"    /// <summary>
+    ///     Indicates that the View Model Code Generator should process this class and produce a View Model.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    class GenerateViewModelAttribute : Attribute {
+        /// <summary>
+        ///     Implements
+        ///     <see href=""https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanging"">INotifyPropertyChanging﻿.</see>
+        /// </summary>
+        public bool ImplementINotifyPropertyChanging { get; set; }
+    }
+
+    /// <summary>
+    ///     Indicates that the View Model Code Generator should process this field and produce a property.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field)]
+    class GeneratePropertyAttribute : Attribute {
+        /// <summary>
+        ///     Assigns a virtual modifier to the property.
+        /// </summary>
+        public bool IsVirtual { get; set; }
+        /// <summary>
+        ///     Specifies the name of the method invoked after the property value is changed.<br/>
+        ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changed</b> pattern.
+        /// </summary>
+        public string? OnChangedMethod { get; set; }
+        /// <summary>
+        ///     Specifies the name of the method invoked when the property value is changing.<br/>
+        ///     If the property is not specified, the method’s name should follow the <b>On[PropertyName]Changing</b> pattern.
+        /// </summary>
+        public string? OnChangingMethod { get; set; }
+        /// <summary>
+        ///     Specifies an access modifier for a set accessor. The default value is the same as a property’s modifier.<br/>
+        ///     Available values: <i>Public, Private, Protected, Internal, ProtectedInternal, PrivateProtected.</i>
+        /// </summary>
+        public AccessModifier SetterAccessModifier { get; set; }
+        /// <summary>
+        ///     Broadcasts a PropertyChangedMessage after the property value is changed. 
+        ///     Inherit your class from the ObservableRecipient class to enable this functionality. 
+        /// </summary>
+        public bool Broadcast{ get; set; }
+        /// <summary>
+        ///     Validates property value and raises the ErrorsChanged event if needed. 
+        ///     Inherit your class from the ObservableValidator class to enable this functionality. 
+        /// </summary>
+        public bool Validate{ get; set; }
     }
 
     /// <summary>

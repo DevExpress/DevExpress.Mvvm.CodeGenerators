@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel;
 using DevExpress.Mvvm.CodeGenerators.MvvmLight;
 using GalaSoft.MvvmLight;
+using DevExpress.Mvvm.CodeGenerators.Tests;
 
 namespace MvvmLight.Mvvm.Tests {
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
@@ -22,6 +23,11 @@ namespace MvvmLight.Mvvm.Tests {
     class ParentWithoutRaiseMethod : INotifyPropertyChanged, INotifyPropertyChanging {
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
+        public ParentWithoutRaiseMethod() {
+            //avoid warnings
+            PropertyChanged?.Invoke(null, null);
+            PropertyChanging?.Invoke(null, null);
+        }
     }
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     partial class ChildWithoutRaiseMethod : ParentWithoutRaiseMethod {

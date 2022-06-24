@@ -11,6 +11,10 @@ partial class GlobalClass {
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
     class ImplementedINPCingClass : INotifyPropertyChanged {
         public event PropertyChangedEventHandler PropertyChanged;
+        public ImplementedINPCingClass() {
+            //avoid warnings
+            PropertyChanged?.Invoke(null, null);
+        }
         public int B { get; set; }
         protected void RaisePropertyChanging(PropertyChangingEventArgs e) => B = 1;
         protected void RaisePropertyChanging(string e) => B = 1;
@@ -141,8 +145,10 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
             NonNullableIntNewValue = newValue;
 #nullable disable
 
+#pragma warning disable DXCG1001
         [GenerateProperty(OnChangedMethod = "OnChanged", OnChangingMethod = "OnChanging")]
         int noParameter;
+#pragma warning restore DXCG1001
 
         public bool ChangedMethodVisited;
         public bool ChangingMethodVisited;

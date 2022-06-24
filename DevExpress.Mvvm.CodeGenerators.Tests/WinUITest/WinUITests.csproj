@@ -6,7 +6,8 @@
     <AssemblyName>DevExpress.Mvvm.CodeGenerators.WinUITests</AssemblyName>
     <LangVersion>9</LangVersion>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
-    <WarningsAsErrors>8618,8604</WarningsAsErrors>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <NoWarn>0105</NoWarn>
     <DefineConstants>WINUI</DefineConstants>
   </PropertyGroup>
 
@@ -15,11 +16,12 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="DevExpress.WinUI.Mvvm.v22.1">
-      <HintPath>..\..\..\2022.1\Bin\WinUI\Sdk\Mvvm\DevExpress.WinUI.Mvvm.v22.1.dll</HintPath>
+      <HintPath>..\..\..\..\2022.1\Bin\WinUI\Sdk\Mvvm\DevExpress.WinUI.Mvvm.v22.1.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
     <PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
     <PackageReference Include="Prism.Wpf" Version="8.1.97" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />

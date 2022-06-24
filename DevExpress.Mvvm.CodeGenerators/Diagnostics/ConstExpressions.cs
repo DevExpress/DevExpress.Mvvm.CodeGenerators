@@ -36,10 +36,6 @@
         const string raiseMethodNotFoundTitle = "Cannot find Raise methods";
         const string raiseMethodNotFoundMessageFormat = "Cannot find the 'void RaisePropertyChang{0}(PropertyChang{0}EventArgs)' or 'void RaisePropertyChang{0}(string)' methods";
 
-        const string genericViewModelId = idPrefix + "0009";
-        const string genericViewModelTitle = "Cannot generate the generic View Model";
-        const string genericViewModelMessageFormat = "The '{0}' class must be non-generic";
-
         const string twoSuitableMethodsId = idPrefix + "1001";
         const string twoSuitableMethodsTitle = "The class contains two suitable methods";
         const string twoSuitableMethodsMessageFormat = "The '{0}' contains two suitable methods: 'void {1}()' and 'void {1}({2})'. 'void {1}({2})' is used.";
@@ -51,5 +47,17 @@
         const string nonNullableDelegateCommandArgumentId = idPrefix + "0011";
         const string nonNullableDelegateCommandArgumentTitle = "Non Nullable DelegateCommand Argument";
         const string nonNullableDelegateCommandArgumentMessageFormat = "The {0} method parameter cannot be of value types (int, double, bool, etc). Use the Nullable<T> parameter instead.";
+
+        const string onMethodNotFoundId = idPrefix + "0012";
+        const string onMethodNotFoundTitle = "Cannot find OnPropertyChanged methods";
+        const string onMethodNotFoundMessageFormat = "Cannot find the 'void OnPropertyChang{0}(PropertyChang{0}EventArgs)' or 'void OnPropertyChang{0}(string)' methods";
+
+        const string noBaseObservableRecipientClassId = idPrefix + "0013";
+        const string noBaseObservableRecipientClassTitle = "Class should be inherited from the ObservableRecipient class";
+        const string noBaseObservableRecipientClassMessageFormat = "Inherit from the 'ObservableRecipient' class to use the 'Broadcast=true' option in the '{0}' property";
+
+        const string noBaseObservableValidatorClassId = idPrefix + "0014";
+        const string noBaseObservableValidatorClassTitle = "Class should be inherited from the ObservableValidator class";
+        const string noBaseObservableValidatorClassMessageFormat = "Inherit from the 'ObservableValidator' class to use the 'Validate=true' option in the '{0}' property";
     }
 }

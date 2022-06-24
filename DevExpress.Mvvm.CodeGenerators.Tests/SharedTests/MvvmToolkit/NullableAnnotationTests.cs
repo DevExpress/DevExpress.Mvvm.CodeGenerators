@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using DevExpress.Mvvm.CodeGenerators.Prism;
+using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 
-namespace Prism.Mvvm.Tests {
+namespace MvvmToolkit.Mvvm.Tests {
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     public partial class NullableAnnotation {
 #nullable enable
@@ -20,11 +20,7 @@ namespace Prism.Mvvm.Tests {
         [GenerateCommand]
         void NullableParameter1(string? str) { }
         [GenerateCommand]
-        void NonNullableParameter1(string str) { }
-        [GenerateCommand]
         Task NullableParameterAsync1(string? str) => Task.CompletedTask;
-        [GenerateCommand]
-        Task NonNullableParameterAsync1(string str) => Task.CompletedTask;
 
 #nullable disable
         [GenerateProperty]

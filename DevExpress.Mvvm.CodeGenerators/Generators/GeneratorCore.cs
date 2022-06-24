@@ -40,11 +40,13 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 bool hasDxAttribute = AttributeHelper.HasAttribute(classSymbol, contextInfo.Dx?.ViewModelAttributeSymbol);
                 bool hasPrismAttribute = AttributeHelper.HasAttribute(classSymbol, contextInfo.Prism?.ViewModelAttributeSymbol);
                 bool hasMvvmLightAttribute = AttributeHelper.HasAttribute(classSymbol, contextInfo.MvvmLight?.ViewModelAttributeSymbol);
+                bool hasMvvmToolkitAttribute = AttributeHelper.HasAttribute(classSymbol, contextInfo.MvvmToolkit?.ViewModelAttributeSymbol);
 
                 int mvvmCount = 0;
                 if(hasDxAttribute) mvvmCount++;
                 if(hasPrismAttribute) mvvmCount++;
                 if(hasMvvmLightAttribute) mvvmCount++;
+                if(hasMvvmToolkitAttribute) mvvmCount++;
 
                 if(mvvmCount > 1) {
                     context.ReportMoreThanOneGenerateViewModelAttributes(classSymbol);
@@ -61,6 +63,8 @@ namespace DevExpress.Mvvm.CodeGenerators {
                     mvvm = SupportedMvvm.Prism;
                 else if(hasMvvmLightAttribute)
                     mvvm = SupportedMvvm.MvvmLight;
+                else if(hasMvvmToolkitAttribute)
+                    mvvm = SupportedMvvm.MvvmToolkit;
                 else continue;
 
                 if(processedSymbols.Contains(classSymbol))

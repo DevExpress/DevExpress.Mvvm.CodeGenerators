@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,18 +28,21 @@ namespace DevExpress.Mvvm.CodeGenerators {
             GetProcessingMembers<IMethodSymbol>(classSymbol, commandSymbol);
         public static bool IsInterfaceImplementedInCurrentClass(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol) =>
             classSymbol.Interfaces.Contains(interfaceSymbol);
-        public static bool IsInterfaceImplemented(INamedTypeSymbol classSymbol, INamedTypeSymbol? interfaceSymbol, ContextInfo contextInfo, SupportedMvvm mvvm) {
-            if(interfaceSymbol == null)
+
+        public static bool ShouldImplementInterface(INamedTypeSymbol classSymbol, INamedTypeSymbol? interfaceSymbol, ContextInfo contextInfo, SupportedMvvm mvvm, Func<ContextInfo, INamedTypeSymbol, bool> getShouldImplementValue) {
+            if(!getShouldImplementValue(contextInfo, classSymbol))
                 return false;
-            if(IsInterfaceImplementedInCurrentClass(classSymbol, interfaceSymbol))
+            if(interfaceSymbol == null)
                 return true;
-            for(INamedTypeSymbol parent = classSymbol.BaseType!; parent != null; parent = parent.BaseType!) {
-                bool hasAttribute = AttributeHelper.HasAttribute(parent, contextInfo.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol) && GetImplementISPVMValue(contextInfo, parent, mvvm);
+            if(IsInterfaceImplementedInCurrentClass(classSymbol, interfaceSymbol))
+                return false;
+            foreach(INamedTypeSymbol parent in classSymbol.GetParents()) {
+                bool hasAttribute = AttributeHelper.HasAttribute(parent, contextInfo.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol) && getShouldImplementValue(contextInfo, parent);
                 bool hasImplementation = IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
                 if(hasAttribute || hasImplementation)
-                    return true;
+                    return false;
             }
-            return false;
+            return true;
         }
 
         static IEnumerable<T> GetProcessingMembers<T>(INamedTypeSymbol classSymbol, INamedTypeSymbol attributeSymbol) where T : ISymbol =>

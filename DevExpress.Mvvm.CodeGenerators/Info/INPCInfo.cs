@@ -8,30 +8,30 @@ namespace DevExpress.Mvvm.CodeGenerators {
         readonly bool hasImplementationInCurrentClass;
 
         public bool HasAttribute { get; }
-        public bool HasRaiseMethodWithEventArgsParameter { get; }
-        public bool HasRaiseMethodWithStringParameter { get; }
+        public bool HasMethodWithEventArgsPrefix { get; }
+        public bool HasMethodWithStringPrefix { get; }
         public string RaiseMethodImplementation { get; }
 
         public static INPCInfo GetINPCedInfo(ContextInfo info, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) =>
             new INPCInfo(classSymbol,
                          info.INPCedSymbol,
                          symbol => AttributeHelper.HasAttribute(symbol, info.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol),
-                         "RaisePropertyChanged",
+                         mvvm.GetRasiePrefix() + "PropertyChanged",
                          "System.ComponentModel.PropertyChangedEventArgs",
-                         "void RaisePropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);");
+                         $"void {mvvm.GetRasiePrefix().ToStringValue()}PropertyChanged(PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);");
         public static INPCInfo GetINPCingInfo(ContextInfo info, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) =>
             new INPCInfo(classSymbol,
                          info.INPCingSymbol,
                          symbol => AttributeHelper.HasAttribute(symbol, info.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol) &&
                                    AttributeHelper.GetPropertyActualValue(symbol, info.GetFrameworkAttributes(mvvm).ViewModelAttributeSymbol, AttributesGenerator.ImplementINPCing, false),
-                         "RaisePropertyChanging",
+                         mvvm.GetRasiePrefix() + "PropertyChanging",
                          "System.ComponentModel.PropertyChangingEventArgs",
-                         "void RaisePropertyChanging(PropertyChangingEventArgs e) => PropertyChanging?.Invoke(this, e);");
+                         $"void {mvvm.GetRasiePrefix().ToStringValue()}PropertyChanging(PropertyChangingEventArgs e) => PropertyChanging?.Invoke(this, e);");
 
         public bool HasNoImplementation() =>
             HasAttribute && !hasImplementation;
         public bool ShouldImplementRaiseMethod() =>
-            HasAttribute && !HasRaiseMethodWithEventArgsParameter && (!hasImplementation || hasImplementationInCurrentClass);
+            HasAttribute && !HasMethodWithEventArgsPrefix && (!hasImplementation || hasImplementationInCurrentClass);
 
         INPCInfo(INamedTypeSymbol classSymbol, INamedTypeSymbol interfaceSymbol, Func<INamedTypeSymbol, bool> checkAttribute, string methodName, string eventArgsParameter, string raiseMethodImplementation) {
             HasAttribute = checkAttribute(classSymbol);
@@ -39,11 +39,11 @@ namespace DevExpress.Mvvm.CodeGenerators {
             if(HasAttribute && hasImplementation)
                 hasImplementationInCurrentClass = true;
 
-            HasRaiseMethodWithEventArgsParameter = HasMethod(classSymbol, methodName, eventArgsParameter, true);
-            HasRaiseMethodWithStringParameter = HasMethod(classSymbol, methodName, "string", true);
+            HasMethodWithEventArgsPrefix = HasRaiseMethod(classSymbol, methodName, eventArgsParameter, true);
+            HasMethodWithStringPrefix = HasRaiseMethod(classSymbol, methodName, "string", true);
 
             bool isRaiseMethodGenerated = false;
-            for(INamedTypeSymbol parent = classSymbol.BaseType!; parent != null; parent = parent.BaseType!) {
+            foreach(INamedTypeSymbol parent in classSymbol.GetParents()) {
                 bool hasAttribute = checkAttribute(parent);
                 bool hasImplementation = ClassHelper.IsInterfaceImplementedInCurrentClass(parent, interfaceSymbol);
                 if(hasAttribute || hasImplementation)
@@ -53,21 +53,26 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 if(hasAttribute)
                     isRaiseMethodGenerated = true;
 
-                if(!HasRaiseMethodWithEventArgsParameter)
-                    HasRaiseMethodWithEventArgsParameter = HasMethod(parent, methodName, eventArgsParameter);
-                if(!HasRaiseMethodWithStringParameter)
-                    HasRaiseMethodWithStringParameter = HasMethod(parent, methodName, "string");
+                if(!HasMethodWithEventArgsPrefix)
+                    HasMethodWithEventArgsPrefix = HasRaiseMethod(parent, methodName, eventArgsParameter, false);
+                if(!HasMethodWithStringPrefix)
+                    HasMethodWithStringPrefix = HasRaiseMethod(parent, methodName, "string", false);
             }
             if(isRaiseMethodGenerated)
-                HasRaiseMethodWithEventArgsParameter = true;
+                HasMethodWithEventArgsPrefix = true;
             RaiseMethodImplementation = raiseMethodImplementation;
         }
-        bool HasMethod(INamedTypeSymbol classSymbol, string methodName, string parameterType, bool ignorePrivateAccessibility = false) =>
-            CommandHelper.GetMethods(classSymbol,
-                                     symbol => (symbol.DeclaredAccessibility != Accessibility.Private || ignorePrivateAccessibility) &&
-                                               symbol.ReturnsVoid &&
-                                               symbol.Name == methodName &&
-                                               symbol.Parameters.Length == 1 && symbol.Parameters.First().Type.ToDisplayString(NullableFlowState.None) == parameterType)
-                         .Any();
+
+        bool HasRaiseMethod(INamedTypeSymbol classSymbol, string methodName, string parameterType, bool ignorePrivateAccessibility) {
+            return classSymbol
+                .GetMembers()
+                .OfType<IMethodSymbol>()
+                .Any(symbol => {
+                    return (symbol.DeclaredAccessibility != Accessibility.Private || ignorePrivateAccessibility) &&
+                        symbol.ReturnsVoid &&
+                        symbol.Name == methodName &&
+                        symbol.Parameters.Length == 1 && symbol.Parameters.First().Type.ToDisplayString(NullableFlowState.None) == parameterType;
+                });
+        }
     }
 }
