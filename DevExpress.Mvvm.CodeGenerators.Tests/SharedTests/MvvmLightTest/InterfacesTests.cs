@@ -18,7 +18,7 @@ namespace MvvmLight.Mvvm.Tests {
     [GenerateViewModel(ImplementICleanup = true)]
     partial class ImplementICUParent { }
     [GenerateViewModel(ImplementICleanup = true)]
-    partial class ImplementICUChild { }
+    partial class ImplementICUChild : ImplementICUParent { }
 
     [GenerateViewModel(ImplementINotifyPropertyChanging = true,
     ImplementICleanup = true)]

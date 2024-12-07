@@ -11,9 +11,12 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static readonly DiagnosticDescriptor IncorrectCommandSignature = CreateDiagnosticDescriptor(incorrectCommandSignatureId, incorrectCommandSignatureTitle, incorrectCommandSignatureMessageFormat);
         public static readonly DiagnosticDescriptor CanExecuteMethodNotFound = CreateDiagnosticDescriptor(canExecuteMethodNotFoundId, canExecuteMethodNotFoundTitle, canExecuteMethodNotFoundMessageFormat);
         public static readonly DiagnosticDescriptor RaiseMethodNotFound = CreateDiagnosticDescriptor(raiseMethodNotFoundId, raiseMethodNotFoundTitle, raiseMethodNotFoundMessageFormat);
+        public static readonly DiagnosticDescriptor OnMethodNotFound = CreateDiagnosticDescriptor(onMethodNotFoundId, onMethodNotFoundTitle, onMethodNotFoundMessageFormat);
         public static readonly DiagnosticDescriptor TwoSuitableMethods = CreateDiagnosticDescriptor(twoSuitableMethodsId, twoSuitableMethodsTitle, twoSuitableMethodsMessageFormat, DiagnosticSeverity.Warning);
         public static readonly DiagnosticDescriptor MoreThanOneGenerateViewModelAttributes = CreateDiagnosticDescriptor(moreThanOneGenerateViewModelAttributesId, moreThanOneGenerateViewModelAttributesTitle, moreThanOneGenerateViewModelAttributesMessageFormat);
         public static readonly DiagnosticDescriptor NonNullableDelegateCommandArgument = CreateDiagnosticDescriptor(nonNullableDelegateCommandArgumentId, nonNullableDelegateCommandArgumentTitle, nonNullableDelegateCommandArgumentMessageFormat);
+        public static readonly DiagnosticDescriptor NoBaseObservableRecipientClass = CreateDiagnosticDescriptor(noBaseObservableRecipientClassId, noBaseObservableRecipientClassTitle, noBaseObservableRecipientClassMessageFormat);
+        public static readonly DiagnosticDescriptor NoBaseObservableValidatorClass = CreateDiagnosticDescriptor(noBaseObservableValidatorClassId, noBaseObservableValidatorClassTitle, noBaseObservableValidatorClassMessageFormat);
 
         public static void ReportNoPartialModifier(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol) =>
             context.ReportDiagnostic(NoPartialModifier, SymbolNameLocation(classSymbol), classSymbol.Name);
@@ -25,14 +28,24 @@ namespace DevExpress.Mvvm.CodeGenerators {
             context.ReportDiagnostic(IncorrectCommandSignature, SymbolNameLocation(methodSymbol), methodSymbol.ReturnType.ToDisplayStringNullable(), methodSymbol.Name, ParameterTypesToDisplayString(methodSymbol));
         public static void ReportCanExecuteMethodNotFound(this GeneratorExecutionContext context, IMethodSymbol methodSymbol, string canExecuteMethodName, string parameterType, IEnumerable<IMethodSymbol> candidates) =>
             context.ReportDiagnostic(CanExecuteMethodNotFound, SymbolNameLocation(methodSymbol, AttributesGenerator.CanExecuteMethod), canExecuteMethodName, parameterType, CandidatesMessage(candidates));
-        public static void ReportRaiseMethodNotFound(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol, string end) =>
-            context.ReportDiagnostic(RaiseMethodNotFound, SymbolNameLocation(classSymbol), end);
+        internal static void ReportRaiseMethodNotFound(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol, string end, RaiseMethodPrefix prefix) {
+            if(prefix == RaiseMethodPrefix.Raise)
+                context.ReportDiagnostic(RaiseMethodNotFound, SymbolNameLocation(classSymbol), end);
+            else
+                context.ReportDiagnostic(OnMethodNotFound, SymbolNameLocation(classSymbol), end);
+        }
+
         public static void ReportTwoSuitableMethods(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol, IFieldSymbol fieldSymbol, string methodName, string parameterType) =>
             context.ReportDiagnostic(TwoSuitableMethods, SymbolNameLocation(fieldSymbol), classSymbol.Name, methodName, parameterType);
         public static void ReportMoreThanOneGenerateViewModelAttributes(this GeneratorExecutionContext context, INamedTypeSymbol classSymbol) =>
             context.ReportDiagnostic(MoreThanOneGenerateViewModelAttributes, SymbolNameLocation(classSymbol), classSymbol.Name);
         public static void ReportNonNullableDelegateCommandArgument(this GeneratorExecutionContext context, IMethodSymbol methodSymbol) =>
             context.ReportDiagnostic(NonNullableDelegateCommandArgument, SymbolNameLocation(methodSymbol), methodSymbol.Name);
+
+        public static void ReportNoBaseObservableRecipientClass(this GeneratorExecutionContext context, IFieldSymbol fieldSymbol, string propertyName) =>
+            context.ReportDiagnostic(NoBaseObservableRecipientClass, SymbolNameLocation(fieldSymbol), propertyName);
+        public static void ReportNoBaseObservableValidatorClass(this GeneratorExecutionContext context, IFieldSymbol fieldSymbol, string propertyName) =>
+            context.ReportDiagnostic(NoBaseObservableValidatorClass, SymbolNameLocation(fieldSymbol), propertyName);
 
         static void ReportDiagnostic(this GeneratorExecutionContext context, DiagnosticDescriptor descriptor, Location location, params object[] messageArgs) =>
             context.ReportDiagnostic(Diagnostic.Create(descriptor, location, messageArgs));

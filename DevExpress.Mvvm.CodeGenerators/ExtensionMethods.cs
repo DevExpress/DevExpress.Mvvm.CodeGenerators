@@ -16,6 +16,12 @@ namespace DevExpress.Mvvm.CodeGenerators {
                 NullableAnnotation.Annotated => NullableFlowState.MaybeNull,
                 _ => NullableFlowState.None
             };
+        public static IEnumerable<INamedTypeSymbol> GetParents(this INamedTypeSymbol typeSymbol) {
+            for(INamedTypeSymbol parent = typeSymbol.BaseType!; parent != null; parent = parent.BaseType!) {
+                yield return parent;
+            }
+        }
+
         #endregion
 
         #region String
@@ -25,5 +31,21 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static string TypeToString(this TypeKind type) => type == TypeKind.Structure ? "struct" : type.ToString().ToLower();
 
         public static string BoolToStringValue(this bool val) => val ? "true" : "false";
+
+        internal static string ToStringValue(this RaiseMethodPrefix val) {
+            return val switch {
+                RaiseMethodPrefix.On => "On",
+                RaiseMethodPrefix.Raise => "Raise",
+                _ => throw new InvalidOperationException(),
+            };
+        }
+
+        internal static RaiseMethodPrefix GetRasiePrefix(this SupportedMvvm mvvm) {
+            return mvvm switch {
+                SupportedMvvm.None or SupportedMvvm.Dx or SupportedMvvm.Prism or SupportedMvvm.MvvmLight => RaiseMethodPrefix.Raise,
+                SupportedMvvm.MvvmToolkit => RaiseMethodPrefix.On,
+                _ => throw new InvalidOperationException()
+            };
+        }
     }
 }

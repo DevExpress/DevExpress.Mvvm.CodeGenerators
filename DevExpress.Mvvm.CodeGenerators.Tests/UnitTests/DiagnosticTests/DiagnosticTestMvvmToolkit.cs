@@ -1,16 +1,18 @@
-﻿using GalaSoft.MvvmLight.Command;
+﻿using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using System.ComponentModel;
 using System.Linq;
+using System.Collections.Immutable;
+using System.Collections.Generic;
 
 namespace DevExpress.Mvvm.CodeGenerators.Tests {
     [TestFixture]
-    public class DiagnosticTestsMvvmLight {
+    public class DiagnosticTestsMvvmToolkit {
         [Test]
         public void NoPartialDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 
 namespace Test {
     [GenerateViewModel]
@@ -29,7 +31,7 @@ namespace Test {
 
         [Test]
         public void InvalidPropertyNameDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 
 namespace Test {
     [GenerateViewModel]
@@ -43,6 +45,7 @@ namespace Test {
     }
 }
 ";
+
             var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
 
             Assert.AreEqual(3, trees.Count());
@@ -51,7 +54,7 @@ namespace Test {
 
         [Test]
         public void OnChangedMethodNotFoundDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 
 namespace Test {
     [GenerateViewModel]
@@ -80,7 +83,7 @@ namespace Test {
 
         [Test]
         public void IncorrectCommandSignatureDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 
 namespace Test {
     [GenerateViewModel]
@@ -97,9 +100,11 @@ namespace Test {
     }
 }
 ";
+
             var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
 
             Assert.AreEqual(3, trees.Count());
+
             Assert.AreEqual(2, diagnostics.Count());
             Assert.AreEqual(GeneratorDiagnostics.IncorrectCommandSignature.Id, diagnostics[0].Id);
             Assert.AreEqual(GeneratorDiagnostics.IncorrectCommandSignature.Id, diagnostics[1].Id);
@@ -107,7 +112,7 @@ namespace Test {
 
         [Test]
         public void CanExecuteMethodNotFoundDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 using System.Threading.Tasks;
 
 namespace Test {
@@ -149,7 +154,7 @@ namespace Test {
 
         [Test]
         public void RaiseMethodNotFoundDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 using System.ComponentModel;
 
 namespace Test {
@@ -173,12 +178,12 @@ namespace Test {
             Assert.AreEqual(3, trees.Count());
             Assert.AreEqual(2, diagnostics.Count());
             foreach(var diagnostic in diagnostics)
-                Assert.AreEqual(GeneratorDiagnostics.RaiseMethodNotFound.Id, diagnostic.Id);
+                Assert.AreEqual(GeneratorDiagnostics.OnMethodNotFound.Id, diagnostic.Id);
         }
 
         [Test]
         public void TwoSuitableMethodsDiagnostic() {
-            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 using System.Threading.Tasks;
 
 namespace Test {
@@ -206,12 +211,48 @@ namespace Test {
             foreach(var diagnostic in diagnostics)
                 Assert.AreEqual(GeneratorDiagnostics.TwoSuitableMethods.Id, diagnostic.Id);
         }
+        [Test]
+        public void NoBaseObservableRecipientClass() {
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+
+namespace Test {
+    [GenerateViewModel]
+    partial class Broadcast {
+        [GenerateProperty(Broadcast = true)]
+        int value;
+        public Broadcast() => value.ToString(); //avoid not used warning
+    }
+}
+";
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
+            Assert.AreEqual(3, trees.Count());
+            Assert.AreEqual(GeneratorDiagnostics.NoBaseObservableRecipientClass.Id, diagnostics.Single().Id);
+        }
+        [Test]
+        public void NoBaseObservableValidatorClass() {
+            var sourceCode = @"using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+
+namespace Test {
+    [GenerateViewModel]
+    partial class Validator {
+        [GenerateProperty(Validate = true)]
+        int value;
+        public Validator() => value.ToString(); //avoid not used warning
+    }
+}
+";
+            var (trees, diagnostics) = GeneratorHelper.GetDiagnostics(CreateCompilation(sourceCode));
+            Assert.AreEqual(3, trees.Count());
+            Assert.AreEqual(GeneratorDiagnostics.NoBaseObservableValidatorClass.Id, diagnostics.Single().Id);
+        }
         [TestCase("[DevExpress.Mvvm.CodeGenerators.Prism.GenerateViewModel]\r\n")]
         [TestCase("[DevExpress.Mvvm.CodeGenerators.GenerateViewModel]\r\n")]
         public void TwoGenerateViewModelAttributeDiagnostic(string generateViewModel) {
             var sourceCode = "namespace Test {\r\n"
                 + generateViewModel +
-    @"[DevExpress.Mvvm.CodeGenerators.MvvmLight.GenerateViewModel]
+    @"[DevExpress.Mvvm.CodeGenerators.MvvmToolkit.GenerateViewModel]
     partial class TwoGenerateViewModelAttributeClass { }
     }
 ";

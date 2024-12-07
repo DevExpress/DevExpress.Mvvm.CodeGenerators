@@ -29,7 +29,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public static SourceBuilder AppendCommandGenericType(this SourceBuilder source, SupportedMvvm mvvm, bool isCommand, string genericArgumentType) => mvvm switch {
             SupportedMvvm.Dx => source.AppendCommandGenericTypeCore(isCommand, genericArgumentType, "DelegateCommand"),
             SupportedMvvm.Prism => source.AppendCommandGenericTypeCore(true, genericArgumentType, "DelegateCommand"),
-            SupportedMvvm.MvvmLight => source.AppendCommandGenericTypeCore(true, genericArgumentType, "RelayCommand"),
+            SupportedMvvm.MvvmLight or SupportedMvvm.MvvmToolkit => source.AppendCommandGenericTypeCore(true, genericArgumentType, "RelayCommand"),
             SupportedMvvm.None => source,
             _ => throw new InvalidOperationException()
         };

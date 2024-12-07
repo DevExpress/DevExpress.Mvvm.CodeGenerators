@@ -6,6 +6,16 @@ using System.Linq;
 
 namespace DevExpress.Mvvm.CodeGenerators {
     enum ChangeEventRaiseMode { EventArgs, PropertyName }
+    enum RaiseMethodPrefix { On, Raise }
+    struct RaiseInfo {
+        public readonly ChangeEventRaiseMode Mode;
+        public readonly RaiseMethodPrefix Prefix;
+        public RaiseInfo(ChangeEventRaiseMode mode, RaiseMethodPrefix prefix) {
+            Mode = mode;
+            Prefix = prefix;
+        }
+    }
+
     static class ClassGenerator {
         const string defaultUsings =
 @"using System.Collections.Generic;
@@ -43,8 +53,8 @@ using System.ComponentModel;";
                 genericTypes, outerClasses, mvvm, contextInfo.Compilation);
 
 
-            bool needStaticChangedEventArgs = inpcedInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangedMethod;
-            bool needStaticChangingEventArgs = inpcingInfo.HasAttribute && (inpcingInfo.HasRaiseMethodWithEventArgsParameter || impelementRaiseChangingMethod);
+            bool needStaticChangedEventArgs = inpcedInfo.HasMethodWithEventArgsPrefix || impelementRaiseChangedMethod;
+            bool needStaticChangingEventArgs = inpcingInfo.HasAttribute && (inpcingInfo.HasMethodWithEventArgsPrefix || impelementRaiseChangingMethod);
             IReadOnlyList<string> propertyNames = GenerateProperties(source, contextInfo, classSymbol, inpcedInfo, inpcingInfo, needStaticChangedEventArgs, needStaticChangingEventArgs, mvvm);
 
             GenerateCommands(source, contextInfo, classSymbol, mvvm);
@@ -69,6 +79,9 @@ using System.ComponentModel;";
                         else
                             source.AppendLine("using GalaSoft.MvvmLight.Command;");
                         source.AppendLine("using GalaSoft.MvvmLight.Messaging;");
+                        break;
+                    case SupportedMvvm.MvvmToolkit:
+                        source.AppendLine("using Microsoft.Toolkit.Mvvm;").AppendLine("using Microsoft.Toolkit.Mvvm.Input;");
                         break;
                     case SupportedMvvm.None:
                         break;
@@ -123,37 +136,38 @@ using System.ComponentModel;";
             }
         }
         static IReadOnlyList<string> GenerateProperties(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, INPCInfo inpcedInfo, INPCInfo inpcingInfo, bool needStaticChangedEventArgs, bool needStaticChangingEventArgs, SupportedMvvm mvvm) {
-            ChangeEventRaiseMode? changedRaiseMode = needStaticChangedEventArgs
-                ? ChangeEventRaiseMode.EventArgs
-                : inpcedInfo.HasRaiseMethodWithStringParameter
-                    ? ChangeEventRaiseMode.PropertyName
-                    : default(ChangeEventRaiseMode?);
-            ChangeEventRaiseMode? changingRaiseMode = needStaticChangingEventArgs
-                ? ChangeEventRaiseMode.EventArgs
-                : inpcingInfo.HasAttribute && inpcingInfo.HasRaiseMethodWithStringParameter
-                    ? ChangeEventRaiseMode.PropertyName
-                    : default(ChangeEventRaiseMode?);
+            RaiseMethodPrefix prefix = mvvm.GetRasiePrefix();
+            RaiseInfo? changedInfo = GetRaiseInfo(inpcedInfo, needStaticChangedEventArgs, true, prefix);
+            RaiseInfo? changingInfo = GetRaiseInfo(inpcingInfo, needStaticChangingEventArgs, inpcingInfo.HasAttribute, prefix);
             bool generateProperties = true;
             List<string> propertyNames = new();
             IEnumerable<IFieldSymbol> fieldCandidates = ClassHelper.GetFieldCandidates(classSymbol, contextInfo.GetFrameworkAttributes(mvvm).PropertyAttributeSymbol);
             if(fieldCandidates.Any()) {
-                if(changedRaiseMode == null) {
-                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ed");
+                if(changedInfo == null) {
+                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ed", prefix);
                     generateProperties = false;
                 }
-                if(inpcingInfo.HasAttribute && changingRaiseMode == null) {
-                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ing");
+                if(inpcingInfo.HasAttribute && changingInfo == null) {
+                    contextInfo.Context.ReportRaiseMethodNotFound(classSymbol, "ing", prefix);
                     generateProperties = false;
                 }
                 if(generateProperties)
                     foreach(IFieldSymbol fieldSymbol in fieldCandidates) {
-                        string? propertyName = PropertyGenerator.Generate(source, contextInfo, classSymbol, fieldSymbol, changedRaiseMode, changingRaiseMode, mvvm);
+                        string? propertyName = PropertyGenerator.Generate(source, contextInfo, classSymbol, fieldSymbol, changedInfo, changingInfo, mvvm);
                         if(propertyName != null) {
                             propertyNames.Add(propertyName);
                         }
                     }
             }
             return propertyNames;
+        }
+
+        private static RaiseInfo? GetRaiseInfo(INPCInfo inpcingInfo, bool needStaticChangingEventArgs, bool hasAttribute, RaiseMethodPrefix prefix) {
+            return needStaticChangingEventArgs
+                ? new RaiseInfo(ChangeEventRaiseMode.EventArgs, prefix)
+                : hasAttribute && inpcingInfo.HasMethodWithStringPrefix
+                    ? new RaiseInfo(ChangeEventRaiseMode.PropertyName, prefix)
+                    : default(RaiseInfo?);
         }
 
         static void GenerateCommands(SourceBuilder source, ContextInfo contextInfo, INamedTypeSymbol classSymbol, SupportedMvvm mvvm) {
@@ -168,18 +182,20 @@ using System.ComponentModel;";
                 case SupportedMvvm.Dx:
                     if(ClassHelper.GetImplementIDEIValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.IDEISymbol))
                         interfaces.Add(new IDataErrorInfoGenerator());
-                    if(ClassHelper.GetImplementISPVMValue(contextInfo, classSymbol, mvvm) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Dx!.ISPVMSymbol, contextInfo, mvvm))
+                    if(ClassHelper.ShouldImplementInterface(classSymbol, contextInfo.Dx!.ISPVMSymbol, contextInfo, mvvm, (context, type) => ClassHelper.GetImplementISPVMValue(context, type, mvvm)))
                         interfaces.Add(new ISupportParentViewModelGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnParentViewModelChanged", 1, "object")));
                     if(ClassHelper.GetImplementISSValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplementedInCurrentClass(classSymbol, contextInfo.Dx!.ISSSymbol))
                         interfaces.Add(new ISupportServicesGenerator(classSymbol.IsSealed, contextInfo.IsWinUI));
                     break;
                 case SupportedMvvm.Prism:
-                    if(ClassHelper.GetImplementIAAValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.Prism!.IAASymbol, contextInfo, mvvm))
+                    if(ClassHelper.ShouldImplementInterface(classSymbol, contextInfo.Prism!.IAASymbol, contextInfo, mvvm, ClassHelper.GetImplementIAAValue))
                         interfaces.Add(new IActiveAwareGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnIsActiveChanged", 0, null)));
                     break;
                 case SupportedMvvm.MvvmLight:
-                    if(ClassHelper.GetImplementICUValue(contextInfo, classSymbol) && !ClassHelper.IsInterfaceImplemented(classSymbol, contextInfo.MvvmLight!.ICUSymbol, contextInfo, mvvm))
+                    if(ClassHelper.ShouldImplementInterface(classSymbol, contextInfo.MvvmLight!.ICUSymbol, contextInfo, mvvm, ClassHelper.GetImplementICUValue))
                         interfaces.Add(new ICleanupGenerator(ClassHelper.ContainsOnChangedMethod(classSymbol, "OnCleanup", 0, null), classSymbol.IsSealed));
+                    break;
+                case SupportedMvvm.MvvmToolkit:
                     break;
                 case SupportedMvvm.None:
                     break;

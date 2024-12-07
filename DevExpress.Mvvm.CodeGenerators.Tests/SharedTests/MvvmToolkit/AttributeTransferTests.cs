@@ -1,10 +1,11 @@
 ﻿using DevExpress.Mvvm.CodeGenerators.Tests.Included;
 using NUnit.Framework;
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using DevExpress.Mvvm.CodeGenerators.Prism;
+using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 
-namespace Prism.Mvvm.Tests {
+namespace MvvmToolkit.Mvvm.Tests {
     class MyCustomAttribute : Attribute {
         public MyCustomAttribute(int value, string str, bool condition, TestEnum testEnum) { }
     }

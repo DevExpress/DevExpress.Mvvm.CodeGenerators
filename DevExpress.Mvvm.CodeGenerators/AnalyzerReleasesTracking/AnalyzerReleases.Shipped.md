@@ -37,3 +37,12 @@ DXCG0011 | DevExpress.Mvvm.CodeGenerators | error | Method has Non-Nullable Argu
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
 DXCG0003 | DevExpress.Mvvm.CodeGenerators | error | Cannot find the DevExpress.Mvvm assembly
+
+## Release 21.2.2
+
+### New Rules
+Rule ID | Category | Severity | Notes
+--------|----------|----------|--------------------
+DXCG0012 | DevExpress.Mvvm.CodeGenerators | error | Cannot find OnPropertyChanged methods
+DXCG0013 | DevExpress.Mvvm.CodeGenerators | error | Class should be inherited from the ObservableRecipient class
+DXCG0014 | DevExpress.Mvvm.CodeGenerators | error | Class should be inherited from the ObservableValidator class

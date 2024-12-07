@@ -26,7 +26,7 @@ namespace DevExpress.Mvvm.CodeGenerators.Tests {
         [Prism.GenerateProperty]
         int prismProperty;
         [Prism.GenerateCommand]
-        void PrismMethod() { }
+        void PrismMethod() { prismProperty++; }
     }
 
     [TestFixture]

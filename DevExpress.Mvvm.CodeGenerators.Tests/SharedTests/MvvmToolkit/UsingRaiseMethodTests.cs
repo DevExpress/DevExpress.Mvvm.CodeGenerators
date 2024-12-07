@@ -1,10 +1,12 @@
 ﻿using NUnit.Framework;
 using System;
 using System.ComponentModel;
-using DevExpress.Mvvm.CodeGenerators.Prism;
+using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
+using Microsoft.Toolkit.Mvvm;
 using DevExpress.Mvvm.CodeGenerators.Tests;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
-namespace Prism.Mvvm.Tests {
+namespace MvvmToolkit.Mvvm.Tests {
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     partial class DefaultRaiseMethod {
         [GenerateProperty]
@@ -48,8 +50,8 @@ namespace Prism.Mvvm.Tests {
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
 
-        protected void RaisePropertyChanged(PropertyChangedEventArgs eventArgs) => PropertyChanged?.Invoke(this, eventArgs);
-        protected void RaisePropertyChanging(PropertyChangingEventArgs eventArgs) => PropertyChanging?.Invoke(this, eventArgs);
+        protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs) => PropertyChanged?.Invoke(this, eventArgs);
+        protected void OnPropertyChanging(PropertyChangingEventArgs eventArgs) => PropertyChanging?.Invoke(this, eventArgs);
     }
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
     partial class ChildWithParentsImplementedRaiseMethod : ParentWithEventArgsParameterRaiseMethod {
@@ -58,7 +60,7 @@ namespace Prism.Mvvm.Tests {
     }
 
     [GenerateViewModel(ImplementINotifyPropertyChanging = true)]
-    partial class ChildWithParentsStringParameterRaiseMethod4 : BindableBase {
+    partial class ChildWithParentsStringParameterRaiseMethod4 : ObservableObject {
         [GenerateProperty]
         int value;
     }

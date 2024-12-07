@@ -13,7 +13,7 @@ namespace Prism.Mvvm.Tests {
         [DevExpress.Mvvm.CodeGenerators.GenerateProperty]
         int dxProperty;
         [DevExpress.Mvvm.CodeGenerators.GenerateCommand]
-        void DxMethod() { }
+        void DxMethod() { dxProperty++; }
     }
 
     [TestFixture]

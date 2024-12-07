@@ -5,6 +5,7 @@ namespace DevExpress.Mvvm.CodeGenerators {
         public const string DxNamespace = "DevExpress.Mvvm.CodeGenerators";
         public const string PrismNamespace = "DevExpress.Mvvm.CodeGenerators.Prism";
         public const string MvvmLightNamespace = "DevExpress.Mvvm.CodeGenerators.MvvmLight";
+        public const string MvvmToolkitNamespace = "DevExpress.Mvvm.CodeGenerators.MvvmToolkit";
 
         public static string GetSourceCode(SupportedMvvm mvvm, bool isWinUI) =>
 $@"using System;
@@ -16,6 +17,7 @@ namespace {mvvm switch {
     SupportedMvvm.None or SupportedMvvm.Dx => DxNamespace,
     SupportedMvvm.Prism => PrismNamespace,
     SupportedMvvm.MvvmLight => MvvmLightNamespace,
+    SupportedMvvm.MvvmToolkit => MvvmToolkitNamespace,
     _ => throw new InvalidOperationException()
 }} {{
 {AccessModifierGenerator.GetSourceCode()}

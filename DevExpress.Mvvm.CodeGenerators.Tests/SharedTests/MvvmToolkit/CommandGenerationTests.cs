@@ -1,17 +1,12 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Reflection;
-using DevExpress.Mvvm.CodeGenerators.MvvmLight;
+using DevExpress.Mvvm.CodeGenerators.MvvmToolkit;
 using GalaSoft.MvvmLight.Helpers;
+using Microsoft.Toolkit.Mvvm.Input;
 using System.Linq;
 
-#if NETCOREAPP
-using GalaSoft.MvvmLight.Command;
-#else
-using GalaSoft.MvvmLight.CommandWpf;
-#endif
-
-namespace MvvmLight.Mvvm.Tests {
+namespace MvvmToolkit.Mvvm.Tests {
     [GenerateViewModel]
     partial class GenerateCommands {
         [GenerateCommand]
@@ -31,7 +26,7 @@ namespace MvvmLight.Mvvm.Tests {
         [GenerateCommand]
         void WithNullableString1(string? str) { }
         [GenerateCommand]
-        void WithNullableString2(string str) { }
+        void WithNullableString2(string? str) { }
         [GenerateCommand]
         void WithNullableString3(string? str) { }
         bool CanWithNullableString3(string str) => str.Length > 0;
@@ -72,24 +67,23 @@ namespace MvvmLight.Mvvm.Tests {
         public void CallRequiredMethodForCommand() {
             var generated = new GenerateCommands();
 
+            var executeMethodWithNoArg = GetFieldValue<Action<int?>, RelayCommand<int?>>(generated.WithNullableArgCommand, "execute");
             var expectedExecuteMethodWithNoArg = generated.GetType().GetMethod("WithNullableArg");
-            var executeMethodWithNoArg = GetFieldValueMethod<MethodInfo, RelayCommand<int?>, WeakAction<int?>>(generated.WithNullableArgCommand, "_execute");
-            Assert.AreEqual(expectedExecuteMethodWithNoArg, executeMethodWithNoArg);
+            Assert.AreEqual(expectedExecuteMethodWithNoArg, executeMethodWithNoArg.Method);
 
-            var method = GetFieldValueMethod<MethodInfo, RelayCommand<int>, WeakAction<int>>(generated.Command, "_execute");
+            var method = GetFieldValue<Action<int>, RelayCommand<int>>(generated.Command, "execute");
             var expectedMethod = generated.GetType().GetMethod("Method");
-            Assert.AreEqual(expectedMethod, method);
+            Assert.AreEqual(expectedMethod, method.Method);
 
-            var canMethod = GetFieldValueMethod<MethodInfo, RelayCommand<int>, WeakFunc<bool>>(generated.Command, "_canExecute");
+            var canMethod = GetFieldValue<Predicate<int>, RelayCommand<int>>(generated.Command, "canExecute");
             var expectedCanMethod = generated.GetType().GetMethod("CanDoIt");
-            Assert.AreEqual(expectedCanMethod, canMethod);
+            Assert.AreEqual(expectedCanMethod, canMethod.Method);
         }
-        static TResult GetFieldValueMethod<TResult, TCommand, T>(TCommand source, string fieldName) {
+        static TResult GetFieldValue<TResult, T>(T source, string fieldName) {
             var fieldInfo = source.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
             Assert.IsNotNull(fieldInfo);
-            var fieldInsance = fieldInfo.GetValue(source);
-            var weakMethod = typeof(T).GetProperty("Method", BindingFlags.NonPublic | BindingFlags.Instance);
-            return (TResult)weakMethod.GetValue(fieldInsance);
+
+            return (TResult)fieldInfo.GetValue(source);
         }
         [Test]
         public void ArgumentTypeForCommand() {
@@ -129,9 +123,10 @@ namespace MvvmLight.Mvvm.Tests {
             var generated = new GenerateCommands();
 
             var attributes = generated.GetType().GetProperty("AttributeTestCommand").GetCustomAttributes().ToList();
-            Assert.AreEqual(2, attributes.Count);
-            Assert.IsTrue(attributes[0] is FirstAttribute);
-            Assert.IsTrue(attributes[1] is ThirdAttribute);
+            Assert.AreEqual(3, attributes.Count);
+            Assert.IsTrue(attributes[0].GetType().Name == "NullableAttribute");
+            Assert.IsTrue(attributes[1] is FirstAttribute);
+            Assert.IsTrue(attributes[2] is ThirdAttribute);
         }
     }
 }
